@@ -1,0 +1,1 @@
+SpringMVC处理Ajax请求是post时候会去先判断Content-Type，如果是application/json就会按照json去解析，如果是application/x-www-form-urlencoded就会按照参数去解析，如果填写的是参数而Content-Type写的是json那么就会出现解析结果为null

@@ -1,0 +1,86 @@
+## nginx配置
+
+```
+http {
+    server {
+        location / {
+            root /data/www;
+        }
+        location /images/ {
+            root /data;
+        }
+    }
+}
+```
+## 二级域名反向代理
+```
+server {  
+    listen 80;
+    server_name 12328.test.com;
+
+    location / {
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header   Host      $http_host;
+        proxy_pass         http://127.0.0.1;
+    }
+}
+    server {  
+    listen 80;
+    server_name test.com;
+
+    location / {
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header   Host      $http_host;
+        proxy_pass         http://weibo.com;
+    }
+}
+
+ ```
+如果有几个匹配的location块，nginx将选择具有最长前缀来匹配location块。 上面的location块提供最短的前缀长度为1，因此只有当所有其他location块不能提供匹配时，才会使用该块。
+ 
+ 它将是以/images/(位置/也匹配这样的请求，但具有较短前缀，也就是“/images/”比“/”长)的请求来匹配。
+ 
+ 这已经是一个在标准端口80上侦听并且可以在本地机器上访问的服务器( http://localhost/ )的工作配置。 响应以/images/开头的URI的请求，服务器将从/data/images目录发送文件。 例如，响应http://localhost/images/logo.png请求，nginx将发送服务上的/data/images/logo.png文件。 如果文件不存在，nginx将发送一个指示404错误的响应。 不以/images/开头的URI的请求将映射到/data/www目录。 例如，响应http://localhost/about/example.html请求时，nginx将发送/data/www/about/example.html文件。
+ ```
+ location ~ \.(gif|jpg|png)$ {
+    root /data/images;
+}
+```
+该参数是一个正则表达式，匹配所有以.gif，.jpg或.png结尾的URI。正则表达式之前应该是~字符。 相应的请求将映射到/data/images目录。
+ 
+ 
+ ### 代理配置
+ ```
+ server {
+    location / {
+        proxy_pass http://localhost:8080/;
+    }
+
+    location ~ \.(gif|jpg|png)$ {
+        root /data/images;
+    }
+}
+```
+此服务器将过滤以.gif，.jpg或.png结尾的请求，并将它们映射到/data/images目录(通过向root指令的参数添加URI)，并将所有其他请求传递到上面配置的代理服务器。
+
+
+## Nginx转发默认忽略带下划线的头
+解决办法：http部分增加
+```
+underscores_in_headers on;
+```
+
+## Nginx Vue History Mode 404问题
+修改配置
+```
+   location /{
+
+        root   /data/nginx/html;
+        index  index.html index.htm;
+
+        if (!-e $request_filename) {
+            rewrite ^/(.*) /index.html last;
+            break;
+        }
+    }
+````

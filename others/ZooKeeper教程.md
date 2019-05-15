@@ -1,0 +1,503 @@
+
+## 依赖
+官方jar包：zookeeper-3.5.4-beta.jar
+
+## znode节点
+### 有四种类型的znode：
+* PERSISTENT-持久化目录节点
+客户端与zookeeper断开连接后，该节点依旧存在
+* PERSISTENT_SEQUENTIAL-持久化顺序编号目录节点
+客户端与zookeeper断开连接后，该节点依旧存在，只是Zookeeper给该节点名称进行顺序编号
+* EPHEMERAL-临时目录节点
+客户端与zookeeper断开连接后，该节点被删除，主节点是临时的话，就不能构建其子节点
+* EPHEMERAL_SEQUENTIAL-临时顺序编号目录节点
+客户端与zookeeper断开连接后，该节点被删除，只是Zookeeper给该节点名称进行顺序编号
+ 
+## ACL
+每个znode被创建时都会带有一个ACL列表，用于决定谁可以对它执行何种操作。
+
+## ZooKeeper Watcher 特性总结
+
+* ***注册只能确保一次消费***
+无论是服务端还是客户端，一旦一个 Watcher 被触发，ZooKeeper 都会将其从相应的存储中移除。因此，开发人员在 Watcher 的使用上要记住的一点是需要反复注册。这样的设计有效地减轻了服务端的压力。如果注册一个 Watcher 之后一直有效，那么针对那些更新非常频繁的节点，服务端会不断地向客户端发送事件通知，这无论对于网络还是服务端性能的影响都非常大。
+
+* ***客户端串行执行***
+客户端 Watcher 回调的过程是一个串行同步的过程，这为我们保证了顺序，同时，需要开发人员注意的一点是，千万不要因为一个 Watcher 的处理逻辑影响了整个客户端的 Watcher 回调。
+
+* ***轻量级设计***
+WatchedEvent 是 ZooKeeper 整个 Watcher 通知机制的最小通知单元，这个数据结构中只包含三部分的内容：通知状态、事件类型和节点路径。也就是说，Watcher 通知非常简单，只会告诉客户端发生了事件，而不会说明事件的具体内容。例如针对 NodeDataChanged 事件，ZooKeeper 的 Watcher 只会通知客户指定数据节点的数据内容发生了变更，而对于原始数据以及变更后的新数据都无法从这个事件中直接获取到，而是需要客户端主动重新去获取数据，这也是 ZooKeeper 的 Watcher 机制的一个非常重要的特性。
+
+
+* 可以设置观察的操作：exists,getChildren,getData 
+
+* 可以触发观察的操作：create,delete,setData
+
+
+
+
+## 基本添加监控实例Demo
+```
+package com.test;
+
+import org.apache.zookeeper.*;
+import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.util.List;
+
+public class ZookeeperTest2 {
+
+    private static String membershipRoot = "/Members";
+    private ZooKeeper zk = null;
+
+
+    /**
+     * 创建客户端
+     *
+     * @return
+     */
+    private ZooKeeper baseClient() {
+        if (zk != null) {
+            return zk;
+        }
+        try {
+            zk = new ZooKeeper("127.0.0.1:2181", 2 * 1000, (event) -> {
+                System.out.println("创建客户端");
+            });
+            return zk;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Test
+    public void getManager() {
+
+        ZooKeeper zooKeeper = baseClient();
+        getChildren(zooKeeper);
+        checkValue(zooKeeper);
+        while (true) {
+
+        }
+    }
+
+    @Test
+    public void addSonNodeClient() throws KeeperException, InterruptedException {
+        ZooKeeper zooKeeper = baseClient();
+        String name = ManagementFactory.getRuntimeMXBean().getName();
+        String processId = name.substring(0, name.indexOf('@'));
+        zooKeeper.create(membershipRoot + '/' + processId, processId.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+        while (true) {
+
+        }
+    }
+
+
+    public void getChildren(ZooKeeper zooKeeper) {
+        try {
+            List<String> children = zooKeeper.getChildren(membershipRoot, (event) -> {
+                System.out.println("type:" + event.getType());
+                if (event.getType() == Watcher.Event.EventType.NodeChildrenChanged) {
+                    getChildren(zooKeeper);
+                }
+
+            });
+            System.out.println("子节点:" + children);
+        } catch (KeeperException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void checkValue(ZooKeeper zooKeeper) {
+        try {
+            byte[] data = zooKeeper.getData(membershipRoot, (event) -> {
+                checkValue(zooKeeper);
+            }, null);
+            System.out.println("数值：" + new String(data));
+        } catch (KeeperException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+}
+
+```
+
+## 分布式锁Demo
+
+* 使用EPHEMERAL会引出一个风险：在非正常情况下，网络延迟比较大会出现session timeout，zookeeper就会认为该client已关闭，从而销毁其id标示，竞争资源的下一个id就可以获取锁。这时可能会有两个process同时拿到锁在跑任务，所以设置好session timeout很重要。
+* 同样使用PERSISTENT同样会存在一个死锁的风险，进程异常退出后，对应的竞争资源id一直没有删除，下一个id一直无法获取到锁对象。
+
+
+```
+package com.test;
+
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.ZooDefs;
+import org.apache.zookeeper.ZooKeeper;
+import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+
+public class ZookeeperTest3 {
+
+    private static String clockPath = "/Clock";
+    private static String clockSon = "/Clock/Son";
+    private ZooKeeper zk = null;
+
+
+    /**
+     * 创建客户端
+     *
+     * @return
+     */
+    private synchronized ZooKeeper baseClient() {
+        if (zk != null) {
+            return zk;
+        }
+        try {
+            zk = new ZooKeeper("127.0.0.1:2181", 2 * 1000, (event) -> {
+                System.out.println("创建客户端");
+            });
+            return zk;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    /**
+     * 注意创建的节点会自动加上编号
+     * 分布式锁
+     */
+    @Test
+    public void testClock() {
+        for (var i = 0; i < 50; i++) {
+            new Thread(() -> {
+                ZooKeeper zooKeeper = baseClient();
+                try {
+                    zooKeeper.create(clockPath, clockPath.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+                    System.out.println(Thread.currentThread().getName() + "获取了锁");
+                } catch (KeeperException e) {
+                    System.err.println(Thread.currentThread().getName() + "没有获取锁");
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+        }
+        while (true) {
+
+        }
+    }
+
+
+    /**
+     * 并发访问时序
+     */
+    @Test
+    public void testOrder() {
+
+        for (var i = 0; i < 50; i++) {
+            new Thread(() -> {
+                ZooKeeper zooKeeper = baseClient();
+                String name = Thread.currentThread().getName();
+                try {
+                    zooKeeper.create(clockSon, name.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
+                } catch (KeeperException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+        }
+
+        while (true) {
+
+        }
+    }
+
+}
+
+```
+
+## 集群
+
+### 目录结构
+
+```
+/zookeeper
+
+        |----zookeeper0/
+
+        |----zookeeper1/
+
+        |----zookeeper2/
+```
+
+
+* 新建目录data：/home/zzl/DataTool/zk34/zookeeper0/data
+
+* 新建目录logs：/home/zzl/DataTool/zk34/zookeeper0/logs
+
+* 新建文件myid：/home/zzl/DataTool/zk34/zookeeper0/data/myid
+
+* myid文件的内容是节点在集群中的编号，zookeeper0节点的编号就写成0，后边的zookeeper1的编号是1，zookeeper2的编号就是2。
+
+
+###配置文件
+```xml
+tickTime=2000
+initLimit=10
+syncLimit=5
+dataDir=E:\\zookeeper\\zookeeper1\\data
+dataLogDir=E:\\zookeeper\\zookeeper1\\log
+clientPort=2181
+server.1=localhost:2887:3887
+server.2=localhost:2888:3888
+server.3=localhost:2889:3889
+```
+
+```xml
+tickTime=2000
+initLimit=10
+syncLimit=5
+dataDir=E:\\zookeeper\\zookeeper2\\data
+dataLogDir=E:\\zookeeper\\zookeeper2\\log
+clientPort=2182
+server.1=localhost:2887:3887
+server.2=localhost:2888:3888
+server.3=localhost:2889:3889
+```
+
+```xml
+tickTime=2000
+initLimit=10
+syncLimit=5
+dataDir=E:\\zookeeper\\zookeeper3\\data
+dataLogDir=E:\\zookeeper\\zookeeper3\\log
+clientPort=2183
+server.1=localhost:2887:3887
+server.2=localhost:2888:3888
+server.3=localhost:2889:3889
+```
+
+## ACL
+
+### 节点权限限制
+
+核心代码
+```
+        List<ACL> acls = new ArrayList<>();  // 权限列表
+        // 第一个参数是权限scheme，第二个参数是加密后的用户名和密码
+        Id user1 = new Id("digest", getDigestUserPwd("user1:123456a"));
+        Id user2 = new Id("digest", getDigestUserPwd("user2:123456b"));
+        acls.add(new ACL(ZooDefs.Perms.ALL, user1));  // 给予所有权限
+        acls.add(new ACL(ZooDefs.Perms.READ, user2));  // 只给予读权限
+        acls.add(new ACL(ZooDefs.Perms.DELETE | ZooDefs.Perms.CREATE, user2));  // 多个权限的给予方式，使用 | 位运算符
+        String result = zooKeeper.create("/testDigestNode", "test data".getBytes(), acls, CreateMode.PERSISTENT); 
+```
+
+完整实例
+```
+package com.test;
+
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.ZooDefs;
+import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.data.ACL;
+import org.apache.zookeeper.data.Id;
+import org.apache.zookeeper.data.Stat;
+import org.apache.zookeeper.server.auth.DigestAuthenticationProvider;
+import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+public class ZookeeperTest4 {
+    private ZooKeeper zk = null;
+
+
+    /**
+     * 创建客户端
+     *
+     * @return
+     */
+    private synchronized ZooKeeper baseClient() {
+        if (zk != null) {
+            return zk;
+        }
+        try {
+            zk = new ZooKeeper("127.0.0.1:2182", 2 * 1000, (event) -> {
+                System.out.println("创建客户端");
+            });
+            return zk;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    /**
+     * 加密密码
+     *
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    public String getDigestUserPwd(String id) {
+        // 加密明文密码
+        try {
+            return DigestAuthenticationProvider.generateDigest(id);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * ZooKeeper提供了如下几种验证模式（scheme）：
+     * digest：Client端由用户名和密码验证，譬如user:password，digest的密码生成方式是Sha1摘要的base64形式
+     * auth：不使用任何id，代表任何已确认用户。
+     * ip：Client端由IP地址验证，譬如172.2.0.0/24
+     * world：固定用户为anyone，为所有Client端开放权限
+     * super：在这种scheme情况下，对应的id拥有超级权限，可以做任何事情(cdrwa）
+     * <p>
+     * <p>
+     * 创建带权限限制的节点
+     */
+    @Test
+    public void addSecreteNode() {
+
+        List<ACL> acls = new ArrayList<>();  // 权限列表
+        // 第一个参数是权限scheme，第二个参数是加密后的用户名和密码
+        Id user1 = new Id("digest", getDigestUserPwd("user1:123456a"));
+        Id user2 = new Id("digest", getDigestUserPwd("user2:123456b"));
+        acls.add(new ACL(ZooDefs.Perms.ALL, user1));  // 给予所有权限
+        acls.add(new ACL(ZooDefs.Perms.READ, user2));  // 只给予读权限
+        acls.add(new ACL(ZooDefs.Perms.DELETE | ZooDefs.Perms.CREATE, user2));  // 多个权限的给予方式，使用 | 位运算符
+
+
+        ZooKeeper zooKeeper = baseClient();
+        try {
+            String result = zooKeeper.create("/testDigestNode", "test data".getBytes(), acls, CreateMode.PERSISTENT);
+        } catch (KeeperException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        List<ACL> aclList = null;
+        try {
+            aclList = zooKeeper.getACL("/testDigestNode", null);
+        } catch (KeeperException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        for (ACL acl : aclList) {
+            System.out.println("\n-----------------------\n");
+            System.out.println("权限scheme id：" + acl.getId());
+            System.out.println("权限位：" + acl.getPerms());
+        }
+
+        while (true) {
+
+        }
+    }
+
+
+    /**
+     * 操作加密的节点
+     */
+    @Test
+    public void getSecreteNode() {
+        ZooKeeper zooKeeper = baseClient();
+        zooKeeper.addAuthInfo("digest", "user1:123456a".getBytes());
+        String result = null;
+
+        /*创建子节点*/
+        try {
+            Stat exists = zooKeeper.exists("/testDigestNode/testOneNode", false);
+            if (exists == null) {
+                result = zooKeeper.create("/testDigestNode/testOneNode", "test data".getBytes(), ZooDefs.Ids.CREATOR_ALL_ACL, CreateMode.PERSISTENT);
+                System.out.println(result);
+            } else {
+                System.out.println(exists);
+            }
+
+        } catch (KeeperException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        /*获取值*/
+        try {
+            byte[] data = zooKeeper.getData("/testDigestNode/testOneNode", false, null);
+            System.out.println("获取值:" + new String(data));
+        } catch (KeeperException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        /*设置值*/
+        try {
+            zooKeeper.setData("/testDigestNode/testOneNode", "new test data".getBytes(), -1);
+        } catch (KeeperException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        while (true) {
+
+        }
+    }
+
+
+  @Test
+    public void addIpLimitNode() {
+        ZooKeeper zooKeeper = baseClient();
+
+        List<ACL> aclsIP = new ArrayList<ACL>();  // 权限列表
+        // 第一个参数是权限scheme，第二个参数是ip地址
+        Id ipId1 = new Id("ip", "192.168.190.1");
+        aclsIP.add(new ACL(ZooDefs.Perms.ALL, ipId1));  // 给予所有权限
+
+        try {
+            String result = zooKeeper.create("/testIpNode", "this is test ip node data".getBytes(), aclsIP, CreateMode.PERSISTENT);
+        } catch (KeeperException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        while (true){
+            
+        }
+    }
+
+}
+
+```
