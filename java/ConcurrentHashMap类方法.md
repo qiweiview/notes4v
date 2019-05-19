@@ -23,7 +23,7 @@ concurrentHashMap.computeIfPresent("keyWord", (x, y) -> {
                 });
 ```
 
-### compute() 不管怎么样都会执行lamda，lamda里的return为插入的值，方法返回值为插入的值
+### compute() 不管怎么样都会执行lamda，lamda里的return为插入的值，方法返回值为插入的值，如果传入函数的返回值为空，则会删除对应key.
 
 ```
  String keyWord = concurrentHashMap.compute("keyWord", (k, y) -> {
