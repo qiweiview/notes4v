@@ -174,24 +174,19 @@ ExecutorService executor = Executors.newCachedThreadPool();
 
 #### 使用FutureTask
 ```
-   ExecutorService executor = Executors.newCachedThreadPool();
-        Callable<Integer> callable = ()->{
-            System.out.println("子线程"+Thread.currentThread().getName()+"在进行计算");
-
-            int sum = 0;
-            for (int i = 0; i < 100; i++)
-                sum += i;
-            return sum;
-        };
-        FutureTask<Integer> futureTask = new FutureTask<>(callable);
-        executor.submit(futureTask);
-        /*
-        Thread thread = new Thread(futureTask2);
-        thread.start();
-
-        FutureTask实现RunnableFuture接口,RunnableFuture继承了Runnable接口和Future接口，而FutureTask实现了RunnableFuture接口。所以它既可以作为Runnable被线程执行，又可以作为Future得到Callable的返回值。
-         */
-        executor.shutdown();
+ FutureTask<Integer> futureTask = new FutureTask<Integer>(() -> {
+            TimeUnit.SECONDS.sleep(2);
+            return 1;
+        });
+        new Thread(futureTask).start();
+        try {
+            Integer integer = futureTask.get();
+            System.out.println("响应："+integer);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
 ```
 
 
