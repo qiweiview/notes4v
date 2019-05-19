@@ -7,7 +7,8 @@
 * merge 合并
 
 
-### computeIfAbsent() 如果不存在就执行lamda，lamda里的return为插入的值，方法返回值为插入的值，如果传入函数的返回值为空，则会删除对应key.
+### computeIfAbsent() 
+#### 如果不存在就执行lamda，lamda里的return为插入的值，方法返回值为插入的值，如果传入函数的返回值为空，则会删除对应key.
 ```
  concurrentHashMap.computeIfAbsent("keyWord", (x) -> {
                     System.out.println("computeIfAbsent：" + x );
@@ -15,7 +16,8 @@
                 });
 ```
 
-### computeIfPresent() 如果存在则执行，lamda里的return为插入的值，方法返回值为插入的值，如果传入函数的返回值为空，则会删除对应key.
+### computeIfPresent()
+#### 如果存在则执行，lamda里的return为插入的值，方法返回值为插入的值，如果传入函数的返回值为空，则会删除对应key.
 ```
 concurrentHashMap.computeIfPresent("keyWord", (x, y) -> {
                     System.out.println("computeIfPresent：" + x + "/" + y);
@@ -23,7 +25,8 @@ concurrentHashMap.computeIfPresent("keyWord", (x, y) -> {
                 });
 ```
 
-### compute() 不管怎么样都会执行lamda，lamda里的return为插入的值，方法返回值为插入的值，如果传入函数的返回值为空，则会删除对应key.
+### compute() 
+#### 不管怎么样都会执行lamda，lamda里的return为插入的值，方法返回值为插入的值，如果传入函数的返回值为空，则会删除对应key.
 
 ```
  String keyWord = concurrentHashMap.compute("keyWord", (k, y) -> {
@@ -33,7 +36,8 @@ concurrentHashMap.computeIfPresent("keyWord", (x, y) -> {
 ```
 
 
-### merge()key对应的值为空的话，把值设置为传入的value（valu不能为空，为空的话会报空指针），否则把值设置成传入函数的返回值，如果传入函数的返回值为空，则会删除对应key.
+### merge()
+#### key对应的值为空的话，把值设置为传入的value（valu不能为空，为空的话会报空指针），否则把值设置成传入函数的返回值，如果传入函数的返回值为空，则会删除对应key.
 
 **原理代码（非真实源码）**
 ```
