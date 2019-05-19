@@ -23,8 +23,8 @@ concurrentHashMap.computeIfPresent("keyWord", (x, y) -> {
                 });
 ```
 
-compute() 不管怎么样都会执行lamda，，lamda里的return为插入的值，方法返回值为插入的值
-### 
+### compute() 不管怎么样都会执行lamda，，lamda里的return为插入的值，方法返回值为插入的值
+
 ```
  String keyWord = concurrentHashMap.compute("keyWord", (k, y) -> {
                     System.out.println("compute:" + k + "/" + y);
@@ -33,7 +33,7 @@ compute() 不管怎么样都会执行lamda，，lamda里的return为插入的值
 ```
 
 
-merge()key对应的值为空的话，把值设置为传入的value（valu不能为空，为空的话会报空指针），否则把值设置成传入函数的返回值，如果传入函数的返回值为空，则会删除对应key.
+### merge()key对应的值为空的话，把值设置为传入的value（valu不能为空，为空的话会报空指针），否则把值设置成传入函数的返回值，如果传入函数的返回值为空，则会删除对应key.
 
 **原理代码（非真实源码）**
 ```
