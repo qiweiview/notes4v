@@ -7,7 +7,7 @@
 * merge 合并
 
 
-### computeIfAbsent() 如果不存在就执行lamda，lamda里的return为插入的值，方法返回值为插入的值
+### computeIfAbsent() 如果不存在就执行lamda，lamda里的return为插入的值，方法返回值为插入的值，如果传入函数的返回值为空，则会删除对应key.
 ```
  concurrentHashMap.computeIfAbsent("keyWord", (x) -> {
                     System.out.println("computeIfAbsent：" + x );
@@ -15,7 +15,7 @@
                 });
 ```
 
-### computeIfPresent() 如果存在则执行，lamda里的return为插入的值，方法返回值为插入的值
+### computeIfPresent() 如果存在则执行，lamda里的return为插入的值，方法返回值为插入的值，如果传入函数的返回值为空，则会删除对应key.
 ```
 concurrentHashMap.computeIfPresent("keyWord", (x, y) -> {
                     System.out.println("computeIfPresent：" + x + "/" + y);
