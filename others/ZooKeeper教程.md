@@ -501,3 +501,90 @@ public class ZookeeperTest4 {
 }
 
 ```
+
+
+## 使用Curator客户端
+```
+RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
+        CuratorFramework client =
+                CuratorFrameworkFactory.builder()
+                        .connectString("127.0.0.1:2181")
+                        .sessionTimeoutMs(5000)
+                        .connectionTimeoutMs(5000)
+                        .retryPolicy(retryPolicy)
+                        .build();
+
+        client.start();
+```
+
+### 创建节点
+```
+ try {
+            client.create()
+                    .creatingParentContainersIfNeeded()//创建父节点
+                    .withMode(CreateMode.EPHEMERAL)//设置模式
+                    .forPath("/fatherT/todayViewMoment","init".getBytes());//设置地址和对应值
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+```
+
+### 删除数据节点
+
+#### 删除一个节点(注意，此方法只能删除叶子节点，否则会抛出异常。)
+```
+client.delete().forPath("path");
+```
+
+#### 删除一个节点，并且递归删除其所有的子节点
+```
+client.delete().deletingChildrenIfNeeded().forPath("path");
+```
+#### 删除一个节点，强制指定版本进行删除
+```
+client.delete().withVersion(10086).forPath("path");
+```
+#### 删除一个节点，强制保证删除(guaranteed()接口是一个保障措施，只要客户端会话有效，那么Curator会在后台持续进行删除操作，直到删除节点成功。)
+```
+client.delete().guaranteed().forPath("path");
+```
+
+
+### 读取数据节点
+
+#### 读取一个节点的数据内容(注意，此方法返的返回值是byte[ ])
+```
+client.getData().forPath("path");
+```
+
+
+#### 读取一个节点的数据内容，同时获取到该节点的stat
+```
+Stat stat = new Stat();
+client.getData().storingStatIn(stat).forPath("path");
+```
+
+### 更新数据节点
+#### 更新一个节点的数据内容（注意：该接口会返回一个Stat实例）
+```
+client.setData().forPath("path","data".getBytes());
+```
+
+#### 更新一个节点的数据内容，强制指定版本进行更新
+```
+client.setData().withVersion(10086).forPath("path","data".getBytes());
+```
+#### 检查节点是否存在
+注意：该方法返回一个Stat实例，用于检查ZNode是否存在的操作. 可以调用额外的方法(监控或者后台处理)并在最后调用forPath( )指定要操作的ZNode
+```
+client.checkExists().forPath("path");
+```
+
+#### 获取某个节点的所有子节点路径
+注意：该方法的返回值为List<String>,获得ZNode的子节点Path列表。 可以调用额外的方法(监控、后台处理或者获取状态watch, background or get stat) 并在最后调用forPath()指定要操作的父ZNode
+```
+client.getChildren().forPath("path");
+```
+
+
+
