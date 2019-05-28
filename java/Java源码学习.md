@@ -1,7 +1,7 @@
 ## Java源码学习
 
-### 复制数组public static native void arraycopy(Object src,  int  srcPos,Object dest, int destPos,int length);
-* 参数
+### 复制数组public static native void arraycopy
+* 参数(Object src,  int  srcPos,Object dest, int destPos,int length)
 ```
 * @param src源数组。
 * @param srcPos在源数组中的起始位置。
