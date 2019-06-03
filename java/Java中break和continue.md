@@ -90,6 +90,22 @@ label**********》1
 label**********》2
 ```
 
+#### break label代码块
+```
+ Integer a=0;
+        view:
+        {
+            while (true) {
+                if (a==10)break view;
+                a++;
+            }
+
+        }
+        System.out.println("hello:"+a);
+```
+
+
+
 
 #### continue 
 ```
