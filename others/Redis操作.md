@@ -354,6 +354,7 @@ hsetnx key field value
 设置失败返回0，成功返回1
 
 ### 4. 使哈希表key的filed属性增加increment
+
 ```
 hincrby key field increment 
 ````
@@ -815,17 +816,17 @@ zscan key cursor match count
 
 ## HyperLogLog基础命令
 
-### 添加指定元素到 HyperLogLog 中
+### 1. 添加指定元素到 HyperLogLog 中
 ```
 pfadd key value1 value2 value3
 ```
 
-### 返回给定 HyperLogLog 的基数估算值(不是很理解用法)
+### 2. 返回给定 HyperLogLog 的基数估算值(不是很理解用法)
 ```
 pfcount key1 key2
 ```
 
-### 将多个 HyperLogLog 合并为一个 HyperLogLog
+### 3.将多个 HyperLogLog 合并为一个 HyperLogLog
 ```
 pfmerge nh  key1 key2 key3
 ```
@@ -836,7 +837,7 @@ pfmerge nh  key1 key2 key3
 
 ## Redis 发布订阅
 
-### 订阅一个或多个符合给定模式的频道
+### 1. 订阅一个或多个符合给定模式的频道
 ```
 psubscribe channel1 channel2 channel3
 ```
@@ -844,17 +845,17 @@ psubscribe channel1 channel2 channel3
 * it* 匹配所有以 it 开头的频道( it.news 、 it.blog 、 it.tweets 等等)
 * news.* 匹配所有以 news. 开头的频道( news.it 、 news.global.today 等等)
 
-### 订阅给定的一个或多个频道的信息
+### 2. 订阅给定的一个或多个频道的信息
 ```
 subscribe channel1 channel2 channel3
 ```
 
-### 将信息发送到指定的频道(只能发一个)
+### 3. 将信息发送到指定的频道(只能发一个)
 ```
 publish channel message
 ```
 
-### 退订所有给定模式的频道。(不知道怎么尝试)
+### 4. 退订所有给定模式的频道。(不知道怎么尝试)
 ```
 punsubsribe channel1
 ```
@@ -863,12 +864,12 @@ punsubsribe channel1
 * it* 匹配所有以 it 开头的频道( it.news 、 it.blog 、 it.tweets 等等)
 * news.* 匹配所有以 news. 开头的频道( news.it 、 news.global.today 等等)
 
-### 指退订给定的频道。(不知道怎么尝试)
+### 5. 指退订给定的频道。(不知道怎么尝试)
 ```
 unsubsribe channel1
 ```
 
-### 查看订阅与发布系统状态。(不懂这个使用)
+### 6. 查看订阅与发布系统状态。(不懂这个使用)
 ```
 pubsub channel
 ```
