@@ -329,7 +329,199 @@ hscan key cursor match count
 
 *　match 让命令只返回和给定模式相匹配的元素
 
+## redis列表基本操作
 
+* Redis列表是简单的字符串列表，按照插入顺序排序。你可以添加一个元素到列表的头部（左边）或者尾部（右边）
+
+* 一个列表最多可以包含 232 - 1 个元素 (4294967295, 每个列表超过40亿个元素)。
+
+### 1. 向列表key尾部插入一个或多个数据,若列表不存在则会创建后再插入
+```
+rpush key value1 value2 value3
+```
+
+### 2. 向列表key头部插入一个或多个数据,若列表不存在则会创建后再插入
+```
+lpush key value1 value2 value3
+```
+
+### 3. 向列表key尾部插入一个数据(没有多个),若列表不存在则返回0
+```
+rpushx key value
+```
+### 4. 向列表key头部插入一个数据(没有多个),若列表不存在则返回0
+```
+lpushx key value
+```
+
+### 5. 在列表key的pivot元素前或者后插入元素value
+```
+linsert key before/after pivot value
+```
+
+### 6. 通过索引（下标）设置列表元素的值
+```
+lset key index value 
+```
+
+### 7. 通过索引（下标）获取列表中的元素
+```
+lindex key index
+```
+
+### 8. 根据参数count的值，移除列表key中与参数value相等的元素
+```
+lrem key count value 
+```
+
+* count > 0 : 从表头开始向表尾搜索，移除与value相等的元素，数量为count
+* count < 0 : 从表尾开始向表头搜索，移除与value相等的元素，数量为count的绝对值。
+* count = 0 : 移除表中所有与 VALUE 相等的值。
+
+### 9. 获取列表key指定范围start到to内的元素
+```
+lrange key start end
+```
+ 0表示列表的第一个元素1表示列表的第二个元素，以此类推
+ -1表示列表的最后一个元素-2 表示列表的倒数第二个元素，以此类推
+
+### 10. 获取列表长度
+```
+llen key
+```
+
+### 11. 移除并获取列表key第一个元素
+```
+lpop key 
+```
+
+### 12. 移除并获取列表key最后一个元素
+```
+rpop key 
+```
+
+### 13. 移出并获取列表的第一个元素， 如果列表没有元素会阻塞列表直到等待超时或发现可弹出元素为止(timeout单位为秒)
+```
+blpop key timeout 
+```
+
+### 14. 移出并获取列表的第一个元素， 如果列表没有元素会阻塞列表直到等待超时或发现可弹出元素为止(timeout单位为秒)
+```
+brpop key timeout 
+```
+
+### 15. 对一个列表进行修剪(trim)，就是说，让列表只保留指定区间start到end内的元素，不在指定区间之内的元素都将被删除。
+```
+ltrim key start end
+```
+ 0 表示列表的第一个元素，以 1 表示列表的第二个元素，以此类推 
+-1 表示列表的最后一个元素， -2 表示列表的倒数第二个元素，以此类推
+
+### 16. 移除列表的key最后一个元素，并将该元素添加到另一个列表nkey的头并返回
+```
+rpoplpush key nkey
+```
+
+### 17. 移除列表的key最后一个元素，并将该元素添加到另一个列表nkey的头并返回, 如果列表没有元素会阻塞列表直到等待超时或发现可弹出元素为止(timeout单位为秒)
+```
+brpoplpush key nkey second
+```
+## redis集合基本操作
+
+* Redis 的 Set 是 String 类型的无序集合。集合成员是唯一的，这就意味着集合中不能出现重复的数据。
+* Redis 中集合是通过哈希表实现的，所以添加，删除，查找的复杂度都是 O(1)。
+
+### 向集合中添加一个或多个value
+```
+sadd key value1 value2 value3 value4
+```
+
+### 获取集合key的数据数
+```
+scard key
+```
+
+### 获得多个集合的差集（不知道应用场景）
+```
+sdiff key1 key2 key3
+```
+结果来自于第一个集合，第一个集合去掉后面集合出现过的元素
+
+### 获得多个集合的差集并存储在daveKey中（会覆盖已存在的同名集合）
+```
+sdiffstore daveKey key1 key2 key3
+```
+
+
+### 获得多个集合的交集
+```
+sinter key1 key2 key3
+```
+
+### 获得多个集合的交集并存储在daveKey中（会覆盖已存在的同名集合）
+```
+sinterstore daveKey key1 key2 key3
+```
+
+### 判断一个元素value是否是一个集合key的成员
+```
+sismember key value
+```
+
+### 返回集合key中的所有成员
+```
+smembers key
+```
+
+### 将指定成员 value 元素从 source 集合移动到 destination 集合
+```
+smove source destination value
+```
+* SMOVE 是原子性操作。
+* 如果 source 集合不存在或不包含指定的 member 元素，则 SMOVE 命令不执行任何操作，仅返回 0 
+* 否则， member 元素从 source 集合中被移除，并添加到 destination 集合中去。
+* 当 destination 集合已经包含 member 元素时， SMOVE 命令只是简单地将 source 集合中的 member 元素删除。
+* 当 source 或 destination 不是集合类型时，返回一个错误
+
+### 移除并返回集合中的指定 key 的一个或多个随机元素
+```
+spop key count
+```
+count 参数在 3.2+ 版本可用。
+
+### 返回集合中的指定 key 的一个或多个随机元素
+```
+srandmenber key count
+```
+* 如果 count 为正数，且小于集合基数，那么命令返回一个包含 count 个元素的数组，数组中的元素各不相同。
+* 如果 count 大于等于集合基数，那么返回整个集合。
+* 如果 count 为负数，那么命令返回一个数组，数组中的元素可能会重复出现多次，而数组的长度为 count 的绝对值。
+
+### 移除集合key中一个或多个成员
+```
+srem key value1 valu2 value3
+```
+不存在的成员元素会被忽略
+
+### 获得多个集合的并集
+```
+sunion key1 key2 key3
+```
+
+### 获得多个集合的并集并存储在daveKey中（会覆盖已存在的同名集合）
+```
+sunionstore daveKey key1 key2 key3
+```
+
+### 迭代集合中的元素
+```
+sscan key cursor mathch count
+```
+## redis有序集合
+* Redis 有序集合和集合一样也是string类型元素的集合,且不允许重复的成员。
+* 不同的是每个元素都会关联一个double类型的分数。redis正是通过分数来为集合中的成员进行从小到大的排序。
+* 有序集合的成员是唯一的,但分数(score)却可以重复。
+* 集合是通过哈希表实现的，所以添加，删除，查找的复杂度都是O(1)。 集合中最大的成员数为 232 - 1 (4294967295, 每个集合可存储40多亿个成员)。
 
 
 ## 发布与订阅
