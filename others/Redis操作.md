@@ -431,49 +431,49 @@ brpoplpush key nkey second
 * Redis 的 Set 是 String 类型的无序集合。集合成员是唯一的，这就意味着集合中不能出现重复的数据。
 * Redis 中集合是通过哈希表实现的，所以添加，删除，查找的复杂度都是 O(1)。
 
-### 向集合中添加一个或多个value
+### 1.向集合中添加一个或多个value
 ```
 sadd key value1 value2 value3 value4
 ```
 
-### 获取集合key的数据数
+### 2.获取集合key的数据数
 ```
 scard key
 ```
 
-### 获得多个集合的差集（不知道应用场景）
+### 3.获得多个集合的差集（不知道应用场景）
 ```
 sdiff key1 key2 key3
 ```
 结果来自于第一个集合，第一个集合去掉后面集合出现过的元素
 
-### 获得多个集合的差集并存储在daveKey中（会覆盖已存在的同名集合）
+### 4.获得多个集合的差集并存储在daveKey中（会覆盖已存在的同名集合）
 ```
 sdiffstore daveKey key1 key2 key3
 ```
 
 
-### 获得多个集合的交集
+### 5.获得多个集合的交集
 ```
 sinter key1 key2 key3
 ```
 
-### 获得多个集合的交集并存储在daveKey中（会覆盖已存在的同名集合）
+### 6.获得多个集合的交集并存储在daveKey中（会覆盖已存在的同名集合）
 ```
 sinterstore daveKey key1 key2 key3
 ```
 
-### 判断一个元素value是否是一个集合key的成员
+### 7.判断一个元素value是否是一个集合key的成员
 ```
 sismember key value
 ```
 
-### 返回集合key中的所有成员
+### 8.返回集合key中的所有成员
 ```
 smembers key
 ```
 
-### 将指定成员 value 元素从 source 集合移动到 destination 集合
+### 9.将指定成员 value 元素从 source 集合移动到 destination 集合
 ```
 smove source destination value
 ```
@@ -483,13 +483,13 @@ smove source destination value
 * 当 destination 集合已经包含 member 元素时， SMOVE 命令只是简单地将 source 集合中的 member 元素删除。
 * 当 source 或 destination 不是集合类型时，返回一个错误
 
-### 移除并返回集合中的指定 key 的一个或多个随机元素
+### 10.移除并返回集合中的指定 key 的一个或多个随机元素
 ```
 spop key count
 ```
 count 参数在 3.2+ 版本可用。
 
-### 返回集合中的指定 key 的一个或多个随机元素
+### 11.返回集合中的指定 key 的一个或多个随机元素
 ```
 srandmenber key count
 ```
@@ -497,32 +497,231 @@ srandmenber key count
 * 如果 count 大于等于集合基数，那么返回整个集合。
 * 如果 count 为负数，那么命令返回一个数组，数组中的元素可能会重复出现多次，而数组的长度为 count 的绝对值。
 
-### 移除集合key中一个或多个成员
+### 12.移除集合key中一个或多个成员
 ```
 srem key value1 valu2 value3
 ```
 不存在的成员元素会被忽略
 
-### 获得多个集合的并集
+### 13.获得多个集合的并集
 ```
 sunion key1 key2 key3
 ```
 
-### 获得多个集合的并集并存储在daveKey中（会覆盖已存在的同名集合）
+### 14.获得多个集合的并集并存储在daveKey中（会覆盖已存在的同名集合）
 ```
 sunionstore daveKey key1 key2 key3
 ```
 
-### 迭代集合中的元素
+### 15.迭代集合中的元素
 ```
 sscan key cursor mathch count
 ```
+* cursor 每次被调用之后， 都会向用户返回一个新的游标， 用户在下次迭代时需要使用这个新游标作为 HSCAN 命令的游标参数
+（当cursor被设置为0， 服务器将开始一次新的迭代， 而当服务器向用户返回值为0的游标时， 表示迭代已结束）
+
+* count 让用户告知迭代命令， 在每次迭代中应该从数据集里返回多少元素(10)
+
+*　match 让命令只返回和给定模式相匹配的元素
+
+
 ## redis有序集合
 * Redis 有序集合和集合一样也是string类型元素的集合,且不允许重复的成员。
 * 不同的是每个元素都会关联一个double类型的分数。redis正是通过分数来为集合中的成员进行从小到大的排序。
 * 有序集合的成员是唯一的,但分数(score)却可以重复。
 * 集合是通过哈希表实现的，所以添加，删除，查找的复杂度都是O(1)。 集合中最大的成员数为 232 - 1 (4294967295, 每个集合可存储40多亿个成员)。
 
+### 1. 将一个或多个成员元素及其分数值加入到有序集当中
+```
+zadd key scope1 value1 scope2 value2 scope3 value3
+```
+* 如果某个成员已经是有序集的成员，那么更新这个成员的分数值，并通过重新插入这个成员元素，来保证该成员在正确的位置上。
+* 分数值可以是整数值或双精度浮点数。
+* 如果有序集合 key 不存在，则创建一个空的有序集并执行 ZADD 操作。
+* 当 key 存在但不是有序集类型时，返回一个错误。
+
+### 2. 获取有序集合key的成员数
+```
+zcard key
+```
+
+### 3. 计算在有序集合中指定区间分数的成员数(区间为scope的值)
+```
+zcount min max
+```
+
+### 4. 有序集合中对指定成员的分数scope加上增量 increment
+```
+zincrby key  scope value
+```
+* 可以通过传递一个负数值 increment ，让分数减去相应的值(比如 ZINCRBY key -5 member ，就是让 member 的 score 值减去 5 )
+* 当 key 不存在，或分数不是 key 的成员时， ZINCRBY key increment member 等同于 ZADD key increment member 。
+* 当 key 不是有序集类型时，返回一个错误。
+* scope值可以是整数值或双精度浮点数。
+
+### 5. 计算给定的一个或多个有序集的交集并将结果集存储在新的有序集合nz中
+```
+zinterstore  nz numkeys   z1 z2 z3
+ZINTERSTORE sum_point 2 mid_test fin_test
+```
+* 其中给定z的数量必须以numkeys(上面有z1 z2 z3那么numkeys为3)参数指定
+* 默认情况下，结果集中某个成员的分数值是所有给定集下该成员分数值之和。
+
+### 6. 计算有序集合中指定字典区间内成员数量
+```
+zlexcount key start end
+```
+示例
+```
+redis 127.0.0.1:6379> ZADD myzset 0 a 0 b 0 c 0 d 0 e
+(integer) 5
+redis 127.0.0.1:6379> ZADD myzset 0 f 0 g
+(integer) 2
+redis 127.0.0.1:6379> ZLEXCOUNT myzset - +
+(integer) 7
+redis 127.0.0.1:6379> ZLEXCOUNT myzset [b [f
+(integer) 5
+```
+
+### 7. 通过索引区间返回有序集合成指定区间内的成员，指定索引区间从start到end范围内成员
+```
+zrange key start end
+```
+* 其中成员的位置按分数值递增(从小到大)来排序。
+* 具有相同分数值的成员按字典序(lexicographical order )来排列。
+
+示例
+```
+redis 127.0.0.1:6379> ZRANGE salary 0 -1              # 显示整个有序集成员
+1) "jack"
+2) "3500"
+3) "tom"
+4) "5000"
+5) "boss"
+6) "10086"
+
+redis 127.0.0.1:6379> ZRANGE salary 1 2               # 显示有序集下标区间 1 至 2 的成员
+1) "tom"
+2) "5000"
+3) "boss"
+4) "10086"
+
+redis 127.0.0.1:6379> ZRANGE salary 0 200000          # 测试 end 下标超出最大下标时的情况
+1) "jack"
+2) "3500"
+3) "tom"
+4) "5000"
+5) "boss"
+6) "10086"
+
+redis > ZRANGE salary 200000 3000000                   # 测试当给定区间不存在于有序集时的情况
+(empty list or set)
+```
+
+
+### 8. 返回有序集中指定区间内的成员，通过索引，分数从高到底
+```
+zrevrange key start end
+```
+
+### 9. 通过字典区间返回有序集合的成员，指定字典区间从start到end范围内成员
+```
+zrangebylex key start end
+```
+
+范例
+```
+redis 127.0.0.1:6379> ZADD myzset 0 a 0 b 0 c 0 d 0 e 0 f 0 g
+(integer) 7
+redis 127.0.0.1:6379> ZRANGEBYLEX myzset - [c
+1) "a"
+2) "b"
+3) "c"
+redis 127.0.0.1:6379> ZRANGEBYLEX myzset - (c
+1) "a"
+2) "b"
+redis 127.0.0.1:6379> ZRANGEBYLEX myzset [aaa (g
+1) "b"
+2) "c"
+3) "d"
+4) "e"
+5) "f"
+```
+
+### 10. 通过分数scope区间返回有序集合的成员，指定分数区间从start到end范围内成员
+```
+zrangebyscore key start end
+```
+
+### 11. 返回有序集中指定分数区间内的成员，分数从高到低排序
+```
+zrevrangebuscore  key start end
+```
+
+
+### 12. 返回有序集合中指定成员的索引
+```
+zrank key value
+```
+
+### 13. 返回有序集合中指定成员的索引，有序集成员按分数值递减(从大到小)排序
+```
+zrevrank key value
+```
+
+### 14. 移除有序集合中的一个或多个成员
+```
+zrem key value1 value2 value3
+```
+
+### 15. 移除有序集合key中给定的字典区间的所有成员
+```
+zremrangebylex key start end
+```
+
+示例
+```
+redis 127.0.0.1:6379> ZADD myzset 0 foo 0 zap 0 zip 0 ALPHA 0 alpha
+(integer) 5
+redis 127.0.0.1:6379> ZRANGE myzset 0 -1
+1) "ALPHA"
+ 2) "aaaa"
+ 3) "alpha"
+ 4) "b"
+ 5) "c"
+ 6) "d"
+ 7) "e"
+ 8) "foo"
+ 9) "zap"
+10) "zip"
+redis 127.0.0.1:6379> ZREMRANGEBYLEX myzset [alpha [omega
+(integer) 6
+```
+
+### 16. 移除有序集合中给定的排名区间(下标索引)的所有成员
+```
+zremrangeburank key start end
+```
+
+### 17. 移除有序集合中给定的分数区间的所有成员
+```
+zremrangebuscore key start end
+```
+
+### 18. 返回有序集中，成员的分数值
+```
+zscore key value
+```
+
+### 19. 计算给定的一个或多个有序集的并集，并存储在新的 key 中
+```
+zunionstore nzu numkeys key1 key2 key3
+```
+
+### 20. 迭代有序集合中的元素（包括元素成员和元素分值）
+```
+zscan key cursor match count
+```
 
 ## 发布与订阅
 
