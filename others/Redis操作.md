@@ -1,3 +1,93 @@
+## redis系统操作
+### 验证密码是否正确
+```
+auth password
+```
+
+### 异步执行一个 AOF（AppendOnly File） 文件重写操作
+``` 
+bgrewriteaof
+```
+* 重写会创建一个当前 AOF 文件的体积优化版本。
+* 即使 Bgrewriteaof 执行失败，也不会有任何数据丢失，因为旧的 AOF 文件在 Bgrewriteaof 成功之前不会被修改
+
+### 在后台异步保存当前数据库的数据到磁盘
+```
+bgsave
+```
+*命令执行之后立即返回 OK ，然后 Redis fork 出一个新子进程，原来的 Redis 进程(父进程)继续处理客户端请求，而子进程则负责将数据保存到磁盘，然后退出。
+
+
+### 返回所有连接到服务器的客户端信息和统计数据
+```
+client list
+```
+
+#### 域的含义：
+addr ： 客户端的地址和端口
+fd ： 套接字所使用的文件描述符
+age ： 以秒计算的已连接时长
+idle ： 以秒计算的空闲时长
+flags ： 客户端 flag
+db ： 该客户端正在使用的数据库 ID
+sub ： 已订阅频道的数量
+psub ： 已订阅模式的数量
+multi ： 在事务中被执行的命令数量
+qbuf ： 查询缓冲区的长度（字节为单位， 0 表示没有分配查询缓冲区）
+qbuf-free ： 查询缓冲区剩余空间的长度（字节为单位， 0 表示没有剩余空间）
+obl ： 输出缓冲区的长度（字节为单位， 0 表示没有分配输出缓冲区）
+oll ： 输出列表包含的对象数量（当输出缓冲区没有剩余空间时，命令回复会以字符串对象的形式被入队到这个队列里）
+omem ： 输出缓冲区和输出列表占用的内存总量
+events ： 文件描述符事件
+cmd ： 最近一次执行的命令
+
+#### 客户端 flag 可以由以下部分组成：
+O ： 客户端是 MONITOR 模式下的附属节点（slave）
+S ： 客户端是一般模式下（normal）的附属节点
+M ： 客户端是主节点（master）
+x ： 客户端正在执行事务
+b ： 客户端正在等待阻塞事件
+i ： 客户端正在等待 VM I/O 操作（已废弃）
+d ： 一个受监视（watched）的键已被修改， EXEC 命令将失败
+c : 在将回复完整地写出之后，关闭链接
+u : 客户端未被阻塞（unblocked）
+A : 尽可能快地关闭连接
+N : 未设置任何 flag
+
+#### 文件描述符事件可以是：
+r : 客户端套接字（在事件 loop 中）是可读的（readable）
+w : 客户端套接字（在事件 loop 中）是可写的（writeable）
+
+
+### 返回当前服务器时间
+```
+time
+```
+
+* 第一个字符串是当前时间(以 UNIX 时间戳格式表示)，
+* 第二个字符串是当前这一秒钟已经逝去的微秒数
+
+### 删除所有数据库的所有key
+```
+flushall
+```
+
+### 删除当前数据库的所有key
+```
+flushdb
+```
+
+### 返回主从实例所属的角色
+```
+role
+```
+
+### 同步保存数据到硬盘
+```
+save
+```
+
+
 ## redis键值基本操作
 
 ### 1. 连接远程redis服务器
@@ -723,25 +813,123 @@ zunionstore nzu numkeys key1 key2 key3
 zscan key cursor match count
 ```
 
-## 发布与订阅
+## HyperLogLog基础命令
 
-### 订阅
+### 添加指定元素到 HyperLogLog 中
 ```
-SUBSCRIBE sub //订阅sub队列
-```
-
-### 模糊订阅
-```
-Psubscribe my*//订阅所有my开头的队列
+pfadd key value1 value2 value3
 ```
 
-### 发布
+### 返回给定 HyperLogLog 的基数估算值(不是很理解用法)
 ```
-PUBLISH sub "hello world"//向sub队列推送消息
-```
-
-### 查看当前存在队列
-```
-PUBSUB CHANNELS
+pfcount key1 key2
 ```
 
+### 将多个 HyperLogLog 合并为一个 HyperLogLog
+```
+pfmerge nh  key1 key2 key3
+```
+* 将多个 HyperLogLog 合并为一个 HyperLogLog ，合并后的 HyperLogLog 的基数估算值是通过对所有 给定 HyperLogLog 进行并集计算得出的。
+
+
+
+
+## Redis 发布订阅
+
+### 订阅一个或多个符合给定模式的频道
+```
+psubscribe channel1 channel2 channel3
+```
+每个模式以 * 作为匹配符
+* it* 匹配所有以 it 开头的频道( it.news 、 it.blog 、 it.tweets 等等)
+* news.* 匹配所有以 news. 开头的频道( news.it 、 news.global.today 等等)
+
+### 订阅给定的一个或多个频道的信息
+```
+subscribe channel1 channel2 channel3
+```
+
+### 将信息发送到指定的频道(只能发一个)
+```
+publish channel message
+```
+
+### 退订所有给定模式的频道。(不知道怎么尝试)
+```
+punsubsribe channel1
+```
+
+每个模式以 * 作为匹配符
+* it* 匹配所有以 it 开头的频道( it.news 、 it.blog 、 it.tweets 等等)
+* news.* 匹配所有以 news. 开头的频道( news.it 、 news.global.today 等等)
+
+### 指退订给定的频道。(不知道怎么尝试)
+```
+unsubsribe channel1
+```
+
+### 查看订阅与发布系统状态。(不懂这个使用)
+```
+pubsub channel
+```
+
+
+## 事物
+* DISCARD取消事物
+* 以 MULTI 开始一个事务， 然后将多个命令入队到事务中， 最后由 EXEC 命令触发事务， 一并执行事务中的所有命令
+
+示例
+```
+redis 127.0.0.1:6379> MULTI
+OK
+
+redis 127.0.0.1:6379> SET book-name "Mastering C++ in 21 days"
+QUEUED
+
+redis 127.0.0.1:6379> GET book-name
+QUEUED
+
+redis 127.0.0.1:6379> SADD tag "C++" "Programming" "Mastering Series"
+QUEUED
+
+redis 127.0.0.1:6379> SMEMBERS tag
+QUEUED
+
+redis 127.0.0.1:6379> EXEC
+1) OK
+2) "Mastering C++ in 21 days"
+3) (integer) 3
+4) 1) "Mastering Series"
+   2) "C++"
+   3) "Programming"
+```
+
+* 单个 Redis 命令的执行是原子性的，但 Redis 没有在事务上增加任何维持原子性的机制，所以 Redis 事务的执行并不是原子性的。
+* 事务可以理解为一个打包的批量执行脚本，但批量指令并非原子化的操作，中间某条指令的失败不会导致前面已做指令的回滚，也不会造成后续的指令不做。
+
+示例
+```
+redis 127.0.0.1:7000> multi
+OK
+redis 127.0.0.1:7000> set a aaa
+QUEUED
+redis 127.0.0.1:7000> set b bbb
+QUEUED
+redis 127.0.0.1:7000> set c ccc
+QUEUED
+redis 127.0.0.1:7000> exec
+1) OK
+2) OK
+3) OK
+如果在 set b bbb 处失败，set a 已成功不会回滚，set c 还会继续执行。
+```
+
+### 监视一个(或多个) key ，如果在事务执行之前这个(或这些) key 被其他命令所改动，那么事务将被打断。
+```
+watch key1 key2 key3
+```
+
+### 取消 WATCH 命令对所有 key 的监视。
+```
+unwatch key1 key2
+```
