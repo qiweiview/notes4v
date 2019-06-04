@@ -1,5 +1,4 @@
-## nginx配置
-
+## nginx基本配置
 ```
 http {
     server {
@@ -12,7 +11,9 @@ http {
     }
 }
 ```
-## 二级域名反向代理
+
+
+## nginx二级域名反向代理
 ```
 server {  
     listen 80;
@@ -49,7 +50,7 @@ server {
 该参数是一个正则表达式，匹配所有以.gif，.jpg或.png结尾的URI。正则表达式之前应该是~字符。 相应的请求将映射到/data/images目录。
  
  
- ### 代理配置
+ ### nginx代理配置
  ```
  server {
     location / {
@@ -64,13 +65,13 @@ server {
 此服务器将过滤以.gif，.jpg或.png结尾的请求，并将它们映射到/data/images目录(通过向root指令的参数添加URI)，并将所有其他请求传递到上面配置的代理服务器。
 
 
-## Nginx转发默认忽略带下划线的头
+## nginx转发默认忽略带下划线的头
 解决办法：http部分增加
 ```
 underscores_in_headers on;
 ```
 
-## Nginx Vue History Mode 404问题
+## nginx Vue History Mode 404问题
 修改配置
 ```
    location /{
@@ -83,4 +84,45 @@ underscores_in_headers on;
             break;
         }
     }
-````
+```
+
+## 使用ngx_http_auth_basic_module配置basic auth认证
+
+
+
+1. 生成用户密码文件
+使用htpasswd创建用户密码文件：
+```
+htpasswd -c -d filename username
+```
+
+如果没有安装 htpasswd，使用以下命令安装：
+```
+apt install apache2-utils
+```
+
+2. 配置basic auth
+在location中添加如下配置：
+```
+location / {
+    auth_basic "登录认证";
+    auth_basic_user_file /usr/local/nginx/conf/htpasswd;
+}
+```
+3. 重启nginx
+```
+nginx -s reload
+```
+
+## nginx文件服务器
+
+修改配置文件
+```
+    root /home; #这个是在server级的
+    location / {
+        autoindex on;
+        autoindex_exact_size on;#文件大小
+        autoindex_localtime on;#创建时间
+    }
+
+```
