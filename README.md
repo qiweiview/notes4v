@@ -1,2 +1,2 @@
 # notes4v
-Poor life notes,haha~
+Simple notes,haha~
