@@ -235,9 +235,9 @@ setrange key offset value
 
 示例
 ```
-set long '123456789'
-setrange long 6 view
-get long //123456view
+set long '12345678'
+setrange long 2 view
+get long //12view78
 ```
 
 ### 6. 获取存储数据长度
@@ -262,27 +262,34 @@ msetnx key1 value1  key2 value2  key3 value3
 get key
 ```
 
-### 10. 获取值的固定长度
+### 10. 获取key存储的值的固定长度（从start到end）
 ```
 getrange key start end
 ```
 
-### 11. 设置值并返回旧值
+### 11. 将key的值设置成新值并返回旧值
 ```
 getset key value
 ```
 
 设置一个没有设置过的值返回的（旧值）是nil
 
-### 12. 对储存的字符串值，设置或清除指定偏移量上的位(bit)。（这个不是很理解作用）
+### 12. 对储存的字符串值，设置或清除指定偏移量上的位(bit)
 ```
 setbit key offset value
 ```
+* 在redis中，存储的字符串都是以二级制的进行存在的
+* 'a' 的ASCII码是  97二进制是：01100001
+* offset的学名叫"偏移" 二进制中的每一位就是offset值啦（offset 0 等于0，offset 1等于1） 
 
-### 13. 对 key 所储存的字符串值，获取指定偏移量上的位(bit) （这个不是很理解作用）
+### 13. 对 key 所储存的字符串值，获取指定偏移量上的位(bit)
 ```
 getbit key offset
 ```
+
+* 在redis中，存储的字符串都是以二级制的进行存在的
+* 'a' 的ASCII码是  97二进制是：01100001
+* offset的学名叫"偏移" 二进制中的每一位就是offset值啦（offset 0 等于0，offset 1等于1） 
 
 ### 14. 获取多个值
 ```
@@ -296,14 +303,14 @@ incr key
 * 返回自增后的数字
 * 对于非integer报"ERR value is not an integer or of range"
 
-### 16. key值自增固定数increment
+### 16. key值自增固定数increment（可以通过负数实现减法）
 ```
 incrby key increment
 ```
 * 返回自增后的数字
 * 对于非integer报"ERR value is not an integer or of range"
 
-### 17. key值自增固定浮点数increment（可以接收小数和整数）
+### 17. key值自增固定浮点数increment（可以接收小数和整数）（可以通过负数实现减法）
 ```
 incrbyfloat key increment
 ```
@@ -312,14 +319,14 @@ incrbyfloat key increment
 
 
 
-### 18. key值自减1
+### 18. key值自减1（可以通过负数实现加法）
 ```
 decr key
 ```
 * 返回自减后的数字
 * 对于非integer报"ERR value is not an integer or of range"
 
-### 19. key值自减固定数increment
+### 19. key值自减固定数increment（可以通过负数实现加法）（可以通过负数实现加法）
 ```
 decrby key increment
 ```
@@ -398,12 +405,12 @@ hmget key file1 file2 file3
 hgetall key
 ```
 
-### 12. 获取哈希表key中的所有属性file
+### 12. 获取哈希表key中的所有属性file的名字
 ```
 hkeys key
 ```
 
-### 13. 获取哈希表key的字段数量
+### 13. 获取哈希表key的字段file数量
 ```
 hlen key
 ```
@@ -448,6 +455,20 @@ lpushx key value
 ### 5. 在列表key的pivot元素前或者后插入元素value
 ```
 linsert key before/after pivot value
+```
+
+示例
+```
+redis> RPUSH mylist "Hello"
+(integer) 1
+redis> RPUSH mylist "World"
+(integer) 2
+redis> LINSERT mylist BEFORE "World" "There"
+(integer) 3
+redis> LRANGE mylist 0 -1
+1) "Hello"
+2) "There"
+3) "World"
 ```
 
 ### 6. 通过索引（下标）设置列表元素的值
