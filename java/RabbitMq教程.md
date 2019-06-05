@@ -161,12 +161,12 @@ public class SendAndReceive {
 ```
 
 
-#### AMQP.Queue.DeclareOk queueDeclare ()申明队列
+#### 方法：AMQP.Queue.DeclareOk queueDeclare ()申明队列
 
 * 主动声明一个服务器命名的独占，自动删除，非持久队列。 新队列的名称保存在AMQP.Queue.DeclareOk结果的“队列”字段中。
 
 
-#### AMQP.Queue.DeclareOk queueDeclare(String queue, boolean durable, boolean exclusive, boolean autoDelete, Map<String,Object> arguments) throws IOException申明队列
+#### 方法：AMQP.Queue.DeclareOk queueDeclare(String queue, boolean durable, boolean exclusive, boolean autoDelete, Map<String,Object> arguments) throws IOException申明队列
 
 * queue  - 队列的名称
 * durable  - 如果我们声明一个持久队列（队列将在服务器重启后仍然存在），则为true
@@ -176,7 +176,7 @@ public class SendAndReceive {
 
 
 
-#### String basicConsume(String queue, boolean autoAck, String consumerTag, boolean noLocal, boolean exclusive, Map<String,Object> arguments, DeliverCallback deliverCallback, CancelCallback cancelCallback, ConsumerShutdownSignalCallback shutdownSignalCallback) throws IOException消费
+#### 方法：String basicConsume(String queue, boolean autoAck, String consumerTag, boolean noLocal, boolean exclusive, Map<String,Object> arguments, DeliverCallback deliverCallback, CancelCallback cancelCallback, ConsumerShutdownSignalCallback shutdownSignalCallback) throws IOException消费
 * queue  - 队列的名称
 * autoAck  - 如果服务器应该考虑一旦传递确认的消息，则为true; 如果服务器应该期望显式确认，则返回false
 * consumerTag  - 客户端生成的消费者标记，用于建立上下文
@@ -308,11 +308,11 @@ public class SendAndWorker {
 }
 
 ```
- #### channel.basicQos(int prefetchCount)
+ #### 方法：channel.basicQos(int prefetchCount)
  * prefetchCount 服务器将传递的最大消息数，如果无限制，则为0
  
  
- #### void basicAck(long deliveryTag, boolean multiple) throws IOException
+ #### 方法：void basicAck(long deliveryTag, boolean multiple) throws IOException
 确认收到一条或多条收到的消息。 从AMQP.Basic.GetOk或AMQP.Basic.Deliver方法提供deliveryTag，其中包含已确认的已接收消息
 
 * deliveryTag  - 收到的AMQP.Basic.GetOk或AMQP.Basic.Deliver中的标签
@@ -328,6 +328,27 @@ public class SendAndWorker {
 * headers
 * fanout
 
+枚举型
+```
+public enum BuiltinExchangeType {
+    DIRECT("direct"),
+    FANOUT("fanout"),
+    TOPIC("topic"),
+    HEADERS("headers");
+
+    private final String type;
+
+    private BuiltinExchangeType(String type) {
+        this.type = type;
+    }
+
+    public String getType() {
+        return this.type;
+    }
+}
+```
+
+示例代码
 ```
 package view.javatest.rabbit2;
 
@@ -413,7 +434,7 @@ public class LogAndLogReceive {
 
 ```
 
-#### void basicPublish(String exchange, String routingKey, boolean mandatory, boolean immediate, AMQP.BasicProperties props, byte[] body) throws IOException发布消息
+#### 方法：void basicPublish(String exchange, String routingKey, boolean mandatory, boolean immediate, AMQP.BasicProperties props, byte[] body) throws IOException发布消息
 发布到不存在的交换将导致通道级协议异常，从而关闭通道。 如果资源驱动的警报生效，Channel＃basicPublish的调用最终将被阻止。
 
 * exchange  - 将消息发布到的交换
@@ -424,3 +445,16 @@ public class LogAndLogReceive {
 * body - 消息体
 
 ### 路由
+
+* 绑定是交换和队列之间的关系。这可以简单地理解为：队列对来自此交换的消息感兴趣。
+
+```
+```
+
+#### 方法：AMQP.Queue.BindOk queueBind(String queue, String exchange, String routingKey, Map<String,Object> arguments) throws IOException队列绑定交换器
+
+* queue  - 队列的名称
+* exchange  - 交换器的名称
+* routingKey  - 用于绑定的路由密钥
+* arguments  - 其他属性（绑定参数）
+
