@@ -226,6 +226,11 @@ docker run -d -p 127.0.0.1:5000:5000/udp training/webapp python app.py
 docker run -d -P --name runoob training/webapp python app.py
 ```
 
+### 获取日志地址
+```
+docker inspect --format='{{.LogPath}}' containerID
+```
+
 # 应用篇
 运行fastDFS
 
