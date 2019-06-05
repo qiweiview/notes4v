@@ -162,7 +162,7 @@ persist key
 
 
 
-### 15. 随机获取一个key
+### 15. 随机获取一个已存在的key
 ```
 randomkey
 ```
