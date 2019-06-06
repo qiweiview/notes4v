@@ -261,7 +261,7 @@ public class SendAndReceive {
 
 #### 方法：String basicConsume(String queue, boolean autoAck, String consumerTag, boolean noLocal, boolean exclusive, Map<String,Object> arguments, DeliverCallback deliverCallback, CancelCallback cancelCallback, ConsumerShutdownSignalCallback shutdownSignalCallback) throws IOException消费
 * queue  - 队列的名称
-* autoAck  - 如果服务器应该考虑一旦传递确认的消息，则为true; 如果服务器应该期望显式确认，则返回false
+* autoAck  - 这个任务自动确认设置为true; 手动确认，设置false
 * consumerTag  - 客户端生成的消费者标记，用于建立上下文
 * noLocal  - 如果服务器不应传递此通道连接上发布的此消费者消息，则为True。 请注意，RabbitMQ服务器不支持此标志。
 * exclusive  - 如果这是一个独家消费者，则为true
@@ -394,10 +394,12 @@ public class SendAndWorker {
 ```
  #### 方法：channel.basicQos(int prefetchCount)
  * prefetchCount 服务器将传递的最大消息数，如果无限制，则为0
+ * 一次从rabbitmq领回来的任务数
  
  
  #### 方法：void basicAck(long deliveryTag, boolean multiple) throws IOException
-确认收到一条或多条收到的消息。 从AMQP.Basic.GetOk或AMQP.Basic.Deliver方法提供deliveryTag，其中包含已确认的已接收消息
+* 确认收到一条或多条收到的消息。 从AMQP.Basic.GetOk或AMQP.Basic.Deliver方法提供deliveryTag，其中包含已确认的已接收消息,
+* 确认后才会接受新的处理任务，不确认任务会还回去
 
 * deliveryTag  - 收到的AMQP.Basic.GetOk或AMQP.Basic.Deliver中的标签
 * multiple  - 如果确认所有消息，包括提供的交付标签，则为true; false仅确认提供的交货标签。
