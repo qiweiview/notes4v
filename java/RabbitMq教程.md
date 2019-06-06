@@ -95,15 +95,24 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
+import org.testng.annotations.Test;
 import view.javatest.rabbit.ConnectionFactoryBuilder;
 
 import java.io.IOException;
+import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
+/**
+ * 基础发送与接收
+ */
 public class SendAndReceive {
-    private final static String QUEUE_NAME = "hello";
+    private final  String QUEUE_NAME = "hello";
+    private String workerName;
 
 
+    public SendAndReceive() {
+        this.workerName = "工人" + UUID.randomUUID();
+    }
     /**
      * 发送消息
      * @throws Exception
@@ -130,7 +139,6 @@ public class SendAndReceive {
      */
     public static void main(String[] argv) throws Exception {
         SendAndReceive sendAndReceive=new SendAndReceive();
-        sendAndReceive.sendMessage();
         sendAndReceive.waitForReceive();
     }
 
@@ -145,11 +153,12 @@ public class SendAndReceive {
         Channel channel = connection.createChannel();
 
         channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-        System.out.println("等待消息:");
+        System.out.println(this.workerName+"等待消息:");
+
 
         DeliverCallback deliverCallback = (consumerTag, delivery) -> {
             String message = new String(delivery.getBody(), "UTF-8");
-            System.out.println("获取消息:" + message+",consumerTag:"+consumerTag );
+            System.out.println(this.workerName+"获取消息:" + message+",consumerTag:"+consumerTag );
         };
 
 
@@ -158,6 +167,7 @@ public class SendAndReceive {
         });
     }
 }
+
 ```
 
 
@@ -205,6 +215,9 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+/**
+ * 任务队列
+ */
 public class SendAndWorker {
     private final String TASK_QUEUE_NAME = "task_queue";
 
@@ -223,7 +236,7 @@ public class SendAndWorker {
     public static void main(String[] argv) throws Exception {
         SendAndWorker sendAndReceive = new SendAndWorker();
 //        sendAndReceive.workerReceive(true);
-                sendAndReceive.workerReceive(false);
+        sendAndReceive.workerReceive(false);
     }
 
 
@@ -242,9 +255,7 @@ public class SendAndWorker {
 
             for (var i = 0; i < 50; i++) {
                 String message = "Hello World! the:" + i;
-                channel.basicPublish("", TASK_QUEUE_NAME,
-                        MessageProperties.PERSISTENT_TEXT_PLAIN,
-                        message.getBytes("UTF-8"));
+                channel.basicPublish("", TASK_QUEUE_NAME, MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes("UTF-8"));
                 System.out.println("发送" + message + "");
             }
         }
@@ -363,6 +374,9 @@ import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
+/**
+ * 发布与订阅
+ */
 public class LogAndLogReceive {
 
     private final String EXCHANGE_NAME = "logs";
@@ -447,8 +461,107 @@ public class LogAndLogReceive {
 ### 路由
 
 * 绑定是交换和队列之间的关系。这可以简单地理解为：队列对来自此交换的消息感兴趣。
+* 直接交换背后的路由算法很简单 - 消息进入队列，其  绑定密钥与消息的路由密钥完全匹配。
 
+示例代码
 ```
+package view.javatest.rabbit2;
+
+import com.rabbitmq.client.*;
+import org.testng.annotations.Test;
+import view.javatest.rabbit.ConnectionFactoryBuilder;
+
+import java.io.IOException;
+import java.util.UUID;
+import java.util.concurrent.TimeoutException;
+
+/**
+ * Direct 路由
+ */
+public class DirectSendAndReceive {
+
+    private final String EXCHANGE_NAME = "direct_logs";
+
+    private final String routingKey1 = "routingKey1";
+    private final String routingKey2 = "routingKey2";
+    private String workerName;
+
+
+    public DirectSendAndReceive() {
+        this.workerName = "工人" + UUID.randomUUID();
+    }
+
+
+    /**
+     * 发送消息
+     *
+     * @throws Exception
+     */
+    @Test
+    public void sendMessage() throws Exception {
+        ConnectionFactory factory = ConnectionFactoryBuilder.getFactory();
+        try (Connection connection = factory.newConnection();
+             Channel channel = connection.createChannel()) {
+            channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.DIRECT);//定义交换器类型
+
+
+            for (var i = 0; i < 50; i++) {
+                String message = "message" + ":" + i;
+                if (i % 3 == 0) {
+                    channel.basicPublish(EXCHANGE_NAME, routingKey1, null, message.getBytes("UTF-8"));
+                    System.out.println("发送消息：" + routingKey1 + "，" + message);
+                } else {
+                    channel.basicPublish(EXCHANGE_NAME, routingKey2, null, message.getBytes("UTF-8"));
+                    System.out.println("发送消息：" + routingKey2 + "，" + message);
+                }
+            }
+
+        }
+    }
+
+    /**
+     * 测试方法
+     *
+     * @param argv
+     * @throws Exception
+     */
+    public static void main(String[] argv) throws Exception {
+        DirectSendAndReceive logAndLogReceive = new DirectSendAndReceive();
+        logAndLogReceive.waitForDirectReceive();
+    }
+
+    /**
+     * 接收消息
+     *
+     * @throws IOException
+     * @throws TimeoutException
+     */
+    public void waitForDirectReceive() throws IOException, TimeoutException {
+
+        ConnectionFactory factory = ConnectionFactoryBuilder.getFactory();
+        Connection connection = factory.newConnection();
+        Channel channel = connection.createChannel();
+
+        channel.exchangeDeclare(EXCHANGE_NAME, BuiltinExchangeType.DIRECT);
+        String queueName = channel.queueDeclare().getQueue();
+
+
+        channel.queueBind(queueName, EXCHANGE_NAME, routingKey1);
+        channel.queueBind(queueName, EXCHANGE_NAME, routingKey2);
+
+        System.out.println("等待获取消息：");
+
+        DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+            String message = new String(delivery.getBody(), "UTF-8");
+            System.out.println("获取到消息" + delivery.getEnvelope().getRoutingKey() + "':'" + message + "'");
+        };
+        channel.basicConsume(queueName, true, deliverCallback, consumerTag -> {
+        });
+
+    }
+}
+
+
 ```
 
 #### 方法：AMQP.Queue.BindOk queueBind(String queue, String exchange, String routingKey, Map<String,Object> arguments) throws IOException队列绑定交换器
@@ -458,3 +571,284 @@ public class LogAndLogReceive {
 * routingKey  - 用于绑定的路由密钥
 * arguments  - 其他属性（绑定参数）
 
+### Topic模式
+
+* 发送到主题交换的消息不能具有任意的  routing_key - 它必须是由**点分隔**组成的单词列表。
+* 单词可以是任何内容，但通常它们指定与消息相关的一些功能。
+* 一些有效的路由键示例：“ stock.usd.nyse ”，“ nyse.vmw ”，“ quick.orange.rabbit ”。
+* 路由密钥中可以包含任意数量的单词，最多可达255个字节。
+
+
+* *（星号）可以替代一个单词。
+* ＃（hash）可以替换零个或多个单词。
+
+示例代码
+```
+package view.javatest.rabbit2;
+
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.DeliverCallback;
+import org.testng.annotations.Test;
+import view.javatest.rabbit.ConnectionFactoryBuilder;
+
+import java.io.IOException;
+import java.util.UUID;
+import java.util.concurrent.TimeoutException;
+
+public class TopicSendAndReceive {
+
+
+    private String workerName;
+
+    private final String EXCHANGE_NAME = "topic_logs";
+
+    public TopicSendAndReceive() {
+        this.workerName = "工人" + UUID.randomUUID();
+    }
+
+
+    /**
+     * 发送消息
+     *
+     * @throws Exception
+     */
+    @Test
+    public void sendMessage() throws Exception {
+        ConnectionFactory factory = ConnectionFactoryBuilder.getFactory();
+        try (Connection connection = factory.newConnection();
+             Channel channel = connection.createChannel()) {
+
+            channel.exchangeDeclare(EXCHANGE_NAME, "topic");
+
+            String routingKey = "";
+            String message = "";
+            for (var i = 0; i < 50; i++) {
+                if (i % 7 == 0) {
+                    routingKey = "Suc.Z";
+                    message = "message:" + i;
+                }
+                if (i % 13 == 0) {
+                    routingKey = "Danger.Z";
+                    message = "message:" + i;
+                }
+                if (i % 11 == 0) {
+                    routingKey = "Warn.Z";
+                    message = "message:" + i;
+                }
+                channel.basicPublish(EXCHANGE_NAME, routingKey, null, message.getBytes("UTF-8"));
+                System.out.println(" 发送" + routingKey + "':'" + message + "'");
+            }
+
+
+        }
+    }
+
+    /**
+     * 测试方法
+     *
+     * @param argv
+     * @throws Exception
+     */
+    public static void main(String[] argv) throws Exception {
+        TopicSendAndReceive logAndLogReceive = new TopicSendAndReceive();
+        logAndLogReceive.waitForTopicReceive();
+    }
+
+    /**
+     * 接收消息
+     *
+     * @throws IOException
+     * @throws TimeoutException
+     */
+    public void waitForTopicReceive() throws IOException, TimeoutException {
+        ConnectionFactory factory = ConnectionFactoryBuilder.getFactory();
+        Connection connection = factory.newConnection();
+        Channel channel = connection.createChannel();
+
+        channel.exchangeDeclare(EXCHANGE_NAME, "topic");
+        String queueName = channel.queueDeclare().getQueue();
+
+
+        channel.queueBind(queueName, EXCHANGE_NAME, "Suc.#");
+        channel.queueBind(queueName, EXCHANGE_NAME, "Danger.#");
+        channel.queueBind(queueName, EXCHANGE_NAME, "Warn.#");
+
+        System.out.println("等待消息:");
+
+        DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+            String message = new String(delivery.getBody(), "UTF-8");
+            System.out.println(" 收到消息" + delivery.getEnvelope().getRoutingKey() + "':'" + message + "'");
+        };
+        channel.basicConsume(queueName, true, deliverCallback, consumerTag -> {
+        });
+    }
+}
+
+```
+
+### Rpc调用
+
+```
+package view.javatest.rabbit2;
+
+import com.rabbitmq.client.*;
+import org.testng.annotations.Test;
+import view.javatest.rabbit.ConnectionFactoryBuilder;
+import view.javatest.rabbit.RPCClient;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.UUID;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeoutException;
+
+public class RpcCallAndReply implements Closeable {
+
+    private Connection connection;
+    private Channel channel;
+    private final String RPC_QUEUE_NAME = "rpc_queue";
+
+
+    public RpcCallAndReply() throws IOException, TimeoutException {
+        ConnectionFactory factory = ConnectionFactoryBuilder.getFactory();
+        connection = factory.newConnection();
+        channel = connection.createChannel();
+    }
+
+
+    /**
+     * 发送消息
+     *
+     * @throws Exception
+     */
+    @Test
+    public void sendMessage() throws Exception {
+        try (RpcCallAndReply rpcCallAndReply = new RpcCallAndReply()) {
+            for (var i=0;i<50;i++){
+                String response = rpcCallAndReply.call("来自远方的问候:"+i);
+            }
+
+        } catch (IOException | TimeoutException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 测试方法
+     *
+     * @param argv
+     * @throws Exception
+     */
+    public static void main(String[] argv) throws Exception {
+        RpcCallAndReply rpcCallAndReply = new RpcCallAndReply();
+        rpcCallAndReply.rpcReceive();
+    }
+
+    /**
+     * 接收消息
+     *
+     * @throws IOException
+     * @throws TimeoutException
+     */
+    public void rpcReceive() throws IOException, TimeoutException {
+
+        ConnectionFactory factory = ConnectionFactoryBuilder.getFactory();
+        try (Connection connection = factory.newConnection();
+             Channel channel = connection.createChannel()) {
+            channel.queueDeclare(RPC_QUEUE_NAME, false, false, false, null);//定义队列
+//            channel.queuePurge(RPC_QUEUE_NAME);//不理解这个为什么要加
+
+            channel.basicQos(1);//只处理一个
+
+            System.out.println("等待远程调用");
+
+            Object monitor = new Object();
+            DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+
+                AMQP.BasicProperties replyProps = new AMQP.BasicProperties
+                        .Builder()
+                        .correlationId(delivery.getProperties().getCorrelationId())
+                        .build();
+
+
+                String message = new String(delivery.getBody(), "UTF-8");
+                System.out.println("收到消息："+message);
+                String response = work(message);//进行处理
+                System.out.println("发送响应："+response);
+                channel.basicPublish("", delivery.getProperties().getReplyTo(), replyProps, response.getBytes("UTF-8"));
+
+                channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);//手动确认
+
+
+                synchronized (monitor) {
+                    monitor.notify();
+                }
+
+
+            };//定义回调
+
+            channel.basicConsume(RPC_QUEUE_NAME, false, deliverCallback, (consumerTag -> {
+            }));
+            // Wait and be prepared to consume the message from RPC client.
+            while (true) {
+                synchronized (monitor) {
+                    try {
+                        monitor.wait();//阻塞
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+    }
+
+
+    public String work(String message) {
+        return "响应:" + message;
+    }
+
+
+    private String call(String message) throws IOException, InterruptedException {
+        final String corrId = UUID.randomUUID().toString();
+
+        String replyQueueName = channel.queueDeclare().getQueue();//随机的队列
+        AMQP.BasicProperties props = new AMQP.BasicProperties
+                .Builder()
+                .correlationId(corrId)
+                .replyTo(replyQueueName)
+                .build();
+
+        channel.basicPublish("", RPC_QUEUE_NAME, props, message.getBytes("UTF-8"));//发送消息，带参数
+
+        final BlockingQueue<String> response = new ArrayBlockingQueue<>(1);//长度为1的阻塞队列
+
+        DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+            if (delivery.getProperties().getCorrelationId().equals(corrId)) {
+                response.offer(new String(delivery.getBody(), "UTF-8"));//添加成功返回true,否则返回false.
+            }
+        };//消息回调
+
+        String ctag = channel.basicConsume(replyQueueName, true, deliverCallback, consumerTag -> {
+        });
+
+        System.out.println("阻塞等待调用响应");
+        String result = response.take();//如果队列为空,线程阻塞
+        channel.basicCancel(ctag);
+        System.out.println("收到调用响应："+result);
+        return result;
+    }
+
+    public void close() throws IOException {
+        connection.close();
+    }
+
+}
+
+```
+
+#### AMQP.Queue.PurgeOk queuePurge(String queue) throws IOException清除给定队列的内容。
+* queue - 队列名
