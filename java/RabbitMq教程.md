@@ -58,30 +58,99 @@ public class Delivery {
 
 ### 范例通用类
 
-#### 连接工厂
+#### 连接工厂类
 ```
+package view.javatest.rabbit;
+
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+
+import java.io.IOException;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeoutException;
 
 public class ConnectionFactoryBuilder {
     private static ConnectionFactory factory;
+    private static Connection connection;
+    private static Channel channel;
+
+    private  static ConcurrentHashMap<String, BlockingQueue<String>> taskMap=new ConcurrentHashMap<>();
 
 
-    public static ConnectionFactory getFactory() {
+
+    public static void addTask(String id,BlockingQueue<String> blockingQueue){
+        taskMap.put(id,blockingQueue);
+    }
+
+    public static void routeResponse(String id,String message){
+        BlockingQueue<String> blockingQueue = taskMap.get(id);
+        if (blockingQueue!=null){
+            blockingQueue.offer(message);//添加成功返回true,否则返回false.
+        }else{
+            System.out.println("无人认领响应");
+        }
+
+    }
+
+    /**
+     * 获取工厂
+     *
+     * @return
+     */
+    public static synchronized ConnectionFactory getFactory() {
         if (factory == null) {
             initFactory();
         }
         return factory;
     }
 
+    /**
+     * 获取连接
+     *
+     * @return
+     */
+    private static synchronized Connection getConnection() {
+        if (connection == null) {
+            try {
+                connection = getFactory().newConnection();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (TimeoutException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return connection;
+    }
+
+    /**
+     * 获取通道
+     *
+     * @return
+     */
+    public static synchronized Channel getChannel() {
+        if (channel == null) {
+            try {
+                channel = getConnection().createChannel();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return channel;
+    }
+
     private static void initFactory() {
         ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.setHost("xxxx");
-        connectionFactory.setPort(xxxx);
-        connectionFactory.setUsername("xxxx");
-        connectionFactory.setPassword("xxxx");
+        connectionFactory.setHost("106.12.111.159");
+        connectionFactory.setPort(5672);
+        connectionFactory.setUsername("testUser");
+        connectionFactory.setPassword("testUser");
         factory = connectionFactory;
     }
 }
+
 
 ```
 
@@ -847,6 +916,176 @@ public class RpcCallAndReply implements Closeable {
     }
 
 }
+
+```
+
+不重复创建队列的修改代码
+```
+package view.javatest.rabbit2;
+
+import com.rabbitmq.client.*;
+import org.testng.annotations.Test;
+import view.javatest.rabbit.ConnectionFactoryBuilder;
+
+import java.io.IOException;
+import java.util.UUID;
+import java.util.concurrent.*;
+
+public class RpcCallAndReply {
+
+
+    public final String RPC_QUEUE_NAME = "rpc_queue";
+    public String replyQueueName;
+
+
+    public RpcCallAndReply() throws IOException {
+        replyQueueName = ConnectionFactoryBuilder.getChannel().queueDeclare("reply", false, false, false, null).getQueue();//响应队列
+    }
+
+
+    /**
+     * 发送消息
+     *
+     * @throws Exception
+     */
+    @Test
+    public void sendMessage() throws Exception {
+
+
+        for (var i = 0; i < 50; i++) {
+            CompletableFuture.runAsync(() -> {
+
+                try {
+                    RpcCallAndReply rpcCallAndReply = new RpcCallAndReply();
+                    rpcCallAndReply.call("来自远方的问候:");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            });
+        }
+
+     while (true){
+
+     }
+
+
+    }
+
+    /**
+     * 开启服务端
+     *
+     * @param argv
+     * @throws Exception
+     */
+    public static void main(String[] argv) throws Exception {
+        RpcCallAndReply rpcCallAndReply = new RpcCallAndReply();
+        rpcCallAndReply.rpcReceive();
+    }
+
+    /**
+     * 服务吨接收消息
+     *
+     * @throws IOException
+     * @throws TimeoutException
+     */
+    public void rpcReceive() throws IOException, TimeoutException {
+
+        ConnectionFactory factory = ConnectionFactoryBuilder.getFactory();
+        try (Connection connection = factory.newConnection();
+             Channel channel = connection.createChannel()) {
+            channel.queueDeclare(RPC_QUEUE_NAME, false, false, false, null);//定义队列
+//            channel.queuePurge(RPC_QUEUE_NAME);//不理解这个为什么要加
+
+            channel.basicQos(1);//只处理一个
+
+            System.out.println("等待远程调用");
+
+            Object monitor = new Object();
+            DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+
+                AMQP.BasicProperties replyProps = new AMQP.BasicProperties
+                        .Builder()
+                        .correlationId(delivery.getProperties().getCorrelationId())
+                        .build();
+
+
+                String message = new String(delivery.getBody(), "UTF-8");
+                System.out.println("收到消息：" + message);
+                String response = work(message);//进行处理
+                System.out.println("发送响应：" + response);
+                channel.basicPublish("", delivery.getProperties().getReplyTo(), replyProps, response.getBytes("UTF-8"));
+                channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);//手动确认
+                synchronized (monitor) {
+                    monitor.notify();
+                }
+            };//定义回调
+
+            channel.basicConsume(RPC_QUEUE_NAME, false, deliverCallback, (consumerTag -> {
+            }));
+
+
+            while (true) {
+                synchronized (monitor) {
+                    try {
+                        monitor.wait();//阻塞
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+    }
+
+
+    public String work(String message) {
+        return "响应:" + message;
+    }
+
+
+    /**
+     * 客户端调用远程方法
+     *
+     * @param message
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    private void call(String message) throws IOException, InterruptedException {
+        final String corrId = UUID.randomUUID().toString();
+
+
+        AMQP.BasicProperties props = new AMQP.BasicProperties
+                .Builder()
+                .correlationId(corrId)//
+                .replyTo(replyQueueName)//作为响应队列
+                .build();
+
+        ConnectionFactoryBuilder.getChannel().basicPublish("", RPC_QUEUE_NAME, props, message.getBytes("UTF-8"));//发送消息，带参数
+
+        BlockingQueue<String> blockingQueue = new ArrayBlockingQueue<>(1);//长度为1的阻塞队列
+
+        ConnectionFactoryBuilder.addTask(corrId, blockingQueue);//添加任务
+
+        DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+            String s = new String(delivery.getBody(), "UTF-8");
+            ConnectionFactoryBuilder.routeResponse(delivery.getProperties().getCorrelationId(), s);
+        };//消息回调
+
+        ConnectionFactoryBuilder.getChannel().basicConsume(replyQueueName, true, deliverCallback, consumerTag -> {
+        });
+
+        System.out.println("阻塞等待调用响应");
+        String result = blockingQueue.take();//如果队列为空,线程阻塞
+        System.out.println("收到调用响应：" + result);
+    }
+
+
+}
+
 
 ```
 
