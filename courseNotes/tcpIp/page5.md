@@ -222,3 +222,24 @@ TCP可靠数据传输：
  
 TCP连接管理：
 
+三次握手  
+```
+step1：客户端向服务器发送一个SYN（=1）段（不携带数据）seq（选择自己的初始序列号）
+
+step2:服务端收到SYN,返回带有SYNACK（SYN=1,seq服务端期望序列，ack客户端序列+1）的报文段（分配缓存）
+
+step3:客户端收到SYNACK后，答复带有ACK（SYN=0,seq服务器所期望的序列号，ack服务器序列号+1）的报文段（可能包含数据）
+```
+[![V7hViD.md.png](https://s2.ax1x.com/2019/06/17/V7hViD.md.png)](https://imgchr.com/i/V7hViD)
+
+四次挥手
+```
+step1：客户端向服务器发送TCP FIN控制segment
+
+step2:服务器收到FIN回复ACK,关闭连接，接着服务器会发送FIN
+
+step3:客户顿收到FIN,回复ACK（进入等待，如果收到FIN会重新发送ACK）
+
+step4:服务器收到ACK连接关闭
+```
+[![V7hdLq.md.png](https://s2.ax1x.com/2019/06/17/V7hdLq.md.png)](https://imgchr.com/i/V7hdLq)
