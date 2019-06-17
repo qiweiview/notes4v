@@ -58,7 +58,7 @@
 ### 基础方法
 
 
-#### trimToSize####   elementData长度修剪到实际存储数据长度
+#### trimToSize  elementData长度修剪到实际存储数据长度
 ```
  public void trimToSize() {
         modCount++;//操作数+1
@@ -70,7 +70,7 @@
     }
 ```
 
-#### ensureCapacity####       确保elementData至少可以容纳minCapacity个数据
+#### ensureCapacity       确保elementData至少可以容纳minCapacity个数据
 ```
   public void ensureCapacity(int minCapacity) {
         if (
@@ -84,7 +84,7 @@
     }
 ```
 
-#### grow####  扩展数组
+#### grow  扩展数组
 ```
   private Object[] grow() {
         return grow(size + 1);//按照实际存储数据量+1来扩展
@@ -132,7 +132,7 @@ private Object[] grow(int minCapacity) {
 ```
 
 
-#### size####  返回实际存储的数据数
+#### size  返回实际存储的数据数
 
 ```
 public int size() {
@@ -140,7 +140,7 @@ public int size() {
     }
 ```
 
-#### isEmpty####  判断实际存储的数据是否为空
+#### isEmpty  判断实际存储的数据是否为空
 
 ```
   public boolean isEmpty() {
@@ -148,7 +148,7 @@ public int size() {
     }
 ```
 
-#### contains####  判断一个元素是否存在
+#### contains  判断一个元素是否存在
 
 ```
  public boolean contains(Object o) {
@@ -156,7 +156,7 @@ public int size() {
     }
 ```
 
-#### indexOf####  获取一个元素位置
+#### indexOf  获取一个元素位置
 
 ```
   public int indexOf(Object o) {
@@ -556,7 +556,7 @@ private void rangeCheckForAdd(int index) {
     }
 ```
 
-#### 下标越界消息#### 
+#### 下标越界消息 
 ```
 private String outOfBoundsMsg(int index) {
         return "Index: "+index+", Size: "+size;
@@ -568,7 +568,7 @@ private static String outOfBoundsMsg(int fromIndex, int toIndex) {
     }
 ```
 
-#### removeAll(Collection<?> c) #### 删除缓冲区中，集合包含的数据
+#### removeAll(Collection<?> c)  删除缓冲区中，集合包含的数据
 ```
  public boolean removeAll(Collection<?> c) {
         return batchRemove(c, false, 0, size);
@@ -818,7 +818,7 @@ public List<E> subList(int fromIndex, int toIndex) {
     }
 ```
 
-#### subList(int fromIndex, int toIndex) #### 
+#### subList(int fromIndex, int toIndex)  
 ```
 public List<E> subList(int fromIndex, int toIndex) {
         subListRangeCheck(fromIndex, toIndex, size);
@@ -1353,7 +1353,7 @@ final class ArrayListSpliterator implements Spliterator<E> {
     }
 ```
 
-#### removeIf(Predicate<? super E> filter) ####  删除表达式返回true的元素
+#### removeIf(Predicate<? super E> filter)   删除表达式返回true的元素
 ```
  @Override
     public boolean removeIf(Predicate<? super E> filter) {
@@ -1430,7 +1430,7 @@ private void replaceAllRange(UnaryOperator<E> operator, int i, int end) {
     }
 ```
 
-#### checkInvariants() #### 检查不变量
+#### checkInvariants()  检查不变量
 ```
 void checkInvariants() {
         // assert size >= 0;
