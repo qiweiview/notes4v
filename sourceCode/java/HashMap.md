@@ -248,8 +248,8 @@ final Node<K,V>[] resize() {
                     else if (e instanceof TreeNode)//e存在下一个节点，e是树节点
                         ((TreeNode<K,V>)e).split(this, newTab, j, oldCap);
                     else { //e存在下一个节点，e是链表
-                        Node<K,V> loHead = null, loTail = null;
-                        Node<K,V> hiHead = null, hiTail = null;
+                        Node<K,V> loHead = null, loTail = null;//low  head/tail
+                        Node<K,V> hiHead = null, hiTail = null;//high head/tail
                         Node<K,V> next;
                         do {
                             next = e.next;
@@ -956,6 +956,77 @@ final class EntrySet extends AbstractSet<Map.Entry<K,V>> {
         return new TreeNode<>(p.hash, p.key, p.value, next);
     }
 ```
+
+## 线程不安全情况
+
+### put过程
+
+* 假设线程A，B计算出的hash桶位相同(x)
+* 首先A希望插入一个key-value对到HashMap中，首先计算记录所要落到的桶的索引坐标(x)，然后获取到该桶里面的链表头结点，此时线程A的时间片用完了
+* 线程B被调度得以执行，和线程A一样执行，只不过线程B成功将记录插到了桶位(x)里面
+* 当线程B成功插入之后，线程A再次被调度运行时，它依然持有过期的链表头,但是它对此一无所知，以至于它认为它应该这样做,继续插入(x)
+* 如此一来就覆盖了线程B插入的记录，这样线程B插入的记录就凭空消失了，造成了数据不一致的行为
+
+```
+ public static void main(String[] args) {
+        HashMap<Integer, Mt> hashMap = new HashMap<>(2,0.75f);
+
+
+        CompletableFuture.runAsync(()->{
+            for(var i=0;i<16;i=i+16){
+                Mt mt = new Mt(123580);
+                hashMap.put(i,mt);//debug
+            }
+        });
+        CompletableFuture.runAsync(()->{
+            for(var i=16*1;i<16*2;i=i+16){
+                Mt mt = new Mt(66666);
+                hashMap.put(i,mt);//debug
+            }
+        });
+
+        while (true){
+            if (hashMap.size()>0){
+                System.out.println(hashMap);
+            }
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+    }
+    
+```
+
+### resize过程引起死循环
+
+* 1.7会出现循环链表
+```
+void transfer(Entry[] newTable) {
+    Entry[] src = table;
+    int newCapacity = newTable.length;
+    for (int j = 0; j < src.length; j++) {
+        Entry e = src[j];
+        if (e != null) {
+            src[j] = null;
+            do {
+                Entry next = e.next;
+                int i = indexFor(e.hash, newCapacity);
+                e.next = newTable[i];
+                newTable[i] = e;
+                e = next;
+            } while (e != null);
+        }
+    }
+}
+```
+
+* 1.8中hashmap不会死循环
+
+
 
 ## 红黑树部分未编写
 
