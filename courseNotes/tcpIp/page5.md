@@ -243,3 +243,87 @@ step3:客户顿收到FIN,回复ACK（进入等待，如果收到FIN会重新发�
 step4:服务器收到ACK连接关闭
 ```
 [![V7hdLq.md.png](https://s2.ax1x.com/2019/06/17/V7hdLq.md.png)](https://imgchr.com/i/V7hdLq)
+
+拥塞控制 
+
+* 太多主机发送了太多数据，以至于网络无法处理
+* 导致分组丢失（缓存溢出）
+* 导致分组延迟变大（路由器缓存排队）
+
+![VLjwK1.png](https://s2.ax1x.com/2019/06/19/VLjwK1.png)
+
+![VLj0Dx.png](https://s2.ax1x.com/2019/06/19/VLj0Dx.png)
+
+[![VLjy5D.md.png](https://s2.ax1x.com/2019/06/19/VLjy5D.md.png)](https://imgchr.com/i/VLjy5D)
+
+方法：
+
+* 端到端拥塞控制（TCP采用这种方法）
+1. 通过调整CongWin(Congestion Window拥塞窗口)
+2. 通过Loss事件=timeout或3个重复ack判断为拥塞
+3. 合理的调整速率
+```
+加性增-乘性减：AIMD
+Additive increase:每个RTT将CongWin增大一个MSS(避免拥塞)
+Multiplicative Decrease:发生loss后将CongWin减半（快速降下来）
+
+慢启动：SS（slow start）
+TCP建立时候，CongWin=1，然后成指数增长（每个RTT将CongWin翻倍）
+```
+![VXdMid.png](https://s2.ax1x.com/2019/06/19/VXdMid.png)
+
+![VXdlRI.png](https://s2.ax1x.com/2019/06/19/VXdlRI.png)
+
+
+指数增长和线性增长切换条件：
+1. 增长：先是指数（慢启动），达到Threshold（拥塞避免）变成线性
+2. 降低：发生Loss时候，直接降低到起始点，然后Threshold降低成Loss前一半
+
+![VXrlK1.png](https://s2.ax1x.com/2019/06/19/VXrlK1.png)
+
+例题
+![VjCQSK.png](https://s2.ax1x.com/2019/06/20/VjCQSK.png)
+
+不同判断条件不同处理：
+
+1. 3个重复的ACK:CongWin直接切到一半，然后线性增长
+2. TimeOut事件：ConWin直接设为一个MSS（Maximum Segment Size最大报文长度），然后指数增长，达到threshold，再线性增长（表示更严重的拥塞）
+
+
+
+* 网络辅助的拥塞控制，路由器显式反馈网络拥塞（ATM）
+
+1. data cells：数据cell
+```
+data cell包含
+
+EFCI位：拥塞的交换机将其设为1
+
+```
+2. RM(resource management)cells:由收放发送给发送方
+```
+RM包含
+
+
+NI bit:rate不许增长
+CI bit:拥塞指示（如果签名的data cell中的EFCI被置1，那么置CI位）
+ER 2bit:速率
+```
+
+TCP性能
+
+```
+给定拥塞窗口和RTT，计算平均吞吐率
+
+* 发生超时时ConWin为W，吞吐率是W/RTT
+* 超时后，ConWin=W/2,吞吐率为W/2RTT
+* 平均吞吐率0.75W/RTT
+```
+
+TCP具有公平性
+* 多媒体通常不使用TCP以免被拥塞控制机制限制速率（使用UDP以恒定速率发送，容忍丢失）（产生不公平）
+* 开启多个并发TCP连接，导致不公平
+
+
+
+
