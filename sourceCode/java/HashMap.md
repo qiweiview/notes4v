@@ -1,5 +1,7 @@
 # HashMap
 
+* 桶位通过(n - 1) & hash（即hash mod n）获取哈希桶的索引
+
 ## 属性
 ```
 
@@ -35,6 +37,49 @@ int threshold;//下一次扩容的阈值（capacity * load factor）（初值为
 
    
 final float loadFactor;//哈希表的负载因子
+```
+
+## 静态工具方法
+```
+
+    //计算hash值
+    static final int hash(Object key) {
+        int h;
+        return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);//高16位异或低16位
+    }
+
+   //如果它是“C类实现”的形式，则返回x的类
+    static Class<?> comparableClassFor(Object x) {
+        if (x instanceof Comparable) {
+            Class<?> c; Type[] ts, as; ParameterizedType p;
+            if ((c = x.getClass()) == String.class) // bypass checks
+                return c;
+            if ((ts = c.getGenericInterfaces()) != null) {
+                for (Type t : ts) {
+                    if ((t instanceof ParameterizedType) &&
+                        ((p = (ParameterizedType) t).getRawType() ==
+                         Comparable.class) &&
+                        (as = p.getActualTypeArguments()) != null &&
+                        as.length == 1 && as[0] == c) // type arg is c
+                        return c;
+                }
+            }
+        }
+        return null;
+    }
+
+   //如果x匹配kc（k的筛选可比较，则返回k.compareTo（x）
+    @SuppressWarnings({"rawtypes","unchecked"}) // for cast to Comparable
+    static int compareComparables(Class<?> kc, Object k, Object x) {
+        return (x == null || x.getClass() != kc ? 0 :
+                ((Comparable)k).compareTo(x));
+    }
+
+   //返回比cap大的最小2的幂
+    static final int tableSizeFor(int cap) {
+        int n = -1 >>> Integer.numberOfLeadingZeros(cap - 1);
+        return (n < 0) ? 1 : (n >= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;
+    }
 ```
 
 ## 构造方法
