@@ -1,0 +1,117 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>代码高亮</title>
+    <meta charset="UTF-8">
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0px;
+        }
+
+        .el-select .el-input {
+            width: 5vw;
+        }
+
+        .input-with-select .el-input-group__prepend {
+            background-color: #fff;
+        }
+
+        .secondaryColor {
+            opacity: 0.5;
+            margin-left: 7px;
+            margin-right: 7px;
+        }
+
+        .secondaryColor:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-row style="overflow: hidden">
+        <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24" style="overflow: hidden">
+            <div style="padding: 15px;text-align: center">
+                <span style="font-size: 50px;">
+                    代码高亮
+                     <el-tooltip class="item" effect="dark" content="来源：http://www.planetb.ca/" placement="right">
+                      <i class="el-icon-info secondaryColor" style="font-size: 35px; cursor: pointer"></i>
+                     </el-tooltip>
+                   </span>
+                <form ref="form" action="http://www.planetb.ca/projects/syntaxHighlighter/popup.php" target="codepopup"
+                      method="post">
+                    <el-input
+                            clearable
+                            style="margin-bottom: 15px;margin-top: 15px;"
+                            name="code"
+                            type="textarea"
+                            :rows="10"
+                            placeholder="请输入代码"
+                            v-model="code">
+                    </el-input>
+
+
+                    <input hidden name="class" v-model="codeType">
+
+                    <el-select v-model="codeType" placeholder="选择语言">
+                        <el-option
+                                v-for="codeType in codeTypes"
+                                :key="codeType"
+                                :label="codeType"
+                                :value="codeType">
+                        </el-option>
+                    </el-select>
+
+                    <el-button @click="showHighLight">获取高亮代码</el-button>
+                    <el-button @click="code=''" type="danger">清空</el-button>
+                </form>
+            </div>
+
+        </el-col>
+    </el-row>
+</div>
+</body>
+<!-- import Vue before Element -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                code: "",
+                codeType: "java",
+                codeTypes: [
+                    "java",
+                    "javascript",
+                    "c++",
+                    "php",
+                    "python",
+                    "ruby",
+                    "xml",
+
+                ]
+            }
+        },
+        methods: {
+            showHighLight() {
+                this.$refs.form.submit()
+            }
+        },
+        mounted: function () {
+
+        }
+    })
+</script>
+</html>
