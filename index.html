@@ -1,0 +1,235 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>你好啊</title>
+    <meta charset="UTF-8">
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0px;
+        }
+
+        .el-select .el-input {
+            width: 5vw;
+        }
+
+        .input-with-select .el-input-group__prepend {
+            background-color: #fff;
+        }
+
+        .secondaryColor {
+            opacity: 0.5;
+            margin-left: 7px;
+            margin-right: 7px;
+        }
+
+        .secondaryColor:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-row style="overflow: hidden">
+        <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24" style="overflow: hidden">
+            <img :src="imageUrl" style="z-index: -1; position: fixed;width: 100vw;height: 100vh"/>
+
+            <div style="width:100%;text-align: center;position: fixed;bottom: 5px;">
+                <div>
+                    <a style="font-size: 18px; color: white;cursor: pointer"
+                       onclick="window.open('http://www.beian.miit.gov.cn')">闽ICP备17002953号-3</a>
+                </div>
+                <div>
+                    <span style="margin-left: 15px;color: white">联系邮箱：qiweiview@gmail.com</span>
+                </div>
+            </div>
+
+            <div style="width: 100vw;text-align: center;margin-top: 25vh;position: fixed">
+                <transition name="el-fade-in-linear">
+                    <span v-show="wordShow" class="transition-box"
+                          style="color: white;font-size: 100px;font-family:PingFang SC">你 好 啊</span>
+                </transition>
+            </div>
+
+            <div style="width: 100vw;text-align: center;position: fixed;margin-top: 40vh;">
+                <el-button @click="isShowTypeMenu=!isShowTypeMenu" style="margin-right: 10px;" type="info"
+                           :icon="isShowTypeMenu?'el-icon-caret-top':'el-icon-caret-bottom'" plain circle></el-button>
+                <el-input ref="wordInput" :autofocus="true" @keyup.enter.native="doSearch" clearable
+                          style="width: 30vw" placeholder="请输入关键字"
+                          v-model="searchKey" class="input-with-select">
+                    <template slot="prepend">{{currentType.name}}</template>
+                    <el-button @click="doSearch" slot="append" icon="el-icon-search"></el-button>
+                </el-input>
+            </div>
+
+            <transition name="el-zoom-in-top">
+                <div v-show="isShowTypeMenu" style="width: 100vw;position: fixed;margin-top: 48vh;">
+                    <el-tabs v-model="tabSelect" style="width: 45%;margin: auto;border-radius: 5px;" type="border-card">
+                        <el-tab-pane v-for="(value,key) in searchTypesGroups" :label="key" :name="key">
+                            <el-button style="margin: 10px;cursor: pointer" v-for="t in value"
+                                       @click="changeCurrentType(t)"
+                                       type="info" plain round>{{ t.name }}
+                            </el-button>
+                        </el-tab-pane>
+                    </el-tabs>
+                </div>
+                </transition>
+
+                    <div style="position: fixed;right: 15px;top: 15px;">
+
+                        <el-dropdown @command="toHighLightPage">
+                    <span class="el-dropdown-link">
+                  <i class=" el-icon-s-cooperation secondaryColor"
+                     style="font-size: 35px; color:white; cursor: pointer"></i>
+                 </span>
+                            <el-dropdown-menu slot="dropdown">
+                                <el-dropdown-item v-for="t in tools" :icon="t.icon" :command="t.name">{{t.name}}
+                                </el-dropdown-item>
+                            </el-dropdown-menu>
+                        </el-dropdown>
+
+                        <i @click="toConfig" class="el-icon-s-tools secondaryColor"
+                           style="font-size: 35px; color:white; cursor: pointer"></i>
+                        <i class="el-icon-info secondaryColor"
+                           style="font-size: 35px; color:white; cursor: pointer"></i>
+
+
+                    </div>
+
+        </el-col>
+
+
+    </el-row>
+</div>
+</body>
+<!-- import Vue before Element -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                isShowTypeMenu: false,
+                tabSelect: "1",
+                searchKey: "",
+                searchType: "",
+                hello: "world",
+                wordShow: false,
+                imageUrl: "",
+                searchTypes: [],
+                searchTypesGroups: {},
+                currentType: {},
+                tools: [
+                    {
+                        name: "代码高亮",
+                        url: "/toolsR/toHighLightPage",
+                        icon: "el-icon-document"
+                    }
+                ]
+            }
+        },
+        methods: {
+            changeCurrentType(t) {
+                this.currentType = t;
+                this.$refs["wordInput"].select();
+                this.doSearch()
+            },
+            toHighLightPage(e) {
+                this.tools.forEach((x) => {
+                    if (e == x.name) {
+                        window.open(x.url);
+                    }
+                })
+            },
+            listSearchUrl() {
+                axios.get('/searchD/listSearchUrl')
+                    .then((response) => {
+                        if (response.data.status == 200) {
+                            console.log(response.data.data)
+                            this.searchTypes = response.data.data;
+                            this.groupByOrder();
+                        }
+                    })
+                    .catch((error) => {
+                        // handle error
+                        console.log(error);
+                    });
+            },
+            groupByOrder() {
+                let first = null;
+                this.searchTypes.forEach((x) => {
+                    let order = x.urlOrder;
+
+                    if (first == null && order == "1") {
+                        first = x;
+                        console.log("赋值")
+                    }
+
+                    let array = this.searchTypesGroups[order];
+                    if (typeof (array) == "undefined") {
+                        array = []
+                        this.searchTypesGroups[order] = array;
+                    }
+                    array.push(x)
+
+                })
+                this.currentType = first;
+
+            },
+            toConfig() {
+                window.location.href = "/searchR/toConfigPage";
+            },
+            doSearch() {
+                if (this.currentType.wordAppend) {
+                    let url = this.currentType.url + this.searchKey;
+                    window.open(url);
+                } else {
+                    let url = this.currentType.url;
+                    window.open(url);
+                }
+            },
+            loadWord() {
+                let _this = this;
+                setTimeout(() => {
+                    _this.wordShow = true;
+                    setTimeout(() => {
+                        _this.wordShow = false;
+                    }, 3000);
+                }, 1000);
+            },
+            screenSizeReload() {
+                let bigUrl = "https://s2.ax1x.com/2019/05/30/VKWHyQ.jpg";
+                let smallUrl = "https://images.unsplash.com/photo-1547074817-2a8d7695d765?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1868&q=80";
+                let width = `${document.documentElement.clientWidth}`;
+                if (width < 500) {
+                    this.imageUrl = smallUrl;
+                } else {
+                    this.imageUrl = bigUrl;
+                }
+            }
+        },
+        mounted: function () {
+            let _this = this;
+            this.listSearchUrl();
+            this.loadWord();
+            this.screenSizeReload();
+
+            window.onresize = () => {
+                _this.screenSizeReload();
+            }
+
+        }
+    })
+</script>
+</html>
