@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>你好啊</title>
+    <meta charset="UTF-8">
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0px;
+        }
+
+        .el-select .el-input {
+            width: 5vw;
+        }
+
+        .input-with-select .el-input-group__prepend {
+            background-color: #fff;
+        }
+
+        .secondaryColor {
+            opacity: 0.5;
+            margin-left: 7px;
+            margin-right: 7px;
+        }
+
+        .secondaryColor:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-row style="overflow: hidden">
+        <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24" style="overflow: hidden;text-align: center">
+
+            <div style="padding: 15px;width: 100%">
+
+                <div>
+                    <el-image ondragstart="return false;" :src="picView.url" :style="{width:picView.width,height:picView.height}">
+                        <div slot="error" class="image-slot">
+                            <i class=" el-icon-loading"></i>
+                        </div>
+                    </el-image>
+
+                    <el-tooltip class="item" effect="dark" content="图床依赖：sm.ms" placement="right">
+                        <i class="el-icon-info secondaryColor" style="font-size: 35px; cursor: pointer"></i>
+                    </el-tooltip>
+
+                </div>
+
+                <el-button type="primary" @click="clearCheck">清空上传列表</el-button>
+                <el-table :data="picList" style="width: 100%">
+
+                    <el-table-column
+                            label="序号"
+                            type="index"
+                    >
+                    </el-table-column>
+
+                    <el-table-column label="预览">
+                        <template slot-scope="scope">
+                            <el-image
+                                    @click="picViewShow(scope.row.url)"
+                                    style="width: 50px; height: 50px"
+                                    :src="scope.row.url"
+                            >
+                                <div slot="placeholder" class="image-slot">
+                                    <i class=" el-icon-loading"></i>
+                                </div>
+                            </el-image>
+                        </template>
+                    </el-table-column>
+
+                    <el-table-column label="地址">
+                        <template slot-scope="scope">
+                            <a target="view_window" :href="scope.row.url"
+                               style="margin-left: 10px">{{scope.row.url}}</a>
+                        </template>
+                    </el-table-column>
+
+                    <el-table-column label="MarkDown字符串">
+                        <template slot-scope="scope">
+                            <span @click="selectSpan( '![]('+scope.row.url+')')" target="view_window"
+                                  :href="scope.row.url" style="margin-left: 10px;cursor: pointer">{{
+                                '![]('+scope.row.url+')' }}</span>
+                        </template>
+                    </el-table-column>
+
+
+                </el-table>
+            </div>
+        </el-col>
+    </el-row>
+
+    <el-dialog width="30%" :modal="false" title="" :visible.sync="picViewDialog.show" style="text-align: center">
+        <img style="width: 100%;height: 100%" :src="picViewDialog.url">
+    </el-dialog>
+</div>
+
+
+</body>
+<!-- import Vue before Element -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                hello: "world",
+                picView: {
+                    url: "https://s2.ax1x.com/2019/06/20/Vj712R.png",
+                    width: "980px",
+                    height: "193px"
+                },
+                picList: [],
+                picViewDialog: {
+                    show: false,
+                    url: ""
+                }
+            }
+        },
+        methods: {
+            tip() {
+
+                this.$notify({
+                    title: '使用说明',
+                    type: "success",
+                    message: "复制文件至剪切板，粘贴文件至页面上传，清除按钮清除上传记录。",
+                    position: 'bottom-right',
+                    duration: 15 * 1000,
+                });
+
+            },
+            selectSpan(md) {
+                window.clipboardData.setData('text', md);
+            },
+            picViewShow(url) {
+                this.picViewDialog.url = url;
+                this.picViewDialog.show = true;
+            },
+            failCheck(response) {
+                if ("error" == response.data.code) {
+                    this.$notify.error({
+                        title: '发生错误',
+                        position: 'bottom-right',
+                        duration: 5 * 1000,
+                        message: "msg:" + response.data.msg
+                    });
+                }
+            },
+            clearCheck() {
+                this.$confirm('确认清空列表', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.clearList();
+                }).catch(() => {
+
+                });
+            },
+            clearList() {
+                const loading = this.$loading({
+                    lock: true,
+                    text: '列表清空中...',
+                    spinner: 'el-icon-loading',
+                    background: 'rgba(0, 0, 0, 0.7)'
+                });
+                axios.get('https://sm.ms/api/clear', {})
+                    .then((response) => {
+                        loading.close();
+                        if ("success" == response.data.code) {
+                            this.picList = response.data.data;
+                        }
+                    })
+                    .catch(function (error) {
+                        loading.close();
+                        console.log(error);
+                    });
+            },
+            loadHistory() {
+                const loading = this.$loading({
+                    lock: true,
+                    text: '加载中...',
+                    spinner: 'el-icon-loading',
+                    background: 'rgba(0, 0, 0, 0.7)'
+                });
+                axios.get('https://sm.ms/api/list', {})
+                    .then((response) => {
+                        loading.close();
+                        this.failCheck(response);
+                        if ("success" == response.data.code) {
+                            this.picList = response.data.data;
+                        }
+                    })
+                    .catch(function (error) {
+                        loading.close();
+                        console.log(error);
+                    });
+            },
+            addPastListener() {
+                let t = this;
+                document.addEventListener('paste', (event) => {
+                    let items = event.clipboardData && event.clipboardData.items;
+                    let file = null;
+                    if (items && items.length) {
+                        // 检索剪切板items
+                        let hasPic = false;
+                        for (let i = 0; i < items.length; i++) {
+                            if (items[i].type.indexOf('image') !== -1) {
+                                hasPic = true;
+                                file = items[i].getAsFile();
+                                t.uploadFile(file);
+                                break;
+                            }
+                        }
+                        if (!hasPic) {
+                            this.$notify.error({
+                                title: '发生错误',
+                                position: 'bottom-right',
+                                duration: 3 * 1000,
+                                message: "剪切板里未找到图片"
+                            });
+                        }
+                    }
+                    // 此时file就是剪切板中的图片文件
+                });
+            },
+            uploadFile(file) {
+                const loading = this.$loading({
+                    lock: true,
+                    text: '上传中...',
+                    spinner: 'el-icon-loading',
+                    background: 'rgba(0, 0, 0, 0.7)'
+                });
+
+                let f = new FormData();
+                f.append("smfile", file);
+                f.append("hello", "world");
+                axios.post('https://sm.ms/api/upload', f)
+                    .then((response) => {
+                        loading.close();
+
+                        this.failCheck(response);
+
+                        if ("success" == response.data.code) {
+                            let url = response.data.data.url;
+                            this.loadHistory()
+                        }
+                    })
+                    .catch(function (error) {
+                        loading.close();
+                        console.log(error);
+                    });
+            },
+        },
+        mounted: function () {
+            this.tip();
+            this.loadHistory();
+            this.addPastListener();
+
+        }
+    })
+</script>
+</html>
