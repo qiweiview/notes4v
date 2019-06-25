@@ -1246,37 +1246,6 @@ private static class SubList<E> extends AbstractList<E> implements RandomAccess 
 ```
 final class ArrayListSpliterator implements Spliterator<E> {
 
-        /*
-         * If ArrayLists were immutable, or structurally immutable (no
-         * adds, removes, etc), we could implement their spliterators
-         * with Arrays.spliterator. Instead we detect as much
-         * interference during traversal as practical without
-         * sacrificing much performance. We rely primarily on
-         * modCounts. These are not guaranteed to detect concurrency
-         * violations, and are sometimes overly conservative about
-         * within-thread interference, but detect enough problems to
-         * be worthwhile in practice. To carry this out, we (1) lazily
-         * initialize fence and expectedModCount until the latest
-         * point that we need to commit to the state we are checking
-         * against; thus improving precision.  (This doesn't apply to
-         * SubLists, that create spliterators with current non-lazy
-         * values).  (2) We perform only a single
-         * ConcurrentModificationException check at the end of forEach
-         * (the most performance-sensitive method). When using forEach
-         * (as opposed to iterators), we can normally only detect
-         * interference after actions, not before. Further
-         * CME-triggering checks apply to all other possible
-         * violations of assumptions for example null or too-small
-         * elementData array given its size(), that could only have
-         * occurred due to interference.  This allows the inner loop
-         * of forEach to run without any further checks, and
-         * simplifies lambda-resolution. While this does entail a
-         * number of checks, note that in the common case of
-         * list.stream().forEach(a), no checks or other computation
-         * occur anywhere other than inside forEach itself.  The other
-         * less-often-used methods cannot take advantage of most of
-         * these streamlinings.
-         */
 
         private int index; // 当前指数，在提前/拆分时修改
         private int fence; // -1直到使用; 然后是最后一个索引
@@ -1289,7 +1258,7 @@ final class ArrayListSpliterator implements Spliterator<E> {
             this.expectedModCount = expectedModCount;
         }
 
-        private int getFence() { // initialize fence to size on first use
+        private int getFence() { // 首次使用时将fence初始化为size
             int hi; // (a specialized variant appears in method forEach)
             if ((hi = fence) < 0) {
                 expectedModCount = modCount;
@@ -1298,13 +1267,13 @@ final class ArrayListSpliterator implements Spliterator<E> {
             return hi;
         }
 
-        public ArrayListSpliterator trySplit() {//拆分
+        public ArrayListSpliterator trySplit() {//五五拆分
             int hi = getFence(), lo = index, mid = (lo + hi) >>> 1;
             return (lo >= mid) ? null : // divide range in half unless too small
                 new ArrayListSpliterator(lo, index = mid, expectedModCount);
         }
 
-        public boolean tryAdvance(Consumer<? super E> action) {//迭代，若有下一位返回true
+        public boolean tryAdvance(Consumer<? super E> action) {//迭代，若有下一位返回true，支持并行
             if (action == null)
                 throw new NullPointerException();
             int hi = getFence(), i = index;
@@ -1319,7 +1288,7 @@ final class ArrayListSpliterator implements Spliterator<E> {
             return false;
         }
 
-        public void forEachRemaining(Consumer<? super E> action) {
+        public void forEachRemaining(Consumer<? super E> action) {//迭代
             int i, hi, mc; // hoist accesses and checks from loop
             Object[] a;
             if (action == null)
