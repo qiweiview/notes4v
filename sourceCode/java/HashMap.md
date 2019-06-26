@@ -1,5 +1,20 @@
 # HashMap
 
+
+## 问题
+
+### 转型问题ClassCastException
+```
+   HashMap<String,Object> hashMap=new HashMap<>();
+        hashMap.put("name","view");
+        hashMap.put("age",12);
+        String rsp="{\"name\":\"view\",\"age\":12}";
+        HashMap<String,String> parse = JSON.parseObject(rsp,HashMap.class);
+        boolean age = parse.get("age") != null;
+        String age1 = parse.get("age");
+```
+
+
 * 桶位通过(n - 1) & hash（即hash mod n）获取哈希桶的索引
 
 ## 属性
