@@ -1,5 +1,5 @@
 # Notes 4 View 
-[个人主页](https://qw607.com)      [项目主页](https://qiweiview.github.io/notes4v/)
+[个人主页](https://qw607.com)     
 
 ## 目录结构
 
