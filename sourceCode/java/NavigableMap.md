@@ -79,18 +79,21 @@ NavigableMap<K,V> descendingMap();
 
 
 ### subMap(K fromKey, boolean fromInclusive, K toKey,   boolean toInclusive)
+
 * 返回此映射部分的视图，其键的范围从fromKey到toKey。 如果fromKey和toKey相等，则返回的映射为空.除非fromInclusive和toInclusive都为真
 ```
 NavigableMap<K,V> subMap(K fromKey, boolean fromInclusive, K toKey,   boolean toInclusive);
 ```
 
 #### headMap(K toKey, boolean inclusive)
+
 * 返回此映射的部分视图，其键小于（或等于，如果inclusive为true）
 ```
 NavigableMap<K,V> headMap(K toKey, boolean inclusive);
 ```
 
 ### tailMap(K fromKey, boolean inclusive)
+
 * 返回此映射的部分视图，其键大于（或等于，如果inclusive为true）
 ```
 NavigableMap<K,V> tailMap(K fromKey, boolean inclusive);
