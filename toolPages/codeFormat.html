@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>代码高亮</title>
+    <title>代码格式化</title>
     <meta charset="UTF-8">
     <!-- import CSS -->
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
@@ -42,7 +42,7 @@
         <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24" style="overflow: hidden">
             <div style="padding: 15px;text-align: center">
                 <span style="font-size: 50px;">
-                    代码高亮
+                    代码格式化
                      <el-tooltip class="item" effect="dark" content="来源：http://www.planetb.ca/" placement="right">
                       <i class="el-icon-info secondaryColor" style="font-size: 35px; cursor: pointer"></i>
                      </el-tooltip>
@@ -54,7 +54,7 @@
                             style="margin-bottom: 15px;margin-top: 15px;"
                             name="code"
                             type="textarea"
-                            :rows="10"
+                            :autosize="{ minRows: 15}"
                             placeholder="请输入代码"
                             v-model="code">
                     </el-input>
