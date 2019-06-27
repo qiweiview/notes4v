@@ -1,5 +1,6 @@
 # sun.misc.Unsafe
 
+[参考文章](https://tech.meituan.com/2019/02/14/talk-about-java-magic-class-unsafe.html)
 
 
 ## 通过反射获取单例对象theUnsafe
