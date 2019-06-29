@@ -1,0 +1,247 @@
+# Optional
+
+## 属性
+```
+   
+    private static final Optional<?> EMPTY = new Optional<>();//empty()的实例
+
+    private final T value;
+    //如果非null，则为value; 如果为null，则表示不存在任何值
+```
+
+## 构造方法
+
+### Optional()构造空的实例
+```
+private Optional() {//私有的
+        this.value = null;
+    }
+```
+
+### Optional(T value)构造具有所述值的实例
+```
+private Optional(T value) {//私有的
+        this.value = Objects.requireNonNull(value);
+    }
+```
+
+### requireNonNull(T obj)
+```
+  public static <T> T requireNonNull(T obj) {
+        if (obj == null)
+            throw new NullPointerException();
+        return obj;
+    }
+```
+
+
+## 方法
+
+### empty()返回一个空的Optional实例
+```
+public static<T> Optional<T> empty() {
+        @SuppressWarnings("unchecked")
+        Optional<T> t = (Optional<T>) EMPTY;
+        return t;
+    }
+```
+
+### (T value)返回描述给定非null的Optional
+```
+  public static <T> Optional<T> of(T value) {
+        return new Optional<>(value);
+    }
+
+```
+
+### ofNullable(T value)返回描述给定值的Optional，如果为null则返回空Optional
+```
+  public static <T> Optional<T> ofNullable(T value) {
+        return value == null ? empty() : of(value);
+    }
+```
+
+### get()如果存在值，则返回该值，否则抛出NoSuchElementException
+```
+public T get() {
+        if (value == null) {
+            throw new NoSuchElementException("No value present");
+        }
+        return value;
+    }
+```
+
+### isPresent()如果存在值，返回true
+```
+ public boolean isPresent() {
+        return value != null;
+    }
+```
+
+### isEmpty()如果不存在值，返回true
+```
+public boolean isEmpty() {
+        return value == null;
+    }
+```
+
+
+### ifPresent(Consumer<? super T> action)不为空就执行
+```
+public void ifPresent(Consumer<? super T> action) {
+        if (value != null) {
+            action.accept(value);
+        }
+    }
+```
+
+### ifPresentOrElse(Consumer<? super T> action, Runnable emptyAction)
+* 存在执行action，不存在执行emptyAction
+```
+public void ifPresentOrElse(Consumer<? super T> action, Runnable emptyAction) {
+        if (value != null) {
+            action.accept(value);
+        } else {
+            emptyAction.run();
+        }
+    }
+```
+
+### filter(Predicate<? super T> predicate)
+```
+public Optional<T> filter(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate);//函数非空
+        if (!isPresent()) {//为空
+            return this;//直接返回
+        } else {
+            return predicate.test(value) ? this : empty();//调用函数，返回true,返回当前值，false返回空对象
+        }
+    }
+```
+
+### map(Function<? super T, ? extends U> mapper)
+```
+public <U> Optional<U> map(Function<? super T, ? extends U> mapper) {
+        Objects.requireNonNull(mapper);//函数不为空
+        if (!isPresent()) {//为空
+            return empty();//返回空对象
+        } else {
+            return Optional.ofNullable(mapper.apply(value));//返回执行后的结果，结果为空就返回空对象
+        }
+    }
+```
+
+### flatMap(Function<? super T, ? extends Optional<? extends U>> mapper)(不理解作用)
+* 如果存在值，则返回apply结果，否则返回空的Optional。
+```
+public <U> Optional<U> flatMap(Function<? super T, ? extends Optional<? extends U>> mapper) {
+        Objects.requireNonNull(mapper);//非空
+        if (!isPresent()) {//为空
+            return empty();//空对象
+        } else {
+            @SuppressWarnings("unchecked")
+            Optional<U> r = (Optional<U>) mapper.apply(value);//执行方法
+            return Objects.requireNonNull(r);
+        }
+    }
+```
+
+
+### or(Supplier<? extends Optional<? extends T>> supplier)
+* 如果存在值，则返回描述该值的Optional，否则返回由供应函数生成的Optional
+```
+ public Optional<T> or(Supplier<? extends Optional<? extends T>> supplier) {
+        Objects.requireNonNull(supplier);
+        if (isPresent()) {//非空
+            return this;//返回
+        } else {//空
+            @SuppressWarnings("unchecked")
+            Optional<T> r = (Optional<T>) supplier.get();
+            return Objects.requireNonNull(r);//返回supplier的值
+        }
+    }
+```
+
+### stream()返回流
+```
+public Stream<T> stream() {
+        if (!isPresent()) {//为空
+            return Stream.empty();//构造空的流
+        } else {
+            return Stream.of(value);//构造有值的流
+        }
+    }
+```
+
+### orElse(T other)非空返回原值，空就返回传入的值
+```
+public T orElse(T other) {
+        return value != null ? value : other;//空就返回传入的值
+    }
+```
+
+### orElseGet(Supplier<? extends T> supplier)非空返回原值，空就返回传入函数的返回值
+```
+public T orElseGet(Supplier<? extends T> supplier) {
+        return value != null ? value : supplier.get();
+    }
+```
+
+### orElseThrow()空就抛出 NoSuchElementException异常
+```
+   public T orElseThrow() {
+        if (value == null) {
+            throw new NoSuchElementException("No value present");
+        }
+        return value;
+    }
+```
+
+### orElseThrow(Supplier<? extends X> exceptionSupplier)
+* 非空返回原值
+* 空就抛出函数的返回异常
+```
+ public <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) throws X {
+        if (value != null) {
+            return value;
+        } else {
+            throw exceptionSupplier.get();
+        }
+    }
+```
+
+### equals(Object obj)对比
+```
+ @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {//内存地址
+            return true;
+        }
+
+        if (!(obj instanceof Optional)) {//对象类型
+            return false;
+        }
+
+        Optional<?> other = (Optional<?>) obj;
+        return Objects.equals(value, other.value);//存储的值，使用的是value的equals
+    }
+```
+
+### hashCode()
+```
+@Override
+    public int hashCode() {
+        return Objects.hashCode(value);
+    }
+```
+
+
+### toString()
+```
+ @Override
+    public String toString() {
+        return value != null
+            ? String.format("Optional[%s]", value)
+            : "Optional.empty";
+    }
+```
