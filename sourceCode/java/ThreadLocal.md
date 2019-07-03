@@ -22,7 +22,10 @@
     }
 ```
 
-### withInitial(Supplier<? extends S> supplier)使用函数作为初始化方法
+### withInitial(Supplier<? extends S> supplier)
+* 使用函数作为初始化方法
+* 返回的是SuppliedThreadLocal
+
 ```
   public static <S> ThreadLocal<S> withInitial(Supplier<? extends S> supplier) {
         return new SuppliedThreadLocal<>(supplier);
@@ -136,7 +139,7 @@ static final class SuppliedThreadLocal<T> extends ThreadLocal<T> {
         }
 
         @Override
-        protected T initialValue() {
+        protected T initialValue() {//重写了initialValue方法
             return supplier.get();
         }
     }
