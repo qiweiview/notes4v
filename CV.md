@@ -4,7 +4,7 @@
 
  - 刘启威/男/1995
  - 本科/集美大学诚毅学院软件工程专业
- - 工作年限：1年
+ - 工作年限：2年
  - 主页：https://qw607.com 
  - Github：https://github.com/qiweiview
  - 公众号：一只刘大头
