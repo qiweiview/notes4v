@@ -1,5 +1,5 @@
 # Notes 4 View 
-[个人主页](https://qw607.com)     
+[个人主页](https://qw607.com)     [简历](https://github.com/qiweiview/notes4v/blob/master/CV.pdf)  
 
 ## 目录结构
 
