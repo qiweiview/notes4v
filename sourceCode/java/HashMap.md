@@ -732,7 +732,8 @@ final class EntrySet extends AbstractSet<Map.Entry<K,V>> {
     
 ```
 
-#### computeIfAbsent 存在就返回，不存在就插入计算后的值
+#### computeIfAbsent 
+* 不存在就插入计算后的值（不为空）
 ```
 @Override
     public V computeIfAbsent(K key,
