@@ -1886,7 +1886,8 @@ public void forEach(BiConsumer<? super K, ? super V> action) {
 ```
 
 ### computeIfAbsent(K key, Function<? super K, ? extends V> mappingFunction)
-* 不存在则执行函数，将函数返回赋值进去
+* 存在就不会执行
+* 不存在会执行，不为空就插入计算后的值，为空就不插入
 ```
 public V computeIfAbsent(K key, Function<? super K, ? extends V> mappingFunction) {
         if (key == null || mappingFunction == null)//键和函数不为空
