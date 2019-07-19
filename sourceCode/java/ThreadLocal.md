@@ -1,5 +1,11 @@
 # ThreadLocal
 
+* 实现依托于ThreadLocal对象中有一个private final int threadLocalHashCode = nextHashCode();属性，
+* 每个线程中都包含一个ThreadLocal的内部类ThreadLocalMap，通过getMap()方法获取当前线程中的ThreadLocalMap
+* ThreadLocalMap中有个内部类Entry，Entry内有个Entry数组的table，类似哈希桶，下标通过ThreadLocal中的threadLocalHashCode & (table.length - 1)计算
+* 因此获取值实质就是通过threadLocalHashCode获取桶下标获取对应Entry数组中的Entry,Entry中的value存的就是我们存放的对象
+* 隔离是通过每个线程对象隔离的，即一个ThreadLocal的threadLocalHashCode被放到了好几个线程对象中
+
 ## 属性
 ```
     private final int threadLocalHashCode = nextHashCode();//哈希码
