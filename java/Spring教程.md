@@ -12,6 +12,7 @@ ApplicationContext context = new ClassPathXmlApplicationContext(s);
 ```
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:aop="http://www.springframework.org/schema/aop"
@@ -19,15 +20,49 @@ ApplicationContext context = new ClassPathXmlApplicationContext(s);
        http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context
        http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
        http://www.springframework.org/schema/aop
        http://www.springframework.org/schema/aop/spring-aop.xsd">
 
-   <!--启动注解扫描-->
-    <context:component-scan base-package="test4v">
-        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/><!--排除Controller-->
-    </context:component-scan>
+
+  <!--事物注解驱动：Spring会对unchecked异常进行事务回滚；如果是checked异常则不回滚 -->
+  <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
+
+  <!--启动注解扫描-->
+  <context:component-scan base-package="test4v">
+    <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/><!--排除Controller-->
+  </context:component-scan>
+
 </beans>
+
 ```
+
+##  @Transactional事务失效解决
+1. 检查你方法是不是public的
+
+2. 你的异常类型是不是unchecked异常 
+如果我想check异常也想回滚怎么办，注解上面写明异常类型即可
+```
+@Transactional(rollbackFor=Exception.class) 
+```
+类似的还有norollbackFor，自定义不回滚的异常
+
+3. 数据库引擎要支持事务，如果是MySQL，注意表要使用支持事务的引擎，比如innodb，如果是myisam，事务是不起作用的
+
+4. 是否开启了对注解的解析
+```
+<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
+```
+5. spring是否扫描到你这个包，如下是扫描到org.test下面的包
+```
+<context:component-scan base-package="org.test" ></context:component-scan>
+```
+6. 检查是不是同一个类中的方法调用（如a方法调用同一个类中的b方法） 
+
+7. 异常是不是被你catch住了
+
+
 
 ## 体系结构
 ![image.png](https://i.loli.net/2019/04/17/5cb6d43d8b5dd.png)
