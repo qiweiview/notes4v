@@ -1,4 +1,34 @@
 # Spring教程
+
+
+
+## 范例
+* 从类路径下加载spring配置文件
+```
+String s = Test4v.class.getResource("Beans.xml").toString();
+ApplicationContext context = new ClassPathXmlApplicationContext(s);
+```
+* beans.xml配置文件
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+   <!--启动注解扫描-->
+    <context:component-scan base-package="test4v">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/><!--排除Controller-->
+    </context:component-scan>
+</beans>
+```
+
 ## 体系结构
 ![image.png](https://i.loli.net/2019/04/17/5cb6d43d8b5dd.png)
 ### 核心容器
