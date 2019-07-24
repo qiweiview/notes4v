@@ -1,4 +1,4 @@
-# Docker-Composef教程
+# Docker-Compose教程
 
 * [教程地址](https://yeasy.gitbooks.io/docker_practice/compose/compose_file.html)
 * [Github地址]( https://github.com/docker/compose )
