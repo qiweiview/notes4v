@@ -120,6 +120,11 @@ public  static SqlSessionTemplate getSqlSessionTemplate() throws Exception {
     return sqlSessionTemplate;
   }
 ```
+
+* 除了get mapper还可以直接调用
+```
+List<Object> objects = sqlSessionTemplate.selectList("test4v.UserMapper2.selectAllUsere");
+```
 * 获取批量操作的template
 
 不能存在使用不同 ExecutorType 的进行中的事务。要么确保对不同 ExecutorType 的 SqlSessionTemplate 的调用处在不同的事务中，要么完全不使用事务
