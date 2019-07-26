@@ -651,3 +651,24 @@ callback 与 async 功能正交分解，async=true 表示结果是否马上返�
 可以根据需要调整缓存文件的路径，保证这个文件不会在发布过程中被清除；
 如果有多个应用进程，请注意不要使用同一个文件，避免内容被覆盖；
 该文件会缓存注册中心列表和服务提供者列表。配置缓存文件后，应用重启过程中，若注册中心不可用，应用会从该缓存文件读取服务提供者列表，进一步保证应用可靠性。
+
+
+## 新版本 telnet 命令使用说明
+* dubbo 2.5.8 新版本增加了 QOS 模块，提供了新的 telnet 命令支持。
+
+### 端口
+* 新版本的 telnet 端口 与 dubbo 协议的端口是不同的端口，默认为 22222，可通过配置文件dubbo.properties 修改:
+```
+dubbo.application.qos.port=33333
+```
+
+* 默认情况下，dubbo 接收任何主机发起的命令，可通过配置文件dubbo.properties 修改:
+```
+dubbo.application.qos.accept.foreign.ip=false
+```
+
+### 支持的命令
+* ls 列出消费者和提供者
+* Online 上线服务命令
+* Offline 下线服务命令
+* help 命令
