@@ -49,7 +49,45 @@ MSL（Maximum Segment Lifetime），TCP允许不同的实现可以设置不同�
 
 ## Content-Type
 * multipart/form-data表单（boundary=AaB03x表示使用这个字符进行分割）
+请求数据：
+```
+POST /test?key=123 HTTP/1.1
+Host: localhost
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+Cache-Control: no-cache
+Postman-Token: 5b3497a1-4a9a-1f8c-1baa-52625f49f913
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="name"
+
+jary
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="age"
+
+12
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+```
+
+* x-www-form-urlencoded
+```
+POST /test?key=123 HTTP/1.1
+Host: localhost
+Content-Type: application/x-www-form-urlencoded
+Cache-Control: no-cache
+Postman-Token: 45a546a6-8242-1444-de34-354b156727a8
+
+name=tomy&age=12
+```
+* raw(可以上传任意格式的文本，可以上传text、json、xml、html等)
+
+* binary 
+1. 相当于Content-Type:application/octet-stream,
+2. 从字面意思得知，只可以上传二进制数据，通常用来上传文件，
+3. 由于没有键值，所以，一次只能上传一个文件
+
+
 * multipart/byteranges包含多个范围（head里有个Content-Range属性）（206）
+
 
 ## 状态码
 * 1xx正在处理
