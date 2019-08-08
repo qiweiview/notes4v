@@ -1,5 +1,8 @@
 # Spring动态注册Bean
 
+
+* 核心思想就是让注册早于AutowiredAnnotationBeanPostProcessor
+
 ## 注册bean分为了两种方式：
 * DefaultListableBeanFactory接口同时实现了这两个接口
 
