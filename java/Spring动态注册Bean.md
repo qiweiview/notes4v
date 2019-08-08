@@ -21,7 +21,7 @@ void registerSingleton(String beanName, Object singletonObject)
 ## BeanFactoryPostProcessor
 * 如果bean不是在BeanFactoryPostProcessor中被注册，那么该bean则无法被**BeanPostProcessor**处理，即无法对其应用aop、Bean Validation等功能
 * 在Spring容器的启动过程中，BeanFactory载入bean的定义后会立刻执行BeanFactoryPostProcessor，此时动态注册bean，则可以保证动态注册的bean被BeanPostProcessor处理，并且可以保证其的实例化和初始化总是先于依赖它的bean
-* 一定要在postProcessBeanFactory方法里注册对象才可以在后面AOP,DI里生效
+* 一定要在postProcessBeanFactory方法里注册对象才可以在后面DI里生效
 ```
 package test;
 
