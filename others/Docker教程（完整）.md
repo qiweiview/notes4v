@@ -3,6 +3,17 @@
 
 ### Docker镜像
 
+### 常用操作
+```
+启动        systemctl start docker
+守护进程重启   sudo systemctl daemon-reload
+重启docker服务   systemctl restart  docker
+重启docker服务  sudo service docker restart
+关闭docker   service docker stop   
+关闭docker  systemctl stop docker
+```
+
+
 #### 1. 获取docker镜像
 ```
 docker pull [选项] [Docker Registry 地址[:端口号]/]仓库名[:标签]
