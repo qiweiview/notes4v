@@ -1,3 +1,4 @@
+# Linux指令
 ### 递归删除
 ```
 rm -rf /home/test
