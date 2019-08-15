@@ -31,6 +31,7 @@
 ### withInitial(Supplier<? extends S> supplier)
 * 使用函数作为初始化方法
 * 返回的是SuppliedThreadLocal
+* SuppliedThreadLocal会在setInitialValue()中被调用
 
 ```
   public static <S> ThreadLocal<S> withInitial(Supplier<? extends S> supplier) {
