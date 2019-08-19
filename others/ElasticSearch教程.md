@@ -1,6 +1,11 @@
 # ElasticSearch教程
 
 
+## keyword和text区别
+* keyword：存储数据时候，不会分词建立索引
+* text：存储数据时候，会自动分词，并生成索引（这是很智能的，但在有些字段里面是没用的，所以对于有些字段使用text则浪费了空间）。
+
+
 ## Index
 * Elastic 会索引所有字段，经过处理后写入一个反向索引（Inverted Index）。查找数据的时候，直接查找该索引。因此，Elastic 数据管理的顶层单位就叫做 Index（索引）。它是单个数据库的同义词。每个 Index （即数据库）的名字必须是小写
 
@@ -18,46 +23,104 @@
 * 同一个 Index 里面的 Document，不要求有相同的结构（scheme），但是最好保持相同，这样有利于提高搜索效率
 
 
-
-## 列出每个 Index 所包含的 Type。
+## Mapping
+* 映射是定义文档及其包含的字段的存储和索引方式的过程
+1. (应将哪些字符串字段视为全文字段。)
+2. (哪些字段包含数字，日期或地理位置)
+3. (日期值的格式)
+4. (用于控制动态添加字段的映射的自定义规则)
+* 每个索引都有一种映射类型，用于确定文档的索引方式。
+* Elasticsearch的mapping一旦创建，只能增加字段，而不能修改已经mapping的字段
 ```
-GET /_mapping?pretty=true
-```
-
-## 查看运行状态
-```
-GET /_cat/health?v
-```
-
-* 绿色 - 一切都很好（集群功能齐全）
-* 黄色 - 所有数据都可用，但尚未分配一些副本（群集功能齐全）
-* 红色 - 某些数据由于某种原因不可用（群集部分功能）
-
-## 查看所有节点(集群中)
-```
-GET /_cat/nodes?v
-```
-
-## 查看所有索引
-```
-GET /_cat/indices?v
-```
-
-## 创建索引Index
-* 可以直接向 Elastic 服务器发出 PUT 请求。下面的例子是新建一个名叫weather的 Index。
-```
-PUT /customer?pretty
+PUT my_index 
+{
+  "mappings": {
+    "properties": { 
+      "title":    { "type": "text"  }, 
+      "name":     { "type": "text"  }, 
+      "age":      { "type": "integer" },  
+      "created":  {
+        "type":   "date", 
+        "format": "strict_date_optional_time||epoch_millis"
+      }
+    }
+  }
+}
 ```
 
-## 列出当前节点所有索引
+
+## Mapping参数
+
+### coerceedit
+* 强制尝试清理脏值以适合字段的数据类型
+
+
+### copy_to
+* 参数允许您将多个字段的值复制到组字段中，然后可以将其作为单个字段进行查询
+* 无法递归复制
+* 原始_source不会显示复制的值
 ```
-GET /_cat/indices?v
+PUT my_index
+{
+  "mappings": {
+    "properties": {
+      "first_name": {
+        "type": "text",
+        "copy_to": "full_name" 
+      },
+      "last_name": {
+        "type": "text",
+        "copy_to": "full_name" 
+      },
+      "full_name": {
+        "type": "text"
+      }
+    }
+  }
+}
+
+
+GET my_index/_search
+{
+  "query": {
+    "match": {
+      "full_name": { 
+        "query": "John Smith",
+        "operator": "and"
+      }
+    }
+  }
+}
 ```
 
-## 删除索引index
-```
-DELETE /customer?pretty
-```
+
+### enabled
+* 有时您只想存储字段而不对其进行索引
+* 启用的设置（仅适用于顶级映射定义和对象字段）会导致Elasticsearch完全跳过对字段内容的解析
+
+### index
+* 选项控制是否索引字段值。
+它接受true或false，默认为true。
+未编制索引的字段不可查询
+
+
+### ignore_above
+* 长度超过ignore_above设置的字符串将不会被索引或存储。对于字符串数组，ignore_above将分别应用于每个数组元素，并且不会索引或存储比ignore_above更长的字符串元素
+
+
+## 在索引时，分析器查询顺序
+* 分析器在字段映射中定义。
+* 索引设置中名为default的分析器。
+* 标准分析仪。
+
+
+## 在查询时，分析器查询顺序
+* analyzer在full-text query中定义。
+* search_analyzer在字段mapping中定义。
+* analyzer在字段映射中定义。
+* 索引设置中名为default_search的分析器。
+* 索引设置中名为default的分析器。
+* 标准分析仪。
 
 ## 中文分词
 
@@ -65,250 +128,6 @@ DELETE /customer?pretty
 
 * 重启后就会自动安装插件
 
-## 新增一条记录
-```
-PUT /customer/_create/1?pretty
-{
-  "name": "John Doe"
-}
-```
-
-## 新增或替换一条记录（不知道和更新有什么区别）
-```
-PUT /customer/_doc/1?pretty
-{
-  "name": "Jay Doe"
-}
-```
-
-## 更新一条记录
-* 每当我们进行更新时，Elasticsearch都会删除旧文档，然后一次性对应用了更新的新文档编制索引。
-
-更新文档
-```
-POST /customer/_update/1?pretty
-{
-  "doc": { "name": "Jane Doe" }
-}
-```
-
-脚本处理
-```
-POST /customer/_update/1?pretty
-{
-  "script" : "ctx._source.age += 5"
-}
-```
-* 在上面的示例中，ctx._source指的是即将更新的当前源文档
-
-## 不指定ID创建索引文档(注意用的是post)
-```
-POST /customer/_doc?pretty
-{
-  "name": "Jane Doe"
-}
-
-```
-
-## 查看记录
-```
-GET /customer/_doc/1?pretty
-```
-
-## 删除一条记录
-```
-DELETE /customer/_doc/2?pretty
-```
-
-## 批量操作
-
-* Bulk API不会因其中一个操作失败而失败。
-* 如果单个操作因任何原因失败，它将继续处理其后的其余操作。
-* 批量API返回时，它将为每个操作提供一个状态（按照发送的顺序），以便您可以检查特定操作是否失败
 
 
-* 添加了2个索引分别为1，2，文档内容为name-John Doe
-```
-POST /customer/_bulk?pretty
-{"index":{"_id":"1"}}
-{"name": "John Doe" }
-{"index":{"_id":"2"}}
-{"name": "Jane Doe" }
-```
-* 更新第一个文档，删除第二个文档
-```
-POST /customer/_bulk?pretty
-{"update":{"_id":"1"}}
-{"doc": { "name": "John Doe becomes Jane Doe" } }
-{"delete":{"_id":"2"}}
-```
 
-## 查询记录
-* 返回所有文档
-```
-GET /bank/_search?q=*&sort=account_number:asc&pretty
-```
-
-* 响应
-```
-{
-    "took": 3,
-    "timed_out": false,
-    "_shards": {
-        "total": 1,
-        "successful": 1,
-        "skipped": 0,
-        "failed": 0
-    },
-    "hits": {
-        "total": {
-            "value": 1,
-            "relation": "eq"
-        },
-        "max_score": 1.3112575,
-        "hits": [
-            {
-                "_index": "my_content",
-                "_type": "_doc",
-                "_id": "1",
-                "_score": 1.3112575,
-                "_source": {
-                    "content": "小刘今天非常烦恼"
-                }
-            }
-        ]
-    }
-}
-```
-
-* took - Elasticsearch执行搜索的时间（以毫秒为单位）
-
-* timed_out  - 告诉我们搜索是否超时
-* _shards  - 告诉我们搜索了多少个分片，以及搜索成功/失败分片的计数
-点击 - 搜索结果
-* hits.total  - 一个对象，包含有关符合我们搜索条件的文档总数的信息
-* hits.hits  - 搜索结果的实际数组（默认为前10个文档）
-* hits.sort  - 每个结果的排序键的排序值（如果按分数排序则丢失）
-* hits._score和max_score  - 暂时忽略这些字段
-
-## 查询语法DSL
-
-### 只查特定字段
-```
-GET /bank/_search
-{
-  "query": { "match_all": {} },
-  "_source": ["account_number", "balance"]
-}
-```
-
-### 查特定条件
-```
-This example returns the account numbered 20:
-
-GET /bank/_search
-{
-  "query": { "match": { "account_number": 20 } }
-}
-```
-
-### 且条件满足
-
-都满足
-```
-GET /bank/_search
-{
-  "query": {
-    "bool": {
-      "must": [
-        { "match": { "address": "mill" } },
-        { "match": { "address": "lane" } }
-      ]
-    }
-  }
-}
-```
- 都不满足
-```
-GET /bank/_search
-{
-  "query": {
-    "bool": {
-      "must_not": [
-        { "match": { "address": "mill" } },
-        { "match": { "address": "lane" } }
-      ]
-    }
-  }
-}
-```
-
-### 或条件满足
-```
-GET /bank/_search
-{
-  "query": {
-    "bool": {
-      "should": [
-        { "match": { "address": "mill" } },
-        { "match": { "address": "lane" } }
-      ]
-    }
-  }
-}
-```
-
-
-### 混合
-```
-This example returns all accounts of anybody who is 40 years old but doesn’t live in ID(aho):
-
-GET /bank/_search
-{
-  "query": {
-    "bool": {
-      "must": [
-        { "match": { "age": "40" } }
-      ],
-      "must_not": [
-        { "match": { "state": "ID" } }
-      ]
-    }
-  }
-}
-```
-
-### 过滤区间
-```
-GET /bank/_search
-{
-  "query": {
-    "bool": {
-      "must": { "match_all": {} },
-      "filter": {
-        "range": {
-          "balance": {
-            "gte": 20000,
-            "lte": 30000
-          }
-        }
-      }
-    }
-  }
-}
-```
-
-### 聚合
-```
-GET /bank/_search
-{
-  "size": 0,
-  "aggs": {
-    "group_by_state": {
-      "terms": {
-        "field": "state.keyword"
-      }
-    }
-  }
-}
-```
