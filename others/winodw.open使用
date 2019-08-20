@@ -1,0 +1,12 @@
+# winodw.open使用
+* 包含子窗口关闭后父窗口刷新
+```
+   let strWindowFeatures = "location=yes,height=570,width=520,scrollbars=yes,status=yes";
+                    let open = window.open("/l/dl", "_blank", strWindowFeatures)
+                    let loop = setInterval(function () {
+                        if (open.closed) {
+                            clearInterval(loop);
+                            parent.location.reload();
+                        }
+                    }, 1);
+```
