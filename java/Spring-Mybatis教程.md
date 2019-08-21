@@ -70,7 +70,7 @@ public class TestApplicationStart {
     properties.setProperty("driver", "com.mysql.cj.jdbc.Driver");
     properties.setProperty("url", "jdbc:mysql://localhost:3306/test4work?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai");
     properties.setProperty("username", "root");
-    properties.setProperty("password", "qwqwqwasasas");
+    properties.setProperty("password", "xxxxx");
     PooledDataSourceFactory pooledDataSourceFactory = new PooledDataSourceFactory();
     pooledDataSourceFactory.setProperties(properties);
     DataSource dataSource = pooledDataSourceFactory.getDataSource();
