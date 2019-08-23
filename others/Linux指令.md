@@ -1,4 +1,11 @@
 # Linux指令
+
+
+### 远程文件传输
+```
+ sshpass -p xxxpassws scp /home/scp/hi ubuntu@qw607.com:
+```
+
 ### 递归删除
 ```
 rm -rf /home/test
