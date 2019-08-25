@@ -1,5 +1,9 @@
 # Thymeleaf使用
-
+## 引用
+```
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" >
+<head>
+```
 ## 获取绝对路径
 1. 在script标签添加
 ```
