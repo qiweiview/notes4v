@@ -133,3 +133,7 @@ jenkins ALL=(ALL) NOPASSWD: ALL
 * 重启Jenkins服务 
 ```$ /etc/init.d/jenkins restart```
 
+## 2. jdk版本太低无法编译高版本项目
+
+修改配置里的jdk使用本地jdk（会报不是jdk目录，但是还是可以用）
+
