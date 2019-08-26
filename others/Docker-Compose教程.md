@@ -119,9 +119,12 @@ push
 重启项目中的服务。
 
 选项：
-
+-f 指定配置文件
+```
+ /home/cv4u/docker-compose-Linux-x86_64  -f /home/cv4u/docker-compose.yml   restart
+```
 -t, --timeout TIMEOUT 指定重启前停止容器的超时（默认为 10 秒）。
-rm
+### rm
 格式为 docker-compose rm [options] [SERVICE...]。
 
 删除所有（停止状态的）服务容器。推荐先执行 docker-compose stop 命令来停止容器。
