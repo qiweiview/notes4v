@@ -11,6 +11,12 @@
 重启docker服务  sudo service docker restart
 关闭docker   service docker stop   
 关闭docker  systemctl stop docker
+
+
+删除没启动的images:
+docker rmi $(docker images -q)
+删除没启动的containers
+docker rm $(docker ps -a -q)
 ```
 
 
