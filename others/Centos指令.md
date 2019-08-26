@@ -1,3 +1,4 @@
+# Centos指令
 1. 更新源
 ```
 vi /etc/yum.repos.d/CentOS-Base.repo
