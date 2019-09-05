@@ -112,3 +112,8 @@ output.elasticsearch:
   #ssl.key: "/etc/pki/client/cert.key"
 
 ```
+
+
+## 注意
+* 在linux系统中测试数据增量不要使用vim，因为filebeat跟踪文件的inode来判断是否发送数据，vim每次保存都工会修改文件的inode。
+使用```echo "test word" >> log.log``` 来测试日志增量

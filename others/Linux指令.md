@@ -13,20 +13,26 @@ rm -rf /home/test
 
 ### 查看端口
 ```
-//UDP类型的端口
-netstat -nupl
-
-//TCP类型的端口
-netstat -ntpl
+lsof -i tcp:81
 ```
 
-### 查看指定端口
+## 通过进程名查看对应进程
+* 先用pgrep [str] 命令进行模糊匹配，找到匹配该特征串的进程ID；
+
+* 其次根据进程ID显示指定的进程信息，ps --pid [pid]；
+
+* 因为查找出来的进程ID需要被作为参数传递给ps命令，故使用xargs命令，通过管道符号连接；
+
+* 最后显示进程详细信息，需要加上-u参数。
 ```
- netstat -ap | grep 81
- 
- lsof -i:81
- 
- netstat -pan|grep 81
+pgrep java | xargs ps -u --pid
+```
+
+
+### 查看进程信息
+* ll是ls -l简写
+```
+ll /proc/pid
 ```
 
 ### 开启端口
