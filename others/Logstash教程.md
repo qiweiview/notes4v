@@ -19,13 +19,6 @@ bin/logstash -f config/first-pipeline.conf --config.reload.automatic
 
 ```
 input {
-    #tcp {
-    #host => "127.0.0.1"  
-    #port => 4560
-    #mode => "server"  
-    #tags => ["tags"]
-    #codec => json_lines  
-    #}
     beats {
         port => "5044"
     }
@@ -33,18 +26,14 @@ input {
  filter {
     
     grok {
-        #match => { "message" => "%{COMBINEDAPACHELOG}"}
-		#match => { "message" =>"%{IP:client} %{WORD:method} %{URIPATHPARAM:request} %{NUMBER:bytes} %{NUMBER:duration}"}
-		match => { "message" =>"\[%{DATA:date}\]\[%{DATA:appName}\]\[%{DATA:host}\]\[%{DATA:level}\]\[%{DATA:content}\]"}
-		#add_field => {"level4v" => "im INFO"}
-		
+		match => { "message" =>"\[%{DATA:logDate}\]\[%{DATA:appName}\]\[%{DATA:hostName}\]\[%{DATA:logLevel}\]\[%{DATA:logContent}\]"}
     }
-    geoip {
-        source => "clientip"
+	
+    date {
+        match => ["logDate", "dd/MMM/yyyy:HH:mm:ss Z","yyyy-MM-dd HH:mm:ss"]
+		target => "logDate"
     }
-	if [level] != "ERROR" {
-        drop { }
-      }
+	
 }
 output {
     stdout { codec => rubydebug }
