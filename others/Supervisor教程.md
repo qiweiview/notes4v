@@ -40,7 +40,7 @@ supervisord -c /etc/supervisord.conf
 [include]
 files = /etc/supervisor/conf.d/*.conf 
 ```
-
+* 程序范例
 ```
 [program:echo_time]
 command=sh /tmp/echo_time.sh
