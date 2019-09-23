@@ -37,6 +37,11 @@ supervisord -c /etc/supervisord.conf
 ## 任务文件
 * 通过supervisord.conf中配置扫描
 ```
+[include]
+files = /etc/supervisor/conf.d/*.conf 
+```
+
+```
 [program:echo_time]
 command=sh /tmp/echo_time.sh
 priority=999                ; the relative start priority (default 999)
