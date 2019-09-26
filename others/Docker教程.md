@@ -106,6 +106,11 @@ docker build -t nginx:v3 .
 
 ```
 
+指定名字，指定标签，指定文件，指定资源目录
+```
+sudo docker build -t 127.0.0.1:5000/ze:latest  -f /home/jenkins_jar/Dockerfile  /home/jenkins_jar
+```
+
 ##### “.”表示上下文路径
 这就引入了上下文的概念。当构建的时候，用户会指定构建镜像上下文的路径，docker build 命令得知这个路径后，会将路径下的所有内容打包，然后上传给 Docker 引擎。这样 Docker 引擎收到这个上下文包后，展开就会获得构建镜像所需的一切文件。
 
