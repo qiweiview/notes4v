@@ -46,10 +46,7 @@ sudo systemctl status jenkins
 
 
 
-## 私有仓库Registry安装
-```
-docker run --name devops-registry -p 5000:5000 -v /home/registry:/var/lib/registry -d registry
-```
+
 
 ## Jenkins配置
 ### 选择安装默认插件
@@ -82,32 +79,23 @@ ExecStart=/usr/bin/docker daemon -H tcp://0.0.0.0:2375 -H unix:///var/run/docker
 
 
 
-## 运行脚本
-
-* local shell
+## 解决方案一(jenkins + docker registry + docker compose)
+* jar加入到镜像中，镜像增量拉取
+* 本地
 ```
 sudo cp $WORKSPACE/zephyr-bootdemo/target/*.jar  /home/jenkins_jar
-sudo docker build -f /home/jenkins_jar/Dockerfile -t zephyrfr:latest /home/jenkins_jar
-sudo docker tag zephyrfr cnigcc.cn:5000/zephyrfr
-sudo docker push cnigcc.cn:5000/zephyrfr
+sudo docker build -t 127.0.0.1:5000/ze:latest  -f /home/jenkins_jar/Dockerfile  /home/jenkins_jar
+sudo docker push 127.0.0.1:5000/ze:latest
 ```
 
-* remote shell
+* 远程
 ```
- sudo docker pull cnigcc.cn:5000/zephyrfr
- sudo docker stop  zephyrfr
- sudo docker rm  zephyrfr
- sudo docker run -d --name zephyrfr -p 9000:9000 cnigcc.cn:5000/zephyrfr
+sudo /home/ze/docker-compose-Linux-x86_64  -f  /home/ze/docker-compose.yml  pull
+sudo /home/ze/docker-compose-Linux-x86_64  -f  /home/ze/docker-compose.yml  rm -sf
+sudo /home/ze/docker-compose-Linux-x86_64  -f  /home/ze/docker-compose.yml  up -d
+sudo docker system prune -f
 ```
 
-
-* 判断创建Dockerfile文件
-```
-if [ -f /home/jenkins_jar/Dockerfile ]
-then sudo echo "exist"
-else sudo echo -e  "FROM openzipkin/jre-full:1.8.0_201 \nCOPY zephyrfr.jar /home \nENTRYPOINT [\"java\",\"-jar\",\"/home/zephyrfr.jar\"]" > Dockerfile
-fi
-```
 
 
 
