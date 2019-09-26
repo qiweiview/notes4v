@@ -11,7 +11,13 @@
 	</head>
 	<body>
 		<div id="app">
-			<el-tag>{{storeData.exerciseDate}}</el-tag><el-tag style="margin-left: 5px;">完成“{{storeData.exerciseName}}”训练</el-tag>
+			<div v-if="storeData.exerciseDate!=''">
+				<el-tag>{{storeData.exerciseDate}}</el-tag><el-tag style="margin-left: 5px;">完成“{{storeData.exerciseName}}”训练</el-tag>
+			</div>
+			<div v-else>
+				<el-tag>未完成任何训练</el-tag>
+			</div>
+			
 			
 			<el-tabs style="height: 80vh;" v-model="storeData.exerciseName">
 				<el-tab-pane v-for="c in contentAarray" :label="c.name" :name="c.name">
@@ -150,6 +156,11 @@
 					let rs = $cookies.get("STORE_DATA")
 					if (rs != null) {
 						this.storeData=rs
+					}else{
+						this.storeData={
+						exerciseName: "胸",
+						exerciseDate: "",
+					}
 					}
 				},
 				finishMark() {
