@@ -32,6 +32,11 @@ docker pull [选项] [Docker Registry 地址[:端口号]/]仓库名[:标签]
 docker image rm
 ```
 
+* 删除那些已停止的容器、dangling 镜像、未被容器引用的 network 和构建过程中的 cache
+```
+docker system prune -f
+```
+
 #### 3. 运行镜像（创建容器实例）
 ```
 docker run -it --rm \ubuntu:16.04  \bash
