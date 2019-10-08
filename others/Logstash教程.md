@@ -39,6 +39,7 @@ output {
     stdout { codec => rubydebug }
 	elasticsearch {
         hosts => [ "localhost:9200" ]
+	index => "logstash4xm-%{+YYYY.MM.dd}"
     }
 	file {
         path => "D:\log\output\otp"
