@@ -10,5 +10,25 @@
 * 重启后就会自动安装插件
 
 
+## 仅保留固定时间数据
+```
+#指定天数日期日期
+DATA=`date -d "1 month ago" +%Y.%m.%d`
+
+#当前日期
+time=`date`
+
+
+#执行api接口
+curl -XDELETE http://127.0.0.1:9200/*-${DATA}
+
+if [ $? -eq 0 ];then
+echo $time"-->del $DATA log success.."
+else
+echo $time"-->del $DATA log fail.."
+fi
+```
+
+
 
 
