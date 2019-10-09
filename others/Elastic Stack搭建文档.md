@@ -13,12 +13,17 @@
 ### 解压，目录结构
 ![](https://i.loli.net/2019/09/04/BtGgQ1ELFXhZx4A.png)
 
+### 修改配置
+```
+cluster.name: my-application
+node.name: node-1
+network.host: 0.0.0.0
+http.port: 9200
+discovery.seed_hosts: ["127.0.0.1", "[::1]"]
+cluster.initial_master_nodes: ["node-1"]
+```
+
 ### 运行es
-#### windows:
-```
-/bin/elasticsearch.bat
-```
-#### linux:
 * linux中需要在非root用户下运行es
 ```
 
@@ -29,6 +34,41 @@ chown -R elasticsearch /elasticsearch-7.3.1
 su elasticsearch 
 
 nohup /bin/elasticsearch & 
+```
+
+### 问题
+* max file descriptors [4096] for elasticsearch process is too low, increase to at least [65535]
+```
+添加下面配置：
+vm.max_map_count=655360
+并执行命令：
+sysctl -p
+```
+* max virtual memory areas vm.max_map_count [65530] is too low, increase to at least [262144]
+```
+找到文件 /etc/security/limits.conf，编辑，在文件的最后追加如下配置：
+
+es soft nofile 65535
+
+es hard nofile 65537
+
+soft nofile表示软限制，hard nofile表示硬限制，
+
+上面两行语句表示，es用户的软限制为65535，硬限制为65537，
+
+即表示es用户能打开的最大文件数量为65537，不管它开启多少个shell。
+
+硬限制是严格的设定，必定不能超过这个设定的数值。
+
+软限制是警告的设定，可以超过这个设定的值，但是若超过，则有警告信息。
+
+在设定上，通常soft会比hard小，举例来说，sofr可以设定为80，而hard设定为100，那么你可以使用到90（因为没有超过100），但介于80~100之间时，系统会有警告信息。
+
+修改了limits.conf，不需要重启，重新登录即生效。
+```
+* the default discovery settings are unsuitable for production use; at least one of [discovery.seed_hosts, discovery.seed_providers, cluster.initial_master_nodes] must be configured
+```
+配置没有修改成单节点
 ```
 
 ### 测试运行成功
