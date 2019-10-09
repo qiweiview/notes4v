@@ -140,29 +140,35 @@ nohup filebeat -e -c filebeat.yml -d "publish" &
 ### 配置文件/conf/first-pipeline.conf(没有则创建)
 ```
 input {
-# filebeat 输入
     beats {
         port => "5044"
     }
 }
  filter {
-    # 提取数据
+    
     grok {
 		match => { "message" =>"\[%{DATA:logDate}\]\[%{DATA:appName}\]\[%{DATA:hostName}\]\[%{DATA:logLevel}\]\[%{DATA:logContent}\]"}
     }
 	
-	# 日期格式转换
     date {
         match => ["logDate", "dd/MMM/yyyy:HH:mm:ss Z","yyyy-MM-dd HH:mm:ss"]
 		target => "logDate"
     }
 	
+	if [logLevel] not in ["INFO", "DEBUG", "ERROR"] {
+    drop {}
+  }
+	
 }
 output {
-    # es 输出
+    stdout { codec => rubydebug }
 	elasticsearch {
         hosts => [ "localhost:9200" ]
+		index => "logstash4xm-%{+YYYY.MM.dd}"
     }
+	#file {
+        #path => "D:\log\output\otp"
+    #}
 }
 ```
 * beats 配置接收日志的端口
