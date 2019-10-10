@@ -12,9 +12,9 @@ else
                 log_dir=$base_dir"log4j.properties"
                 if [ -f "$log_dir" ]; then
                         /bin/cp -rf $log_dir $base_dir"logconfig.backup"
-                        rm $log_dir
-                        echo "备份原有配置文件到logconfig.backup"
+                        echo "存在"$log_dir",备份原有配置文件到logconfig.backup"
                 else
+                        rm -rf  $log_dir
                         echo "log4j.rootLogger=DEBUG,F
 
 log4j.appender.F = org.apache.log4j.DailyRollingFileAppender
@@ -22,7 +22,7 @@ log4j.appender.F.File = /bea/app_logs/"$project_name"
 log4j.appender.F.Append = true
 log4j.appender.F.Threshold = DEBUG
 log4j.appender.F.layout = org.apache.log4j.PatternLayout
-log4j.appender.F.layout.ConversionPattern =[%d{yyyy-MM-dd HH:mm:ss}]["$project_name"][172.28.2.81][%p][%m]%n" >>$log_dir
+log4j.appender.F.layout.ConversionPattern =[%d{yyyy-MM-dd HH:mm:ss}]["$project_name"][172.28.2.80][%p][%m]%n" >>$log_dir
                         echo "创建"$log_dir
                 fi
 
