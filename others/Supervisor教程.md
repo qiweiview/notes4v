@@ -9,7 +9,7 @@ apt-get install supervisor
 
 ## 离线安装
 ### 1. [获取supervisor包](https://github.com/Supervisor/supervisor/releases)
-
+[3.3.1版本](https://files.pythonhosted.org/packages/80/37/964c0d53cbd328796b1aeb7abea4c0f7b0e8c7197ea9b0b9967b7d004def/supervisor-3.3.1.tar.gz)
  
 
 ### 2. 解压supervisor-3.3.1.tar.gz 并安装 
@@ -18,6 +18,7 @@ apt-get install supervisor
 　　# python setup.py install
 ```
 [可能碰到缺少meld3](https://github.com/Supervisor/meld3/releases)
+[1.0.1版本](https://codeload.github.com/Supervisor/meld3/tar.gz/1.0.1)
 ```
 　# tar zxvf meld3-1.0.1.tar.gz
 　# python setup.py install
@@ -81,9 +82,4 @@ stdout_logfile=/tmp/echo_time.stdout.log
 　　重启某一进程 (program_name=你配置中写的程序名称)
 　　# supervisorctl restart program_name
 　　
-　　停止全部进程
-　　# supervisorctl stop all
-　　
-　　查看 该程序的日志
-　　#supervisorctl tail -f program_name  
-```
+　　停止
