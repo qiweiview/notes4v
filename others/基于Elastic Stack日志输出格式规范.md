@@ -99,7 +99,8 @@ $upstream_response_time  请求过程中，upstream响应时间
 log4j.rootLogger=DEBUG,F
 
 log4j.appender.F = org.apache.log4j.DailyRollingFileAppender
-log4j.appender.F.File = your log path
+log4j.appender.F.DatePattern='_'yyyy-MM-dd-HH-mm'.log'
+log4j.appender.F.File = /bea/log
 log4j.appender.F.Append = true
 log4j.appender.F.Threshold = DEBUG 
 log4j.appender.F.layout = org.apache.log4j.PatternLayout
