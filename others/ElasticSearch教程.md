@@ -30,5 +30,12 @@ fi
 ```
 
 
+* 使用crontab执行定时任务，每天凌晨执行
+```
+crontab -e
+
+0 0 * * * /home/linrui/XXXXXXXX.sh
+```
+
 
 
