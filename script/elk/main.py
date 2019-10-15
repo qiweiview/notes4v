@@ -5,7 +5,7 @@ def main():
 	print '===脚本开始运行==='
 	
 	#json=fast_crate.parseConfig('project_info_demo.yml')
-        json=fast_crate.parseConfig('project_info.yml')
+        json=fast_crate.parseConfig('demo.yml')
 	for project in json['projects']:
 		pass
 
