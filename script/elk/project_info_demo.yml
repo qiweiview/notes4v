@@ -1,0 +1,15 @@
+# logstash服务器地址
+logstash_host: 192.168.1.1:5044 
+# filebeat目录,将动态生成配置文件替换默认配置文件
+filebeat_path: /home/py_script_test
+# 当前服务器地址
+host: 192.168.1.1
+
+# 项目信息
+projects:
+# 项目名
+ - name: demo
+# 项目日志配置文件生成路径（不存在将抛出异常）
+   path: /home
+# 项目日志文件输出路径（不存在将创建）
+   log_path: /home/py_script_test
