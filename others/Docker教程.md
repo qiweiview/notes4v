@@ -12,6 +12,7 @@
 关闭docker   service docker stop   
 关闭docker  systemctl stop docker
 
+docker system prune -a 清除缓存
 
 删除没启动的images:
 docker rmi $(docker images -q)
