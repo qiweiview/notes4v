@@ -20,6 +20,38 @@
 ### 解压，目录结构
 ![](https://i.loli.net/2019/09/04/BtGgQ1ELFXhZx4A.png)
 
+### 修改系统参数
+```
+[1]: max file descriptors [65535] for elasticsearch process is too low, increase to at least [65536]
+[2]: max virtual memory areas vm.max_map_count [65530] is too low, increase to at least [262144]
+```
+
+```
+sudo vi /etc/sysctl.conf
+
+添加下面配置：
+
+vm.max_map_count=655360 
+
+并执行命令：
+
+sysctl -p
+
+然后，重新启动elasticsearch，即可启动成功。
+
+sudo vi /etc/security/limits.conf
+
+添加如下内容:
+
+* soft nofile 65536
+
+* hard nofile 131072
+
+* soft nproc 2048
+
+* hard nproc 4096
+```
+
 ### 运行es
 
 * linux中需要在非root用户下运行es
@@ -107,7 +139,7 @@ output {
 ### 后台运行logstash
 * --config.reload.automatic 参数申明配置热加载
 ```
-nohup bin/logstash -f config/first-pipeline.conf --config.reload.automatic &
+nohup ./bin/logstash -f ./config/first-pipeline.conf --config.reload.automatic &
 ```
 
 
