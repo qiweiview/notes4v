@@ -1,3 +1,5 @@
+# Nginx教程
+
 ## nginx基本配置
 ```
 http {
@@ -125,4 +127,26 @@ nginx -s reload
         autoindex_localtime on;#创建时间
     }
 
+```
+
+## 负载均衡
+```
+http {
+
+upstream tomcats {
+        server 14.215.177.39:80;
+        server 117.21.216.80:80;
+        server 27.152.185.199:80;
+    }
+    
+ server {
+        listen       80;
+        server_name  localhost;
+
+       
+
+         location / {
+            proxy_pass http://tomcats;
+        }
+    
 ```
