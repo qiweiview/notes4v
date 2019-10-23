@@ -33,3 +33,22 @@ select DATE_FORMAT(start_time,'%Y%u') weeks,count(product_no) count from test gr
 
 select DATE_FORMAT(start_time,'%Y%m') months,count(product_no) count from test group bymonths; 
 ```
+
+### if使用
+mysql的if函数，例如：IF(expr1,expr2,expr3) 
+说明：如果 expr1是TRUE，则IF()的返回值为expr2; 否则返回值则为expr3
+实例场景：如果video_id为null，则直接返回空字符，避免不必要的查询影响效率：
+```
+SELECT
+
+IF (
+	isnull(sum(trade.cost_amount)),
+	0,
+	sum(trade.cost_amount)
+) AS getTotalOutpatientAmount
+FROM
+	auth_trade trade
+WHERE
+	trade.cost_time > curdate()
+AND trade.state = '-1'
+```
