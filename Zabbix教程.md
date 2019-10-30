@@ -46,3 +46,21 @@ Start Zabbix server and agent processes and make it start at system boot:
 # systemctl enable zabbix-server zabbix-agent apache2
 ```
 Now your Zabbix server is up and running!
+
+## 安装Client
+### 运行以下命令以安装 Zabbix agent ：
+```
+# apt install zabbix-agent
+```
+### 修改配置
+
+```
+vim /etc/zabbix/zabbix_agentd.conf
+```
+
+### 运行以下命令以启动 Zabbix agent：
+```
+# service zabbix-agent start
+```
+
+
