@@ -58,6 +58,14 @@ Now your Zabbix server is up and running!
 vim /etc/zabbix/zabbix_agentd.conf
 ```
 
+```
+EnableRemoteCommands=1
+Server=192.168.216.136
+ServerActive=192.168.216.136
+Hostname=zabbix 135
+UnsafeUserParameters=1
+```
+
 ### 运行以下命令以启动 Zabbix agent：
 ```
 # service zabbix-agent start
