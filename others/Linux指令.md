@@ -46,7 +46,13 @@ firewall-cmd --zone=public --add-port=81/tcp --permanent;firewall-cmd --reload;
 ps auxw|head -1;ps auxw|sort -rn -k4|head -10 
 ```
 
-### CPU占用最多的前10个进程： 
+## CPU占用最多的前10个进程： 
 ```
 ps auxw|head -1;ps auxw|sort -rn -k3|head -10 
+```
+
+## 创建一个大文件
+* 生成一个1000M的test文件，文件内容为全0（因从/dev/zero中读取，/dev/zero为0源）
+```
+dd if=/dev/zero of=test1 bs=1M count=1000
 ```
