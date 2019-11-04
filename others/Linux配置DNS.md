@@ -6,11 +6,10 @@
 # 添加IP
 ip add
 
-# 跳转目录
- cd /etc/sysconfig/network-scripts/
- 
  # 编辑文件
- vi ifcfg-ens33
+ vi /etc/sysconfig/network-scripts/ifcfg-ens33
+ 
+
  
  # 设置内容
  ONBOOT = yes
