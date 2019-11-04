@@ -99,9 +99,10 @@ $upstream_response_time  请求过程中，upstream响应时间
 log4j.rootLogger=DEBUG,F
 
 log4j.appender.F = org.apache.log4j.DailyRollingFileAppender
-log4j.appender.F.DatePattern='_'yyyy-MM-dd-HH-mm'.log'
-log4j.appender.F.File = /bea/log
-log4j.appender.F.Append = true
+#设置后缀，按天分割日志
+log4j.appender.F.DatePattern=yyyy-MM-dd'_backup'
+log4j.appender.F.File = /bea/log.log
+#log4j.appender.F.Append = true
 log4j.appender.F.Threshold = DEBUG 
 log4j.appender.F.layout = org.apache.log4j.PatternLayout
 log4j.appender.F.layout.ConversionPattern =[%d{yyyy-MM-dd HH:mm:ss}][应用名][部署服务器][%p][%m]%n
