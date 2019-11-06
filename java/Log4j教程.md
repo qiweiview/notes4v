@@ -1,4 +1,4 @@
-# Log4j使用
+# Log4j教程
 
 ## 依赖
 ```
@@ -48,4 +48,28 @@ public class AppTest {
     }
 }
 
+```
+
+## 代码配置
+```
+ /*控制台部分*/
+        ConsoleAppender console = new ConsoleAppender(); //create appender
+
+        console.setLayout(new PatternLayout("[%d{yyyy-MM-dd HH:mm:ss}][%p][%m]%n"));
+        console.setThreshold(Level.DEBUG);
+        console.activateOptions();
+        //add appender to any Logger (here is root)
+        Logger.getRootLogger().addAppender(console);
+
+
+        /*文件部分*/
+        DailyRollingFileAppender fa = new DailyRollingFileAppender();
+        fa.setName("FileLogger");
+        fa.setFile(logPath + File.separator + "log.log");
+        fa.setDatePattern("yyyy-MM-dd'_backup'");
+        fa.setLayout(new PatternLayout("[%d{yyyy-MM-dd HH:mm:ss}][%p][%m]%n"));
+        fa.setThreshold(Level.INFO);
+        fa.setAppend(true);
+        fa.activateOptions();
+        Logger.getRootLogger().addAppender(fa);
 ```
