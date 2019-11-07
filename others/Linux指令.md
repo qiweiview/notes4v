@@ -56,3 +56,9 @@ ps auxw|head -1;ps auxw|sort -rn -k3|head -10
 ```
 dd if=/dev/zero of=test1 bs=1M count=1000
 ```
+
+## 获取当前时间
+```
+time=$(date "+%Y-%m-%d %H:%M:%S")
+echo time
+```
