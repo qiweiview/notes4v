@@ -1,6 +1,67 @@
 # Dubbo教程
 
 
+## 泛化
+* provider
+```
+ @Bean
+    public ServiceConfig getServiceConfig(){
+        GenericService xxxService  = new GenericServiceImpl();
+
+        ServiceConfig<GenericService> service = new ServiceConfig<>();
+        service.setApplication(getApplicationConfig());
+        service.setRegistry(getRegistryConfig()); // 多个注册中心可以用setRegistries()
+        service.setProtocol(getProtocolConfig()); // 多个协议可以用setProtocols()
+        service.setInterface("com.xxx.XxxService");//泛化的话调用类全部指向这个，是个虚类
+        service.setRef(xxxService );//实际指向类引用
+        service.setVersion("1");//版本
+        service.export();
+
+        return service;
+
+    }
+```
+
+```
+public class GenericServiceImpl implements GenericService {
+    @Override
+    public Object $invoke(String s, String[] strings, Object[] objects) throws GenericException {
+        System.out.println("method"+s);
+        System.out.println(Arrays.toString(strings));
+        System.out.println(Arrays.toString(objects));
+        return "welcome";
+
+    }
+}
+```
+
+* consumer
+```
+  // 普通编码配置方式
+        ApplicationConfig application = new ApplicationConfig();
+        application.setName("generic-consumer");
+
+        // 连接注册中心配置
+        RegistryConfig registry = new RegistryConfig();
+        registry.setAddress("zookeeper://127.0.0.1:2181");
+
+        ReferenceConfig<GenericService> reference = new ReferenceConfig<GenericService>();
+        reference.setApplication(application);
+        reference.setRegistry(registry);
+        reference.setVersion("1");//版本也要一样
+        reference.setInterface("com.xxx.XxxService");//要与提供者名字一样
+        reference.setGeneric(true); // 声明为泛化接口
+
+        ReferenceConfigCache cache = ReferenceConfigCache.getCache();
+        GenericService genericService = cache.get(reference);
+
+        // 基本类型以及Date,List,Map等不需要转换，直接调用
+        Object resultObj = genericService.$invoke("getUserInfo", new String[] {"java.lang.Integer", "java.lang.String"},
+                new Object[] {1, "guoxi.li"});
+        removeClassFeild(resultObj);
+        System.out.println(resultObj);
+```
+
 ## 踩坑
 * 使用apache的包，不然会有奇奇怪怪的问题
 * 暴露的接口和实现中如果申明为public 的方法，那么就不能是void，否则会报compile error: getPropertyValue (Ljava/lang/Object;Ljava/lang/String;)
