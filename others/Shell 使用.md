@@ -1,6 +1,6 @@
 # Shell 使用.md
 
-### 范例
+## 范例
 * 读取外部文件，循环，判断
 ```
 if [ ! -f "$1" ]; then
@@ -28,4 +28,15 @@ log4j.appender.F.layout.ConversionPattern =[%d{yyyy-MM-dd HH:mm:ss}]["$project_n
 
         done <"$1"
 fi
+```
+
+## 根据名字返回端口
+```
+if [ ! -n "$1" ]; then
+                echo "缺少参数,正确调用方式logfile.sh [datafile]"
+        else
+                port=$(ps -ef | grep $1 | grep -v grep | cut -c 9-15 | xargs)
+                echo $port
+fi
+
 ```
