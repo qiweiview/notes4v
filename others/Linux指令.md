@@ -62,3 +62,8 @@ dd if=/dev/zero of=test1 bs=1M count=1000
 time=$(date "+%Y-%m-%d %H:%M:%S")
 echo time
 ```
+
+## 管道操作
+```
+ps -ef | grep tqsdyyewzdn | grep -v grep | cut -c 9-15 | xargs
+```
