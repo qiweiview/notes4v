@@ -31,12 +31,15 @@ fi
 ```
 
 ## 根据名字返回端口
+* 并调用java
 ```
 if [ ! -n "$1" ]; then
                 echo "缺少参数,正确调用方式logfile.sh [datafile]"
         else
                 port=$(ps -ef | grep $1 | grep -v grep | cut -c 9-15 | xargs)
-                echo $port
+                $(javac XmlProducer.java)
+                command="java XmlProducer $port"
+                eval $command
 fi
 
 ```
