@@ -30,7 +30,7 @@ log4j.appender.F.layout.ConversionPattern =[%d{yyyy-MM-dd HH:mm:ss}]["$project_n
 fi
 ```
 
-## 根据名字返回端口
+## 根据名字返回PID
 * 并调用java
 ```
 if [ ! -n "$1" ]; then
