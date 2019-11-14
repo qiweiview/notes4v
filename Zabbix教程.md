@@ -82,6 +82,15 @@ UnsafeUserParameters=1
 
 ## 客户端
 ```
-#安装 example.rpm 包并在安装过程中显示正在安装的文件信息及安装进度
+# 安装 example.rpm 包并在安装过程中显示正在安装的文件信息及安装进度
 rpm -ivh example.rpm 
+
+# 修改配置
+vim /etc/zabbix/zabbix_agentd.conf
+
+EnableRemoteCommands=1
+Server=192.168.216.136
+ServerActive=192.168.216.136
+Hostname=zabbix 135
+UnsafeUserParameters=1
 ```
