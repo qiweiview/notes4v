@@ -1,9 +1,11 @@
 # Zabbix教程
 
+# Ubuntu
+
 ## 安装Zabbix Server
 * [ubuntu安装](https://www.zabbix.com/download?zabbix=4.4&os_distribution=ubuntu&os_version=18.04_bionic&db=mysql)
 
-## 服务端
+
 
 ### a. Install Zabbix repository
 documentation
@@ -71,4 +73,15 @@ UnsafeUserParameters=1
 # service zabbix-agent start
 ```
 
+# Centos
 
+## 服务端
+```
+跑离线包
+```
+
+## 客户端
+```
+#安装 example.rpm 包并在安装过程中显示正在安装的文件信息及安装进度
+rpm -ivh example.rpm 
+```
