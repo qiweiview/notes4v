@@ -20,3 +20,8 @@ ip add
 
 
 [相关材料](https://blog.csdn.net/jasonhector/article/details/78657532)
+
+## ifconfig command not found
+```
+yum install net-tools
+```
