@@ -34,7 +34,7 @@ fi
 ```
 crontab -e
 
-0 0 * * * /home/linrui/XXXXXXXX.sh
+0 0 * * * /home/linrui/XXXXXXXX.sh > /dev/null 2>&1
 ```
 
 
