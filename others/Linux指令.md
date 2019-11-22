@@ -65,5 +65,5 @@ echo time
 
 ## 管道操作
 ```
-ps -ef | grep tqsdyyewzdn | grep -v grep | cut -c 9-15 | xargs
+ps -ef | grep tqsdyyewzdn | grep -v grep | cut -c 9-15 | xargs kill -s 9
 ```
