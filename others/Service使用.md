@@ -9,3 +9,34 @@ service httpd start 等价 /etc/rc.d/init.d/httpd  start
 
 service httpd stop 等价 /etc/rc.d/init.d/httpd  stop
 ```
+
+## 脚本范例
+```
+case "$1" in
+start)
+   echo start
+   ;;
+stop)
+   echo stop
+   ;;
+restart)
+   echo restart
+   ;;
+
+*)
+
+echo "Usage: start|stop|restart"
+
+exit 1
+
+;;
+
+
+
+esac
+
+
+
+exit 0
+
+```
