@@ -20,7 +20,7 @@
 ### 解压，目录结构
 ![](https://i.loli.net/2019/09/04/BtGgQ1ELFXhZx4A.png)
 
-### 修改系统参数
+### 可能出现问题
 ```
 [1]: max file descriptors [65535] for elasticsearch process is too low, increase to at least [65536]
 [2]: max virtual memory areas vm.max_map_count [65530] is too low, increase to at least [262144]
@@ -50,6 +50,16 @@ sudo vi /etc/security/limits.conf
 * soft nproc 2048
 
 * hard nproc 4096
+```
+
+### 单机运行配置
+```
+cluster.name: my-application
+node.name: node-1
+network.host: 0.0.0.0
+http.port: 9200
+discovery.seed_hosts: ["127.0.0.1", "[::1]"]
+cluster.initial_master_nodes: ["node-1"]
 ```
 
 ### 运行es
