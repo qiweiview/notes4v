@@ -3,7 +3,7 @@
 ## service xxxx does not support chkconfig
 * 在脚本的开头添加下面两行即可：
 ```
-#chkconfig: - 85 15
+#chkconfig: 2345 85 60
 #description: nginx is a World Wide Web server. It is used to serve
 ```
 
