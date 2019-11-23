@@ -1,4 +1,4 @@
-# Elastic Stack搭建文档
+# Elastic Stack(ELK)搭建文档
 
 * Logstash和Elasticsearch以及Kibana处于Elastic Stack的中心，不需要每个业务系统都进行部署
 * Beat(我们使用的是FileBeat)作为日志的采集者，采集并发送日志给logstash服务器。需要在每个业务系统部署，并配置指向日志文件输出路径
@@ -77,6 +77,61 @@ nohup /bin/elasticsearch &
 ```
 
 
+### 服务
+```
+#processname: elasticsearch-7.3.1
+
+ES_HOME=/home/es/elasticsearch-7.3.1
+
+case "$1" in
+status)
+   length=`ps -ef | grep elasticsearch-7.3.1/lib | grep -v grep | cut -c 9-15 | wc -L`
+   if [ "$length" -gt "0" ];then
+    pid=`ps -ef | grep elasticsearch-7.3.1/lib | grep -v grep | cut -c 9-15`
+    echo -e "\033[32m elasticsearch is active with pid $pid ----->  \033[0m"
+   else
+    echo -e "\033[31m elasticsearch is not active  \033[0m"
+   fi 
+   ;;
+start)
+   length=`ps -ef | grep elasticsearch-7.3.1/lib | grep -v grep | cut -c 9-15 | wc -L`
+   if [ "$length" -gt "0" ];then
+    echo "elasticsearch already running..."
+    pid=`ps -ef | grep elasticsearch-7.3.1/lib | grep -v grep | cut -c 9-15`
+    echo "the pid is $pid"
+   else
+    su - es  -c "$ES_HOME/bin/elasticsearch -d"
+    echo "elasticsearch start..."
+   fi
+   ;;
+stop)
+   stop=`ps -ef | grep elasticsearch-7.3.1/lib | grep -v grep | cut -c 9-15 | wc -L`
+   if [ "$stop" -gt "0" ];then
+    ps -ef | grep  elasticsearch-7.3.1/lib | grep -v grep | cut -c 9-15 | xargs kill -s 9
+    echo "elasticsearch stop..."
+   else
+    echo "elasticsearch is not running..."
+   fi
+   ;; 
+
+*)
+
+echo "Usage: start|stop|restart|status"
+
+exit 1
+
+;;
+
+ 
+
+esac
+
+ 
+
+exit 0 
+
+
+```
 
 ### 测试运行成功
 * 默认占用9200端口,访问localhost:9200，类似相应即运行成功
@@ -149,9 +204,65 @@ output {
 ### 后台运行logstash
 * --config.reload.automatic 参数申明配置热加载
 ```
-nohup ./bin/logstash -f ./config/first-pipeline.conf --config.reload.automatic &
+nohup ./bin/logstash -f ./config/first-pipeline.conf --config.reload.automatic >/dev/null 2>&1  &
 ```
 
+### 服务
+```
+#processname: elasticsearch-7.3.1
+
+LOGSTASH_HOME=/home/es/logstash-7.3.1
+
+case "$1" in
+status)
+   length=`ps -ef | grep logstash-7.3.1 | grep -v grep | cut -c 9-15 | wc -L`
+   if [ "$length" -gt "0" ];then
+    pid=`ps -ef | grep logstash-7.3.1 | grep -v grep | cut -c 9-15`
+    echo -e "\033[32m logstash is active with pid $pid ----->  \033[0m"
+   else
+    echo -e "\033[31m logstash is not active  \033[0m"
+   fi 
+   ;;
+start)
+   length=`ps -ef | grep logstash-7.3.1 | grep -v grep | cut -c 9-15 | wc -L`
+   if [ "$length" -gt "0" ];then
+    echo "logstash already running..."
+    pid=`ps -ef | grep logstash-7.3.1 | grep -v grep | cut -c 9-15`
+    echo "the pid is $pid"
+   else
+    su - es  -c "nohup $LOGSTASH_HOME/bin/logstash -f $LOGSTASH_HOME/config/default-pipeline.conf --config.reload.automatic >/dev/null 2>&1 &"
+    #su - es  -c "nohup $LOGSTASH_HOME/bin/logstash -f $LOGSTASH_HOME/config/default-pipeline.conf --config.reload.automatic >/home/es/lll &"
+    echo "logstash start..."
+   fi
+   ;;
+stop)
+   stop=`ps -ef | grep logstash-7.3.1 | grep -v grep | cut -c 9-15 | wc -L`
+   if [ "$stop" -gt "0" ];then
+    ps -ef | grep logstash-7.3.1 | grep -v grep | cut -c 9-15 | xargs kill -s 9
+    echo "logstash stop..."
+   else
+    echo "logstash is not running..."
+   fi
+   ;; 
+
+*)
+
+echo "Usage: start|stop|restart|status"
+
+exit 1
+
+;;
+
+ 
+
+esac
+
+ 
+
+exit 0 
+
+
+```
 
 
 ## Kibana搭建
@@ -164,7 +275,7 @@ nohup ./bin/logstash -f ./config/first-pipeline.conf --config.reload.automatic &
 
 ### 运行
 ```
-/bin/kibana
+nohup ./bin/kibana >/dev/null 2>&1  &
 ```
 
 
