@@ -78,6 +78,7 @@ nohup /bin/elasticsearch &
 
 
 ### 服务
+* service
 ```
 #processname: elasticsearch-7.3.1
 
@@ -131,6 +132,20 @@ esac
 exit 0 
 
 
+```
+
+* systemctl
+```
+[Unit]
+Description=elasticsearch
+[Service]
+User=elasticsearch
+LimitNOFILE=100000
+LimitNPROC=100000
+Environment="JAVA_HOME=/usr/local/jdk/jdk1.8.0_231"
+ExecStart=/usr/local/elk/elasticsearch-7.3.1/bin/elasticsearch
+[Install]
+WantedBy=multi-user.target
 ```
 
 ### 测试运行成功
@@ -208,6 +223,7 @@ nohup ./bin/logstash -f ./config/first-pipeline.conf --config.reload.automatic >
 ```
 
 ### 服务
+* service
 ```
 #processname: elasticsearch-7.3.1
 
@@ -264,6 +280,19 @@ exit 0
 
 ```
 
+* systemctl
+```
+[Unit]
+Description=logstash
+[Service]
+User=elasticsearch
+Environment="JAVA_HOME=/usr/local/jdk/jdk1.8.0_231"
+ExecStart=/usr/local/elk/logstash-7.3.1/bin/logstash -f /usr/local/elk/logstash-7.3.1/conf/df.con  --config.reload.automatic
+LimitNOFILE=100000
+LimitNPROC=100000
+[Install]
+WantedBy=multi-user.target
+```
 
 ## Kibana搭建
 ### [下载对应版本](https://www.elastic.co/cn/downloads/kibana)
@@ -278,6 +307,19 @@ exit 0
 nohup ./bin/kibana >/dev/null 2>&1  &
 ```
 
+### 服务
+* systemctl
+```
+[Unit]
+Description=kibana
+[Service]
+User=elasticsearch
+ExecStart=/usr/local/elk/kibana-7.3.1-linux-x86_64/bin/kibana
+LimitNOFILE=100000
+LimitNPROC=100000
+[Install]
+WantedBy=multi-user.target
+```
 
 
 ## Filebeat搭建
