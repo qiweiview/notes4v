@@ -1,5 +1,9 @@
 # Zabbix教程
 
+## 自动发现
+* 设置自动发现规则
+* 设置自动发现动作
+
 # Ubuntu
 
 ## 安装Zabbix Server
@@ -94,3 +98,5 @@ ServerActive=192.168.216.136
 Hostname=zabbix 135
 UnsafeUserParameters=1
 ```
+
+
