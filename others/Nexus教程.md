@@ -22,6 +22,14 @@ ip:8081
 
 * maven setting.xml
 ```
+  <servers> 
+     <server>
+      <id>Nexus Repository</id>
+      <username>xxx</username>
+      <password>xxx</password>
+    </server>
+  </servers> 
+
     <mirror>
       <id>nexus</id>
       <mirrorOf>*</mirrorOf>
@@ -44,6 +52,12 @@ ip:8081
 
 * 构建者pom.xml
 ```
+    <groupId>com.qw607</groupId>
+    <artifactId>xxx</artifactId>
+    <version>1.0.1-SNAPSHOT</version>
+    <!-- -SNAPSHOT则会创建快照版本 -->
+    
+    
 <!-- 构建插件 -->
  <build>
         <plugins>
@@ -88,15 +102,15 @@ ip:8081
     </build>
     
     
- <!-- 配置上私服地址, 前面带上用户名密码, 目的是可以通过 mvn deploy 命令直接发布上传 -->
+ <!-- 配置上私服地址, 前面带上用户名密码, 目的是可以通过 mvn deploy 命令直接发布上传，id对应setting文件中server的id,否则会401密码错误 -->
     <distributionManagement>
         <repository>
             <id>Nexus Repository</id>
-            <url>http://view:123@114.67.111.177:8081/repository/maven-releases/</url>
+            <url>http://114.67.111.177:8081/repository/maven-releases/</url>
         </repository>
         <snapshotRepository>
             <id>Nexus Repository</id>
-            <url>http://view:123@114.67.111.177:8081/repository/maven-snapshots/</url>
+            <url>http://114.67.111.177:8081/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 ```
