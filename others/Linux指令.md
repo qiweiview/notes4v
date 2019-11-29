@@ -67,3 +67,9 @@ echo time
 ```
 ps -ef | grep tqsdyyewzdn | grep -v grep | cut -c 9-15 | xargs kill -s 9
 ```
+
+## 后台运行不带日志
+```
+nohup xxx >/dev/null 2>&1  &
+
+```
