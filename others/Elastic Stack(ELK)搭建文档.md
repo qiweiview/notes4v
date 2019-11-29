@@ -22,11 +22,12 @@
 
 ### 可能出现问题
 #### 一
+* 问题
 ```
 [1]: max file descriptors [65535] for elasticsearch process is too low, increase to at least [65536]
 [2]: max virtual memory areas vm.max_map_count [65530] is too low, increase to at least [262144]
 ```
-
+* 解决
 ```
 sudo vi /etc/sysctl.conf
 
@@ -53,18 +54,21 @@ sudo vi /etc/security/limits.conf
 * hard nproc 4096
 ```
 #### 二
+* 问题
 ```
 [1]: max number of threads [1024] for user [weblogic] is too low, increase to at least [4096]
 ```
-
+* 解决
 ```
 This can be done by setting ulimit -u 4096 as root before starting Elasticsearch, or by setting nproc to 4096 in /etc/security/limits.conf.
 ```
 #### 三
+* 问题
 ```
 [2]: system call filters failed to install; check the logs and fix your configuration or disable system call filters at your own risk
 ```
-* 在elasticsearch.yml中配置
+* 解决
+在elasticsearch.yml中配置
 ```
 bootstrap.memory_lock: false
 bootstrap.system_call_filter: false
