@@ -52,6 +52,23 @@ sudo vi /etc/security/limits.conf
 * hard nproc 4096
 ```
 
+```
+[1]: max number of threads [1024] for user [weblogic] is too low, increase to at least [4096]
+```
+
+```
+This can be done by setting ulimit -u 4096 as root before starting Elasticsearch, or by setting nproc to 4096 in /etc/security/limits.conf.
+```
+
+```
+[2]: system call filters failed to install; check the logs and fix your configuration or disable system call filters at your own risk
+```
+* 在elasticsearch.yml中配置
+```
+bootstrap.memory_lock: false
+bootstrap.system_call_filter: false
+```
+
 ### 单机运行配置
 ```
 cluster.name: my-application
