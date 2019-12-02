@@ -66,3 +66,9 @@ Started SonarQube.
 #如果未完成启动可以使用console命令查看启动过程中的问题
 sh $SONAR_HOME/bin/linux-x86-64/sonar.sh console
 ```
+
+## 使用
+* 项目目录下运行
+```
+mvn sonar:sonar  -Dsonar.host.url=http://10.16.0.102:9000  -Dsonar.login=352d356b92aa96ab7d9ba7096c666a87a7b457ce
+```
