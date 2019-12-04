@@ -18,6 +18,10 @@ docker system prune -a 清除缓存
 docker rmi $(docker images -q)
 删除没启动的containers
 docker rm $(docker ps -a -q)
+
+
+查看固定行数日志
+docker logs --tail 500
 ```
 
 
