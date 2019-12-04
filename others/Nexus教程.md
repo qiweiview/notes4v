@@ -32,7 +32,7 @@ ip:8081
 
     <mirror>
       <id>nexus</id>
-      <mirrorOf>*</mirrorOf>
+      <mirrorOf>*</mirrorOf><!-- 所有的jar都会从这个仓库里找，最好是在项目中设置私有仓库 -->
       <url>http://114.67.111.177:8081/repository/maven-public/</url>
      </mirror>
 ```
