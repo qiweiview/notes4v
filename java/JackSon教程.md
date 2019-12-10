@@ -9,6 +9,27 @@
         </dependency>
 ```
 
+## 序列化LocalDateTime
+```
+ @JsonSerialize(using = NativeLocalDateTimeSerializer.class)
+    private LocalDateTime createDate;
+```
+
+```
+public class NativeLocalDateTimeSerializer extends StdSerializer<LocalDateTime> {
+
+
+    protected NativeLocalDateTimeSerializer() {
+        super(LocalDateTime.class);
+    }
+
+    @Override
+    public void serialize(LocalDateTime localDateTime, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+        jsonGenerator.writeString(localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+    }
+}
+
+```
 
 ## 字符串转对象
 ```
@@ -32,4 +53,5 @@ ObjectMapper objectMapper = new ObjectMapper();
 Car car = new Car("yellow", "renault");
 objectMapper.writeValue(new File("target/car.json"), car);
 ```
+
 
