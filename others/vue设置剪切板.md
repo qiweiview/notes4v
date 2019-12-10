@@ -1,5 +1,6 @@
 # vue设置剪切板.md
 
+[文档](https://github.com/Inndy/vue-clipboard2)
 
 ## 依赖
 ```
