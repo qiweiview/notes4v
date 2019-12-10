@@ -1,6 +1,6 @@
 # vue综合
 
-标准格式
+## 标准格式
 ```
   var vm = new Vue({
         el: '#vue_det',
@@ -17,4 +17,9 @@
             }
         }
     })
+```
+
+## click传入对象
+```
+<el-button @click="copyPost(scope.row,$event)">复制</el-button>
 ```
