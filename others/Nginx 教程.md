@@ -1,6 +1,6 @@
 # Nginx教程
 
-
+* 如果有几个匹配的location块，nginx将选择具有最长前缀来匹配location块
 
 ## 前后端分离部署方案
 ```
@@ -46,56 +46,34 @@ http {
 ```
 
 
-## nginx二级域名反向代理
+## nginx二级域名转发
 ```
-server {  
-    listen 80;
-    server_name 12328.test.com;
+location / {
+            #root   html;
+            #index  index.html index.htm;
+            
+            #处理二级域名fund.cmbchina.com转发
+            if ($http_host ~* "^(.*?)\.qw607\.com$") {    #正则表达式
+                set $domain $1;                     #设置变量
+            }
+            if ($domain ~* "fund") {
+               proxy_pass http://192.168.1.22:88;      #域名中有fund，转发到88端口
+            }
+            
+            #if ($domain ~* "cms") {
+            #   proxy_pass http://192.168.1.22:99;      #域名中有cms，转发到9090端口
+            #}
 
-    location / {
-        proxy_set_header   X-Real-IP $remote_addr;
-        proxy_set_header   Host      $http_host;
-        proxy_pass         http://127.0.0.1;
-    }
-}
-    server {  
-    listen 80;
-    server_name test.com;
 
-    location / {
-        proxy_set_header   X-Real-IP $remote_addr;
-        proxy_set_header   Host      $http_host;
-        proxy_pass         http://weibo.com;
-    }
-}
-
- ```
-如果有几个匹配的location块，nginx将选择具有最长前缀来匹配location块。 上面的location块提供最短的前缀长度为1，因此只有当所有其他location块不能提供匹配时，才会使用该块。
- 
- 它将是以/images/(位置/也匹配这样的请求，但具有较短前缀，也就是“/images/”比“/”长)的请求来匹配。
- 
- 这已经是一个在标准端口80上侦听并且可以在本地机器上访问的服务器( http://localhost/ )的工作配置。 响应以/images/开头的URI的请求，服务器将从/data/images目录发送文件。 例如，响应http://localhost/images/logo.png请求，nginx将发送服务上的/data/images/logo.png文件。 如果文件不存在，nginx将发送一个指示404错误的响应。 不以/images/开头的URI的请求将映射到/data/www目录。 例如，响应http://localhost/about/example.html请求时，nginx将发送/data/www/about/example.html文件。
- ```
- location ~ \.(gif|jpg|png)$ {
-    root /data/images;
-}
+            proxy_set_header Host            $host;
+            proxy_set_header X-Real-IP       $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            #将代理服务器收到的用户的真实IP信息传给后端服务器
+            
+            #默认转发(不符合上文if条件的，默认转发至以下)
+            proxy_pass http://localhost:8090/cmbwww/;
+        }
 ```
-该参数是一个正则表达式，匹配所有以.gif，.jpg或.png结尾的URI。正则表达式之前应该是~字符。 相应的请求将映射到/data/images目录。
- 
- 
- ### nginx代理配置
- ```
- server {
-    location / {
-        proxy_pass http://localhost:8080/;
-    }
-
-    location ~ \.(gif|jpg|png)$ {
-        root /data/images;
-    }
-}
-```
-此服务器将过滤以.gif，.jpg或.png结尾的请求，并将它们映射到/data/images目录(通过向root指令的参数添加URI)，并将所有其他请求传递到上面配置的代理服务器。
 
 
 ## nginx转发默认忽略带下划线的头
