@@ -1,5 +1,36 @@
 # Nginx教程
 
+
+
+## 前后端分离部署方案
+```
+ upstream back{
+    server 127.0.0.1:8081;
+    }
+```
+```
+location / {
+            root   html;
+            index  index.html index.htm;
+        }
+		
+		location ^~ /server-api/{
+            proxy_pass http://back/;
+            proxy_send_timeout 1800;
+            proxy_read_timeout 1800;
+            proxy_connect_timeout 1800;
+            client_max_body_size 2048m;
+            proxy_http_version 1.1;  
+            proxy_set_header Upgrade $http_upgrade;  
+            proxy_set_header Connection "Upgrade"; 
+            proxy_set_header  Host              $http_host;   # required for docker client's sake
+            proxy_set_header  X-Real-IP         $remote_addr; # pass on real client's IP
+            proxy_set_header  X-Forwarded-For   $proxy_add_x_forwarded_for;
+            proxy_set_header  X-Forwarded-Proto $scheme;
+        }
+```
+
+
 ## nginx基本配置
 ```
 http {
