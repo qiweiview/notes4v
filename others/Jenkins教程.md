@@ -97,7 +97,15 @@ sudo docker system prune -f
 ```
 
 
-
+## Windows 部署linux解决方案
+* [pscp](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html)
+* [plink](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html)
+```
+# 复制
+E:\pscp\pscp.exe -p -r -v -pw wdwdwd   E:\DataPool\codeAppCach\JENKINS_HOME\workspace\jarvis_back\target\jarvis-0.0.1-SNAPSHOT.jar  ubuntu@49.235.223.216:/home/jarvis/back/app.jar
+# 执行指令
+E:\plink\plink.exe   -pw wdwdwd ubuntu@49.235.223.216 "sudo /home/jarvis/dockerCompose -f /home/jarvis/docker-compose.yml  restart"
+```
 
 
 
