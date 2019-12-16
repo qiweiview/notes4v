@@ -39,6 +39,15 @@ LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 ```
 
+## LocalDateTime转时间戳
+```
+
+//获取秒数
+Long second = LocalDateTime.now().toEpochSecond(ZoneOffset.of("+8"));
+//获取毫秒数
+Long milliSecond = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
+```
+
 ## 时间戳转LocalDateTime
 ```
 long second = Long.parseLong(exp);
