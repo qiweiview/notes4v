@@ -2,6 +2,33 @@
 
 * 如果有几个匹配的location块，nginx将选择具有最长前缀来匹配location块
 
+
+## 配置重定向
+```
+server {
+    rewrite 规则 定向路径 重写类型;
+}
+规则：可以是字符串或者正则来表示想匹配的目标url
+定向路径：表示匹配到规则后要定向的路径，如果规则里有正则，则可以使用$index来表示正则里的捕获分组
+重写类型：
+last ：相当于Apache里德(L)标记，表示完成rewrite，浏览器地址栏URL地址不变
+break；本条规则匹配完成后，终止匹配，不再匹配后面的规则，浏览器地址栏URL地址不变
+redirect：返回302临时重定向，浏览器地址会显示跳转后的URL地址
+permanent：返回301永久重定向，浏览器地址栏会显示跳转后的URL地址
+
+
+# 根地址重定向
+rewrite / /index/index.html
+# 访问 /last.html 的时候，页面内容重写到 /index.html 中
+rewrite /last.html /index.html last;
+# 访问 /break.html 的时候，页面内容重写到 /index.html 中，并停止后续的匹配
+rewrite /break.html /index.html break;
+# 访问 /redirect.html 的时候，页面直接302定向到 /index.html中
+rewrite /redirect.html /index.html redirect;
+# 访问 /permanent.html 的时候，页面直接301定向到 /index.html中
+rewrite /permanent.html /index.html permanent;
+
+```
 ## 前后端分离部署方案
 ```
  upstream back{
