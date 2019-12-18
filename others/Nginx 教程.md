@@ -19,15 +19,18 @@ permanent：返回301永久重定向，浏览器地址栏会显示跳转后的UR
 
 # 根地址重定向
 rewrite / /index/index.html
+
 # 访问 /last.html 的时候，页面内容重写到 /index.html 中
 rewrite /last.html /index.html last;
+
 # 访问 /break.html 的时候，页面内容重写到 /index.html 中，并停止后续的匹配
 rewrite /break.html /index.html break;
+
 # 访问 /redirect.html 的时候，页面直接302定向到 /index.html中
 rewrite /redirect.html /index.html redirect;
+
 # 访问 /permanent.html 的时候，页面直接301定向到 /index.html中
 rewrite /permanent.html /index.html permanent;
-
 ```
 ## 前后端分离部署方案
 ```
