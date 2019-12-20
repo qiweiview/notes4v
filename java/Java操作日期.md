@@ -12,6 +12,30 @@ JDK 1.8后
 LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 ```
 
+## Calendar获取年月日
+```
+Calendar now = Calendar.getInstance();
+		System.out.println("年: " + now.get(Calendar.YEAR));
+		System.out.println("月: " + (now.get(Calendar.MONTH) + 1) + "");
+		System.out.println("日: " + now.get(Calendar.DAY_OF_MONTH));
+		System.out.println("时: " + now.get(Calendar.HOUR_OF_DAY));
+		System.out.println("分: " + now.get(Calendar.MINUTE));
+		System.out.println("秒: " + now.get(Calendar.SECOND));
+		System.out.println("当前时间毫秒数：" + now.getTimeInMillis());
+```
+
+## Calendar转化为Date
+```
+    Calendar cal=Calendar.getInstance();  
+    Date date=cal.getTime();  
+```      
+ ## Date转化为Calendar  
+ ```
+    Date date=new Date();  
+    Calendar cal=Calendar.getInstance();  
+    cal.setTime(date);  
+```
+
 ### 获取Date类型明天和昨天
 ```
  /**
