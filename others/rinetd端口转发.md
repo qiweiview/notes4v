@@ -2,7 +2,7 @@
 
 
 ## 安装
-[下载地址](https://pkgs.org/)
+[下载地址](https://pkgs.org/download/rinetd)
 ```
  rpm  -ivh  rinetd-0.62-9.el7.nux.x86_64.rpm
 ```
