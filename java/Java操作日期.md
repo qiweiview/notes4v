@@ -12,6 +12,17 @@ JDK 1.8后
 LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 ```
 
+## 字符串转Calendar
+```
+SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            Date date = df.parse(dateTime);
+            Calendar cal=Calendar.getInstance();
+            cal.setTime(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+```
 ## Calendar获取年月日
 ```
 Calendar now = Calendar.getInstance();
