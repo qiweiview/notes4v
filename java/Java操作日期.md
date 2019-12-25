@@ -12,6 +12,25 @@ JDK 1.8后
 LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 ```
 
+## 区间内时间
+```
+ public  static List<String> getTimeInterval(String start,String end){
+        List<String> list=new ArrayList<>();
+        Date s = str2Date(start);
+        Calendar sc = Calendar.getInstance();
+        sc.setTime(s);
+        Date e = str2Date(end);
+        Calendar ec = Calendar.getInstance();
+        ec.setTime(e);
+        while (sc.before(ec)){
+            sc.set(Calendar.DAY_OF_MONTH, sc.get(Calendar.DAY_OF_MONTH) + 1);
+            String format = df.format(sc.getTime());
+            list.add(format);
+        }
+        return list;
+    }
+```
+
 ## 字符串转Calendar
 ```
 SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
