@@ -1,5 +1,34 @@
 # Mybatis教程
 
+## 纯java配置
+```
+ public static DataSource getDataSource() {
+        Properties properties = new Properties();
+        properties.setProperty("driver", "com.mysql.jdbc.Driver");
+        properties.setProperty("url", "jdbc:mysql://172.28.2.80:3307/xxx?roundRobinLoadBalance=true&autoReconnect=true&useUnicode=true&characterEncoding=UTF-8");
+        properties.setProperty("username", "xxx");
+        properties.setProperty("password", "xxx");
+        PooledDataSourceFactory pooledDataSourceFactory = new PooledDataSourceFactory();
+        pooledDataSourceFactory.setProperties(properties);
+        DataSource dataSource = pooledDataSourceFactory.getDataSource();
+        return dataSource;
+    }
+    public static SqlSessionFactory getSqlSessionFactoryBySqlSessionFactoryBean() throws Exception {
+        SqlSessionFactoryBean factoryBean = new SqlSessionFactoryBean();
+        factoryBean.setDataSource(getDataSource());
+        SqlSessionFactory object = factoryBean.getObject();
+        return object;
+    }
+
+    public static void main(String[] args) throws Exception {
+        SqlSessionFactory sqlSessionFactoryBySqlSessionFactoryBean = getSqlSessionFactoryBySqlSessionFactoryBean();
+        Configuration configuration = sqlSessionFactoryBySqlSessionFactoryBean.getConfiguration();
+        configuration.addMappers("com.zoewin.zephyr.paymentplatform.timer.dao");
+        SqlSession sqlSession = sqlSessionFactoryBySqlSessionFactoryBean.openSession();
+        TestMapper mapper = sqlSession.getMapper(TestMapper.class);
+    }
+```
+
 ## 从 XML 中构建 SqlSessionFactory
 
 读取配置文件
