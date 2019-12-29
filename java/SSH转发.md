@@ -1,6 +1,13 @@
-# ssh转发
+# SSH转发
 
-
+## 依赖
+```
+<dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <version>0.1.55</version>
+        </dependency>
+```
 ## 实体
 ```
 public class SSHForward {
