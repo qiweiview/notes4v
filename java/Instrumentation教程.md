@@ -1,7 +1,9 @@
 # Instrumentation教程
 
 
-## [参考](https://www.ibm.com/developerworks/cn/java/j-lo-jse61/index.html)
+## [参考1](https://www.ibm.com/developerworks/cn/java/j-lo-jse61/index.html)
+## [参考2](https://zhuanlan.zhihu.com/p/51909016)
+
 
 ## jdk5代理客户端
 
