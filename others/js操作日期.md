@@ -37,9 +37,10 @@ formatDate:function(value){
 			if(s<10){s='0'+s;}
 			const t=Y+"-"+m+"-"+d+' '+H+":"+i+":"+s;
 			return t;
-		}1
+		}
+```
 
 调用：
-(这里是俩中括号^-^)formatDate(xxx)}}
-
+```
+{{formatDate(xxx)}}
 ```
