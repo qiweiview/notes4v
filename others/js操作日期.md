@@ -22,22 +22,34 @@ var resultDates=parseInt(Math.abs(date2-date1)/1000/60/60);
 ```
 vue.js
 时间戳转日期
-formatDate:function(value){
-			const date=new Date(value);
-			Y=date.getFullYear(),
-			m=date.getMonth()+1,
-			d=date.getDate(),
-			H=date.getHours(),
-			i=date.getMinutes(),
-			s=date.getSeconds();
-			if(m<10){m='0'+m;}
-			if(d<10){d='0'+d;}
-			if(H<10){H='0'+H;}
-			if(i<10){i='0'+i;}
-			if(s<10){s='0'+s;}
-			const t=Y+"-"+m+"-"+d+' '+H+":"+i+":"+s;
-			return t;
-		}
+		
+		
+formatDate(value) {
+      const date=new Date(value);
+      const Y = date.getFullYear()
+      const m = date.getMonth() + 1
+      const d = date.getDate()
+      const H = date.getHours()
+      const i = date.getMinutes()
+      const s = date.getSeconds()
+      if (m < 10) {
+        m = '0' + m
+      }
+      if (d < 10) {
+        d = '0' + d
+      }
+      if (H < 10) {
+        H = '0' + H
+      }
+      if (i < 10) {
+        i = '0' + i
+      }
+      if (s < 10) {
+        s = '0' + s
+      }
+      const t = Y + '-' + m + '-' + d + ' ' + H + ':' + i + ':' + s
+      return t
+    }		
 ```
 
 调用：
