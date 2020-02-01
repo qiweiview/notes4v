@@ -24,6 +24,46 @@
     }
 ```
 
+* 主线程通过c++本地方法唤醒
+```
+void JavaThread::run() {
+  ...
+  thread_main_inner();
+}
+
+void JavaThread::thread_main_inner() {
+  ...
+  this->exit(false);
+  delete this;
+}
+
+void JavaThread::exit(bool destroy_vm, ExitType exit_type) {
+  ...
+  // Notify waiters on thread object. This has to be done after exit() is called
+  // on the thread (if the thread is the last thread in a daemon ThreadGroup the
+  // group should have the destroyed bit set before waiters are notified).
+  ensure_join(this);
+  ...
+}
+
+static void ensure_join(JavaThread* thread) {
+  // We do not need to grap the Threads_lock, since we are operating on ourself.
+  Handle threadObj(thread, thread->threadObj());
+  assert(threadObj.not_null(), "java thread object must exist");
+  ObjectLocker lock(threadObj, thread);
+  // Ignore pending exception (ThreadDeath), since we are exiting anyway
+  thread->clear_pending_exception();
+  // Thread is exiting. So set thread_status field in  java.lang.Thread class to TERMINATED.
+  java_lang_Thread::set_thread_status(threadObj(), java_lang_Thread::TERMINATED);
+  // Clear the native thread instance - this makes isAlive return false and allows the join()
+  // to complete once we've done the notify_all below
+  java_lang_Thread::set_thread(threadObj(), NULL);
+  lock.notify_all(thread);//这个位置唤醒了所有线程
+  // Ignore pending exception (ThreadDeath), since we are exiting anyway
+  thread->clear_pending_exception();
+}
+```
+
 ## 线程锁
 
 ### 范例一
