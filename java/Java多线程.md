@@ -23,44 +23,6 @@
         }
     }
 ```
-* 线程结束时
-```
-private void exit() {
-        if (threadLocals != null && TerminatingThreadLocal.REGISTRY.isPresent()) {
-            TerminatingThreadLocal.threadTerminated();
-        }
-        if (group != null) {
-            group.threadTerminated(this);
-            group = null;
-        }
-        /* Aggressively null out all reference fields: see bug 4006245 */
-        target = null;
-        /* Speed the release of some of these resources */
-        threadLocals = null;
-        inheritableThreadLocals = null;
-        inheritedAccessControlContext = null;
-        blocker = null;
-        uncaughtExceptionHandler = null;
-    }
-```
-
-* 唤醒位置
-```
-void threadTerminated(Thread t) {
-        synchronized (this) {
-            remove(t);
-
-            if (nthreads == 0) {
-                notifyAll();//唤醒所有阻塞线程
-            }
-            if (daemon && (nthreads == 0) &&
-                (nUnstartedThreads == 0) && (ngroups == 0))
-            {
-                destroy();
-            }
-        }
-    }
-```
 
 ## 线程锁
 
