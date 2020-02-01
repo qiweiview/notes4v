@@ -1,4 +1,29 @@
 # Java多线程
+
+
+## Thread.join()
+```
+ public final synchronized void join(final long millis)
+    throws InterruptedException {
+        if (millis > 0) {
+            if (isAlive()) {
+                final long startTime = System.nanoTime();
+                long delay = millis;
+                do {
+                    wait(delay);
+                } while (isAlive() && (delay = millis -
+                        TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime)) > 0);
+            }
+        } else if (millis == 0) {
+            while (isAlive()) {//isAlive判断的是子线程的状态
+                wait(0);//wait调用的是父线程的等待，即父线程放弃锁并等待
+            }
+        } else {
+            throw new IllegalArgumentException("timeout value is negative");
+        }
+    }
+```
+
 ## 线程锁
 
 ### 范例一
