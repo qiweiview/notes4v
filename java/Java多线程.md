@@ -1,5 +1,48 @@
 # Java多线程
 
+## Exchanger
+```
+private final Exchanger<List> exchanger = new Exchanger();
+
+
+        new Thread(()->{
+            //todo 生产
+            while (true){
+                try {
+                    List<Integer> list=new ArrayList<>();
+                    for(int i=0;i<3;i++){
+                        list.add(i);
+                        System.out.println(Thread.currentThread().getName()+":生产->"+i);
+                        DebugUtils.sleep(1);
+                    }
+                    Object exchange = exchanger.exchange(list);
+                    System.out.println(Thread.currentThread().getName() + ":交换完毕-->" + exchange);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }).start();
+        new Thread(()->{
+            //todo 消费
+            while (true) {
+                try {
+                    List exchange = exchanger.exchange(null);
+                    System.out.println(Thread.currentThread().getName() + ":交换完毕-->" + exchange);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+        synchronized (this){
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+   
+```
 
 ## Thread.join()
 ```
