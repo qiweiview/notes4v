@@ -73,3 +73,8 @@ ps -ef | grep tqsdyyewzdn | grep -v grep | cut -c 9-15 | xargs kill -s 9
 nohup xxx >/dev/null 2>&1  &
 
 ```
+
+## 磁盘大小排行
+```
+du -s * | sort -nr | head
+```
