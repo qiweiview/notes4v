@@ -20,6 +20,27 @@ void execute(JobExecutionContext context)
 * Trigger 代表一个调度参数的配置，什么时候去调。（一个JobDetail可以有多个Trigger，但是一个Trigger只能对应一个JobDetail）
 * Scheduler 代表一个调度容器，一个调度容器中可以注册多个 JobDetail 和 Trigger。当 Trigger 与 JobDetail 组合，就可以被 Scheduler 容器调度了。
 
+
+## 类
+### JobDetailImpl
+```
+public class JobDetailImpl implements Cloneable, Serializable, JobDetail {
+    private static final long serialVersionUID = -6069784757781506897L;
+    private String name;
+    private String group;
+    private String description;
+    private Class<? extends Job> jobClass;
+    private JobDataMap jobDataMap;
+    private boolean durability;
+    private boolean shouldRecover;
+    private transient JobKey key;
+```
+* job和trigger中都包含JobDataMap,可以通过JobExecutionContext方法获取混合的
+```
+JobDataMap mergedJobDataMap = context.getMergedJobDataMap();
+```
+
+
 ## 范例：运行一个job对应一个trigger
 ```
 // 1. 创建 SchedulerFactory
