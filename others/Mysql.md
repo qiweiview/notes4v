@@ -1,5 +1,11 @@
 ## Mysql内容
 
+
+
+## 字符串转日期 
+```
+SELECT STR_TO_DATE('2017-01-06 10:20:30','%Y-%m-%d %H:%i:%s') AS result;
+```
 ### 创建数据库指定编码
 ```
 CREATE DATABASE `mydb` CHARACTER SET utf8 COLLATE utf8_general_ci;
