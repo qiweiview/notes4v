@@ -297,7 +297,31 @@ ExecutorService executor = Executors.newCachedThreadPool();
         }
 ```
 
+```
+public class MyFutureTask extends FutureTask {
+    public MyFutureTask(Callable callable) {
+        super(callable);
+    }
 
+    @Override
+    protected void done() {
+        System.out.println("任务完成");
+        if (!isCancelled()){
+            try {
+                Object o = get();
+                System.out.println(o);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        super.done();
+    }
+}
+```
 
 
 ## Runnable接口方式
