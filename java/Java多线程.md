@@ -66,28 +66,12 @@ private final Exchanger<List> exchanger = new Exchanger();
 ```
 
 ## Thread.join()
-```
- public final synchronized void join(final long millis)
-    throws InterruptedException {
-        if (millis > 0) {
-            if (isAlive()) {
-                final long startTime = System.nanoTime();
-                long delay = millis;
-                do {
-                    wait(delay);
-                } while (isAlive() && (delay = millis -
-                        TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime)) > 0);
-            }
-        } else if (millis == 0) {
-            while (isAlive()) {//isAlive判断的是子线程的状态
-                wait(0);//wait调用的是父线程的等待，即父线程放弃锁并等待
-            }
-        } else {
-            throw new IllegalArgumentException("timeout value is negative");
-        }
-    }
-```
-* 将会按顺序输出
+
+
+### A,B两线程运行，B线程中调用A.join()，则B线程会在A线程执行完后执行
+* A.join()会暂停当前执行线程,导致B线程被暂停
+* 在A线程结束后，本地方法会唤醒所有本对象（A对象）所暂停的线程，所以B线程被唤醒了
+* demo如下，代码将会按顺序输出
 ```
 public static void main(String[] args) {
         Thread t = new Thread(() -> {
@@ -112,6 +96,30 @@ public static void main(String[] args) {
         System.out.println("im t3");
     }
 ```
+
+### 源码
+```
+ public final synchronized void join(final long millis)
+    throws InterruptedException {
+        if (millis > 0) {
+            if (isAlive()) {
+                final long startTime = System.nanoTime();
+                long delay = millis;
+                do {
+                    wait(delay);
+                } while (isAlive() && (delay = millis -
+                        TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime)) > 0);
+            }
+        } else if (millis == 0) {
+            while (isAlive()) {//isAlive判断的是子线程的状态
+                wait(0);//wait调用的是父线程的等待，即父线程放弃锁并等待
+            }
+        } else {
+            throw new IllegalArgumentException("timeout value is negative");
+        }
+    }
+```
+
 
 * 主线程通过c++本地方法唤醒
 ```
