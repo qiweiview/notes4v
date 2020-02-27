@@ -1,5 +1,26 @@
 # Java多线程
 
+## 用户线程和守护线程
+* JVM会在只剩下守护线程的时候关闭，如果不存在守护线程，只有用户线程未完成，那么就会一直阻塞
+```
+   public static void main(String[] args) {
+        Thread t = new Thread(() -> {
+            Thread thread = Thread.currentThread();
+            synchronized (thread){
+                try {
+                    thread.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        });
+       // t.setDaemon(true);
+        t.start();
+
+    }
+```
+
 ## Exchanger
 ```
 private final Exchanger<List> exchanger = new Exchanger();
