@@ -87,10 +87,11 @@ private final Exchanger<List> exchanger = new Exchanger();
         }
     }
 ```
+* 将会按顺序输出
 ```
 public static void main(String[] args) {
         Thread t = new Thread(() -> {
-            System.out.println("im t");
+            System.out.println("im t1");
         });
         Thread t2 = new Thread(() -> {
             try {
@@ -103,6 +104,12 @@ public static void main(String[] args) {
         });
         t2.start();
         t.start();
+        try {
+            t2.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("im t3");
     }
 ```
 
