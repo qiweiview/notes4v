@@ -87,6 +87,24 @@ private final Exchanger<List> exchanger = new Exchanger();
         }
     }
 ```
+```
+public static void main(String[] args) {
+        Thread t = new Thread(() -> {
+            System.out.println("im t");
+        });
+        Thread t2 = new Thread(() -> {
+            try {
+                t.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("im t2");
+
+        });
+        t2.start();
+        t.start();
+    }
+```
 
 * 主线程通过c++本地方法唤醒
 ```
