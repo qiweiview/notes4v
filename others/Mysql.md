@@ -3,14 +3,11 @@
 
 ## 生成日期参照表
 ```
-DROP TABLE
-IF
-	EXISTS num;
 	
-	
+-- 数字表（使用后删除）
 CREATE TABLE num ( i INT );
 
-
+-- 插入数字
 INSERT INTO num ( i )
 VALUES
 	( 0 ),
@@ -24,18 +21,16 @@ VALUES
 	( 8 ),
 	( 9 );
 	
+
 	
-DROP TABLE
-IF
-	EXISTS xc_calendar;
+-- 时间模板表	
+CREATE TABLE  date_model ( date datetime,time_stamp int(15),index (date),index (time_stamp));
 	
-	
-CREATE TABLE
-IF
-	NOT EXISTS date_model ( date datetime,time_stamp int(15),index (date),index (time_stamp));
-	
-	
-INSERT INTO date_model ( DAY ) SELECT
+-- 插入	
+INSERT INTO date_model ( date,time_stamp ) 
+select date.date date,ROUND(UNIX_TIMESTAMP(date.date),0) time_stamp
+from (
+SELECT
 ADDDATE( ( DATE_FORMAT( '2017-01-01 00:00:00', '%Y-%m-%d 00:00:00' ) ), numlist.id ) AS `date` 
 FROM
 	(
@@ -46,7 +41,11 @@ FROM
 		CROSS JOIN num AS n10
 		CROSS JOIN num AS n100
 	CROSS JOIN num AS n1000 
-	) AS numlist;
+	) AS numlist) as date
+	where date<'2038-01-20 00:00:00'
+	
+	
+	
 ```
 
 ## 字符串转日期 
