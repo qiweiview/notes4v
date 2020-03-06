@@ -2,6 +2,8 @@
 
 
 ## 生成日期参照表
+
+* 生成参照表
 ```
 	
 -- 数字表（使用后删除）
@@ -47,6 +49,36 @@ FROM
 	
 	
 ```
+* 使用范例
+```
+SELECT
+	a.date,
+	IFNULL( b.count, 0 ) count 
+FROM
+	(
+	SELECT
+		CAST( date AS DATE ) date 
+	FROM
+		date_model 
+	WHERE
+		date >= DATE_SUB( curdate( ), INTERVAL 7 DAY ) 
+		AND date <= curdate( ) 
+	) a
+	LEFT JOIN (
+	SELECT
+		count( * ) count,
+		CAST( updateDate AS DATE ) date 
+	FROM
+		unfinished_task 
+	WHERE
+		updateUser = 'view' 
+	GROUP BY
+		CAST( updateDate AS DATE ) 
+	) b ON a.date = b.date 
+ORDER BY
+	a.date
+```
+
 
 ## 字符串转日期 
 ```
