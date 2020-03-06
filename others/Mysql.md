@@ -1,6 +1,53 @@
 ## Mysql内容
 
 
+## 生成日期参照表
+```
+DROP TABLE
+IF
+	EXISTS num;
+	
+	
+CREATE TABLE num ( i INT );
+
+
+INSERT INTO num ( i )
+VALUES
+	( 0 ),
+	( 1 ),
+	( 2 ),
+	( 3 ),
+	( 4 ),
+	( 5 ),
+	( 6 ),
+	( 7 ),
+	( 8 ),
+	( 9 );
+	
+	
+DROP TABLE
+IF
+	EXISTS xc_calendar;
+	
+	
+CREATE TABLE
+IF
+	NOT EXISTS date_model ( DAY DATETIME );
+	
+	
+INSERT INTO date_model ( DAY ) SELECT
+ADDDATE( ( DATE_FORMAT( '2017-01-01 00:00:00', '%Y-%m-%d 00:00:00' ) ), numlist.id ) AS `date` 
+FROM
+	(
+	SELECT
+		n1.i + n10.i * 10 + n100.i * 100 + n1000.i * 1000 AS id 
+	FROM
+		num n1
+		CROSS JOIN num AS n10
+		CROSS JOIN num AS n100
+	CROSS JOIN num AS n1000 
+	) AS numlist;
+```
 
 ## 字符串转日期 
 ```
