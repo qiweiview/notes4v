@@ -32,7 +32,7 @@ IF
 	
 CREATE TABLE
 IF
-	NOT EXISTS date_model ( DAY DATETIME );
+	NOT EXISTS date_model ( date datetime,time_stamp int(15),index (date),index (time_stamp));
 	
 	
 INSERT INTO date_model ( DAY ) SELECT
