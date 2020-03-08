@@ -5,6 +5,7 @@
 
 * ![](https://i.stack.imgur.com/VQ5XP.png)
 
+###  mysql 没有 full join
 
 
 ## 生成日期参照表
