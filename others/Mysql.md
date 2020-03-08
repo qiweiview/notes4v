@@ -1,5 +1,11 @@
 ## Mysql内容
 
+## 表拼接
+
+
+* ![](https://i.stack.imgur.com/VQ5XP.png)
+
+
 
 ## 生成日期参照表
 
