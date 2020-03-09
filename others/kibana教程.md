@@ -4,6 +4,9 @@
 
 * nginx.conf
 ```
+# rewrite ^/kibana/(.*)$ /$1 break; 这句很重要
+
+
 location /kibana {
 rewrite ^/kibana/(.*)$ /$1 break;
 proxy_pass http://localhost:5601/;
