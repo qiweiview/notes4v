@@ -229,6 +229,10 @@ upstream tomcats {
          location / {
             proxy_pass http://tomcats;
         }
+
+}
+
+}
     
 ```
 
