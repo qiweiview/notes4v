@@ -1,6 +1,45 @@
 # Nginx教程
 
-* 如果有几个匹配的location块，nginx将选择具有最长前缀来匹配location块
+## nginx upload module
+* [下载nginx](http://nginx.org/download/nginx-1.17.9.tar.gz)
+* [下载nginx upload module](http://www.grid.net.ru/nginx/download/nginx_upload_module-2.2.0.tar.gz)
+```
+./configure --add-module=../nginx_upload_module-2.2.0 --with-cc-opt="-Wno-error"
+make
+make install 
+```
+
+* 编译异常
+```
+./configure --with-cc-opt="-Wno-error"
+```
+
+* 配置文件
+```
+ location /test {
+              proxy_pass http://qw607.com;
+         }
+
+        location = /upload {
+
+    upload_store_access all:rw;
+    upload_pass /test?path=$upload_tmp_path&name=$upload_file_name; #//表示Nginx接收完上传的文件后，然后交给后端处理的地址
+    upload_cleanup 400 404 499 500-505; #//表示当发生这些http status代码的情况下，会把上传的文件删除
+    upload_store /home/view/nginx/file_dir 1; #//上传模块接收到的文件临时存放的路径， 1 表示方式，该方式是需要在/tmp/upload_tmp下创建以0到9为目录名称的目录，上传时候会进行一个散列
+处理。
+    #upload_store_access user:r; #//指定访问模式
+    #upload_limit_rate 128k; #//设定上传速度上限
+    upload_set_form_field "${upload_field_name}_name" $upload_file_name; #//设定后续脚本语言访问的变量，其中${upload_field_name}对照本例子就是addfile。比如后台PHP就可以通过$_POST['addfile_name']来获取上传文件的名称。
+    upload_set_form_field "${upload_field_name}_content_type" $upload_content_type; #//同上
+    upload_set_form_field "${upload_field_name}_path" $upload_tmp_path;  #//由于在upload_store设置了临时文件存放根路径，该路径就是经过散裂后上传文件存在真实路径，比如后续处理可以>根据这值把上传文件拷贝或者移动到指定的目录下。
+    upload_pass_form_field "^.*$"; #//
+    #upload_pass_args on; #// 打开开关，意思就是把前端脚本请求的参数会传给后端的脚本语言，比如：http://192.168.1.203:7100/upload/?k=23.PHP脚本可以通过$_POST['k']来访问。
+}
+
+```
+
+* 要在  /home/view/nginx/file_dir目录创10个文件夹给hash
+## 如果有几个匹配的location块，nginx将选择具有最长前缀来匹配location块
 
 
 ## 配置重定向
