@@ -4,12 +4,7 @@
 * 防火墙规则要开
 * 测试时遇到ufw规则开了依然连不上
 ```
-java 
--Dcom.sun.management.jmxremote.port=8088
--Dcom.sun.management.jmxremote.authenticate=false 
--Dcom.sun.management.jmxremote.ssl=false 
--Djava.rmi.server.hostname=114.67.111.177 
-Run
+java -Dcom.sun.management.jmxremote.port=8088 -Dcom.sun.management.jmxremote.rmi.port=8088 -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=114.67.111.177 Run
 ```
 
 ## 类
