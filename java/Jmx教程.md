@@ -8,6 +8,31 @@
 java -Dcom.sun.management.jmxremote.port=8088 -Dcom.sun.management.jmxremote.rmi.port=8088 -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=114.67.111.177 Run
 ```
 
+* 常用列表
+``` 
+-Dcom.sun.management.jmxremote.port=8088 
+-Dcom.sun.management.jmxremote.rmi.port=8088 
+-Dcom.sun.management.jmxremote.authenticate=false  
+-Dcom.sun.management.jmxremote.ssl=false 
+-Djava.rmi.server.hostname=114.67.111.177 
+-Dcom.sun.management.jmxremote.access.file=Path_to_access_file/jmxremote.access
+-Dcom.sun.management.jmxremote.password.file=Path_to_password_file/jmxremote.password
+```
+
+## 密码文件
+* jmxremote.access
+```
+monitorRoleUser   readonly
+controlRoleUser   readwrite 
+```
+
+* jmxremote.password
+```
+monitorRoleUser password1
+controlRoleUser password2
+```
+
+
 ## 类
 * MBean
 * 运行主类
