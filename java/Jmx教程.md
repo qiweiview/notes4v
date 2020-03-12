@@ -1,6 +1,8 @@
-# jmx教程
+# Jmx教程
 
 ## 远程运行指令
+* 防火墙规则要开
+* 测试时遇到ufw规则开了依然连不上
 ```
 java 
 -Dcom.sun.management.jmxremote.port=8088
