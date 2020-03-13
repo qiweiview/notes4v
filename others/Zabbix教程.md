@@ -1,6 +1,12 @@
 # Zabbix教程
 
 ## JMX配置
+
+### 安装java-gateway
+```
+apt-get install zabbix-java-gateway
+```
+
 ### 配置java-gateway服务
 ```
 egrep -v '#|^$' /etc/zabbix/zabbix_java_gateway.conf
