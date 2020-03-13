@@ -86,6 +86,9 @@ Start Zabbix server and agent processes and make it start at system boot:
 Now your Zabbix server is up and running!
 
 ## 安装Client
+### 文件安装优先
+[下载](https://www.zabbix.com/download_agents)
+
 ### 运行以下命令以安装 Zabbix agent ：
 ```
 # apt install zabbix-agent
