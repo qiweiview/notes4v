@@ -18,7 +18,7 @@ then
     -Dcom.sun.management.jmxremote.rmi.port=8088
     -Dcom.sun.management.jmxremote.authenticate=false
     -Dcom.sun.management.jmxremote.ssl=false
-    -Djava.rmi.server.hostname=114.67.111.177
+    -Djava.rmi.server.hostname=111.111.111.111
     org.apache.zookeeper.server.quorum.QuorumPeerMain"
 
 ```
