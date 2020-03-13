@@ -4,6 +4,7 @@
 * 防火墙规则要开
 * -Dcom.sun.management.jmxremote.port 和 Dcom.sun.management.jmxremote.rmi.port 都要指定，否则使用其他端口，防火墙没开的话连不上。
 * 连接不上，检查进程pid占用的端口有没有开
+* -Djava.rmi.server.hostname=114.67.111.177要绑定，不能是0.0.0.0不然会一直断掉连不上
 ```
 java -Dcom.sun.management.jmxremote.port=8088 -Dcom.sun.management.jmxremote.rmi.port=8088 -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=114.67.111.177 Run
 ```
