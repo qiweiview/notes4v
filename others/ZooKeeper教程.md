@@ -1,4 +1,11 @@
 
+# ZooKeeper教程
+
+## 启动
+```
+/bin/zkServer.sh start
+```
+
 ## 依赖
 官方jar包：zookeeper-3.5.4-beta.jar
 
