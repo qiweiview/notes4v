@@ -1,5 +1,31 @@
 # Zabbix教程
 
+## JMX配置
+### 配置java-gateway服务
+```
+egrep -v '#|^$' /etc/zabbix/zabbix_java_gateway.conf
+LISTEN_IP="0.0.0.0"
+LISTEN_PORT=10052
+PID_FILE="/var/run/zabbix/zabbix_java.pid"
+START_POLLERS=5
+TIMEOUT=3
+systemctl start zabbix-java-gateway
+systemctl enable zabbix-java-gateway
+```
+### 修改zabbix server配置
+* 添加以下三行，这里配置的StartJavaPollers值要小于之前java_gateway中的START_POLLERS
+```
+tail -n 3 /etc/zabbix/zabbix_server.conf 
+JavaGateway=127.0.0.1
+JavaGatewayPort=10052     
+StartJavaPollers=3
+```
+
+* 修改zabbix_server.conf后重启服务
+```
+systemctl restart zabbix-server
+```
+
 ## 自动发现
 * 设置自动发现规则
 * 设置自动发现动作
