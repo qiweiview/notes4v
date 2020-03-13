@@ -1,6 +1,22 @@
 # kafka教程
 
+## jmx接入
+* 修改kafka-run-class.sh 
+* 顶部增加JMX_PORT=port
+```
+# JMX settings
+if [ -z "$KAFKA_JMX_OPTS" ]; then
+  KAFKA_JMX_OPTS="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false "
+fi
 
+# JMX port to use
+if [  $JMX_PORT ]; then
+  KAFKA_JMX_OPTS="$KAFKA_JMX_OPTS -Dcom.sun.management.jmxremote.port=$JMX_PORT  -Dcom.sun.management.jmxremote.rmi.port=$JMX_PORT -Djava.rmi.server.hostname=111.111.111.111"
+fi
+
+```
+
+## 介绍
 * Apache Kafka是一个分布式发布 - 订阅消息系统和一个强大的队列
 * Kafka消息保留在磁盘上，并在群集内复制以防止数据丢失
 * Kafka 设计中将每一个主题分区当作一个具有顺序排列的日志。同处于一个分区中的消息都被设置了一个唯一的偏移量。Kafka 只会保持跟踪未读消息，一旦消息被置为已读状态，Kafka 就不会再去管理它了
