@@ -74,6 +74,30 @@ rewrite /redirect.html /index.html redirect;
 # 访问 /permanent.html 的时候，页面直接301定向到 /index.html中
 rewrite /permanent.html /index.html permanent;
 ```
+
+## 配置文件概述
+```
+worker_process      # 表示工作进程的数量，一般设置为cpu的核数
+
+worker_connections  # 表示每个工作进程的最大连接数
+
+server{}            # 块定义了虚拟主机
+
+    listen          # 监听端口
+
+    server_name     # 监听域名
+
+    location {}     # 是用来为匹配的 URI 进行配置，URI 即语法中的“/uri/”
+
+    location /{}    # 匹配任何查询，因为所有请求都以 / 开头
+
+        root        # 指定对应uri的资源查找路径，这里html为相对路径，完整路径为
+                    # /opt/nginx-1.7.7/html/
+
+        index       # 指定首页index文件的名称，可以配置多个，以空格分开。如有多
+                    # 个，按配置顺序查找。
+```
+
 ## 前后端分离部署方案
 ```
  upstream back{
