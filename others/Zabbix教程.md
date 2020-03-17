@@ -1,5 +1,153 @@
 # Zabbix教程
 
+## Centos6.9安装
+
+### 引导zabbix3.4的yum源
+```
+rpm -ivh http://repo.zabbix.com/zabbix/3.4/rhel/6/x86_64/zabbix-release-3.4-1.el6.noarch.rpm
+```
+
+###  安装php5.6和Apache服务
+```
+# rpm -ivh http://repo.webtatic.com/yum/el6/latest.rpm
+```
+
+* 安装下面所有的包：
+```
+yum -y install httpd php56w php56w-gd php56w-mysqlnd php56w-bcmath php56w-mbstring php56w-xml php56w-ldap
+```
+
+* 编辑php的ini文件（vim /etc/php.ini）并修改一下内容，注意date.timezone一定要写对，否则在配置完zabbix后，显示的界面全部报错
+```
+# vim /etc/php.ini
+
+post_max_size = 16M
+
+max_execution_time = 300
+
+max_input_time = 300
+
+date.timezone = Asia/Shanghai
+
+always_populate_raw_post_data = -1
+```
+
+* 配置/etc/httpd/conf/httpd.conf，修改以下内容
+```
+# vim /etc/httpd/conf/httpd.conf
+
+DocumentRoot "/var/www/html/zabbix"
+
+<Directory "/var/www/html/zabbix">
+
+ServerName 192.168.0.125
+
+DirectoryIndex index.html index.html.var index.php
+```
+
+* 创建zabbix用户和组
+```
+# groupadd zabbix
+
+# useradd -g zabbix zabbix
+```
+
+* 安装zabbix server:
+```
+# yum install zabbix zabbix-get zabbix-server zabbix-server-mysql zabbix-sender -y
+```
+* 安装zabbix web server:
+```
+# yum install zabbix-web zabbix-web-mysql -y
+```
+
+* 往数据库中导入一些数据
+```
+# zcat /usr/share/doc/zabbix-server-mysql-3.4.8/create.sql.gz | mysql -uzabbix -pzabbix zabbix
+```
+* 修改zabbix配置
+```
+# vim /etc/zabbix/zabbix_server.conf
+
+DBHost=192.168.0.125
+```
+* 设置数据库用户名和密码，可自己在数据库中设置用户和密码
+```
+DBUser=zabbix
+
+DBPassword=zabbix
+```
+* 复制zabbix到站点目录下
+```
+# \cp -R /usr/share/zabbix/ /var/www/html/
+```
+
+* 修改zabbix.conf.ph 文件
+```
+# cd /var/www/html/zabbix/
+
+# cp zabbix.conf.php.example zabbix.conf.php
+
+# vim zabbix.conf.php
+
+ 
+
+<?php
+
+// Zabbix GUI configuration file.
+
+global $DB, $HISTORY;
+
+ 
+
+$DB['TYPE']                             = 'MYSQL';
+
+$DB['SERVER']                   = '192.168.0.125';
+
+$DB['PORT']                             = '3306';
+
+$DB['DATABASE']                 = 'zabbix';
+
+$DB['USER']                             = 'zabbix';
+
+$DB['PASSWORD']                 = 'zabbix';
+
+// Schema name. Used for IBM DB2 and PostgreSQL.
+
+$DB['SCHEMA']                   = '';
+
+ 
+
+$ZBX_SERVER                             = '192.168.0.125';
+
+$ZBX_SERVER_PORT                = '10051';
+
+$ZBX_SERVER_NAME                = '';
+
+ 
+
+$IMAGE_FORMAT_DEFAULT   = IMAGE_FORMAT_PNG;
+```
+
+* 添加到系统服务
+```
+# chkconfig --add httpd
+
+# chkconfig --add /etc/init.d/zabbix-server
+```
+设置开机自启
+```
+# chkconfig httpd on
+
+# chkconfig zabbix-server on
+```
+* 启动服务
+```
+# service httpd start
+
+# service zabbix-server start
+```
+
 ## JMX配置
 
 ### 安装java-gateway
