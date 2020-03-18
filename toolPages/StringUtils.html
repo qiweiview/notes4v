@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>字符串工具</title>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="format-detection" content="telephone=no" />
+		<!-- import CSS -->
+		<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+	</head>
+	<body>
+		<div id="app">
+			<el-row :gutter="10">
+				<el-col :xs="7" :sm="7" :md="7" :lg="7" :xl="7" style="padding: 15px;">
+					<span style="font-size: 25px;">🤡仅保留{{historyLengthLimit}}条历史记录</span>
+					<el-table :data="historyData" style="width: 100%" max-height="800px">
+						<el-table-column label="历史记录">
+							<template slot-scope="scope">
+								<span>{{scope.row.inPutText}}</span>
+							</template>
+						</el-table-column>
+						<el-table-column label="操作" width="100">
+							<template slot-scope="scope">
+								<el-button size="mini" @click="loadHistry(scope.row)">读 取</el-button>
+								<!-- <el-button size="mini" type="danger" @click="deleteHistry(scope.row)">删 除</el-button> -->
+							</template>
+						</el-table-column>
+					</el-table>
+				</el-col>
+				<el-col :xs="10" :sm="10" :md="10" :lg="10" :xl="10" style="padding: 15px;">
+					<el-form ref="form" label-width="80px">
+						<el-form-item label="基础字符">
+							<el-input resize="none" type="textarea" :autosize="{ minRows: 8, maxRows: 15}" style="width: 80%;" v-model="inPutText"
+							 placeholder="请输入内容"></el-input>
+							<el-button size="mini" @click="reProduceData">生 成 👇</button>
+						</el-form-item>
+						<el-form-item>
+							<el-table :data="replaceTable" style="width: 100%">
+								<el-table-column label="键值">
+									<template slot-scope="scope">
+										<el-input placeholder="输入键值" v-model="scope.row.key" clearable>
+										</el-input>
+									</template>
+								</el-table-column>
+								<el-table-column label="替换值">
+									<template slot-scope="scope">
+										<el-input @keyup.native.enter="appendComma(scope.row)" @change="valueChange(scope.row)" placeholder="输入替换值"
+										 v-model="scope.row.value" clearable>
+										</el-input>
+									</template>
+								</el-table-column>
+								<el-table-column>
+									<template slot-scope="scope">
+										<el-button @click="deleteReplaceWord(scope.row)" type="danger" icon="el-icon-delete" circle></el-button>
+									</template>
+								</el-table-column>
+							</el-table>
+							<div style="text-align: center;margin-top: 15px;">
+								<el-button type="success" @click="addReplaceWord" icon="el-icon-plus" circle></el-button>
+							</div>
+						</el-form-item>
+						<el-form-item label="重复次数">
+							<el-checkbox v-model="repeatEnable">开启</el-checkbox>
+							<el-input-number v-model="repeatNum" @change="numChange" :min="1" :max="50" label="重复次数"></el-input-number>
+						</el-form-item>
+						<el-form-item label="输出">
+							<el-input resize="none" type="textarea" :autosize="{ minRows: 4, maxRows: 15}" placeholder="hi~" v-model="outPutText">
+						</el-form-item>
+					</el-form>
+				</el-col>
+				<el-col :xs="7" :sm="7" :md="7" :lg="7" :xl="7">
+					<el-row>
+						<el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+							<el-button style="margin-bottom: 5px;" size="mini" @click="doWordParse">👈解 析</el-button>
+						</el-col>
+						<el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24" style="margin-top: 5px;">
+							<el-input resize="none" type="textarea" :autosize="{ minRows: 15, maxRows: 20}" placeholder="比对文本一" v-model="parseText1">
+						</el-col>
+						<el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24" style="margin-top: 5px;">
+							<el-input resize="none" type="textarea" :autosize="{ minRows: 15, maxRows: 20}" placeholder="比对文本二" v-model="parseText2">
+						</el-col>
+					</el-row>
+
+
+
+				</el-col>
+			</el-row>
+
+			</el-input>
+		</div>
+	</body>
+	<!-- import Vue before Element -->
+	<script src="https://unpkg.com/vue/dist/vue.js"></script>
+	<!-- import JavaScript -->
+	<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+	<script src="https://unpkg.com/vue-cookies@1.5.12/vue-cookies.js"></script>
+	<script>
+		new Vue({
+			el: '#app',
+			data: function() {
+				return {
+					parseText1: "INSERT INTO USER (ID,NAME,PASS_WD,CITY) VALUES(1,'JERRY','777','厦门')",
+					parseText2: "INSERT INTO USER (ID,NAME,PASS_WD,CITY) VALUES(2,'TOM','123','厦门')",
+					inPutText: '你好#{name1},我是#{name2}',
+					outPutText: '',
+					repeatNum: 1,
+					repeatEnable: false,
+					replaceTable: [{
+							key: '#{name1}',
+							value: 'D1,D2,D3',
+							array: ['D1', 'D2', 'D3'],
+						},
+						{
+							key: '#{name2}',
+							value: 'A1,A2,A3',
+							array: ['A1', 'A2', 'A3']
+						}
+					],
+					historyData: [],
+					historyLengthLimit: 20,
+					printAllLCSTime: 0,
+					calculationLimit: 40 * 10000
+				}
+			},
+			mounted: function() {
+				this.$cookies.config(new Date(2222, 02, 02).toUTCString())
+				this.loadData();
+			},
+			methods: {
+				printAllLCS(dp, str1, str2, i, j) {
+					if (i == 0 || j == 0) {
+						return new Set([""])
+					} else if (str1[i - 1] == str2[j - 1]) {
+						var newSet = new Set()
+						if (this.printAllLCSTime++ > this.calculationLimit) { // cycle safe
+							this.$message.error('算法次数限制，强制返回结果')
+							return newSet
+						}
+						this.printAllLCS(dp, str1, str2, i - 1, j - 1).forEach(function(el) {
+							newSet.add(el + str1[i - 1])
+						})
+						return newSet
+					} else {
+						var set = new Set()
+						if (dp[i][j - 1] >= dp[i - 1][j]) {
+							if (this.printAllLCSTime++ > this.calculationLimit) { // cycle safe
+								this.$message.error('算法次数限制，强制返回结果')
+								return set
+							}
+							this.printAllLCS(dp, str1, str2, i, j - 1).forEach(function(el) {
+								if (el.endsWith('#{key}')) {
+									set.add(el)
+								} else {
+									set.add(el + '#{key}')
+								}
+
+							})
+						}
+						if (dp[i - 1][j] >= dp[i][j - 1]) {
+							if (this.printAllLCSTime++ > this.calculationLimit) { // cycle safe
+								this.$message.error('算法次数限制，强制返回结果')
+								return set
+							}
+							this.printAllLCS(dp, str1, str2, i - 1, j).forEach(function(el) {
+								if (el.endsWith('#{key}')) {
+									set.add(el)
+								} else {
+									set.add(el + '#{key}')
+
+								}
+							})
+						}
+						return set
+					}
+				},
+				LCS(str1, str2) {
+					var m = str1.length
+					var n = str2.length
+					var dp = [new Array(n + 1).fill(0)]
+					for (var i = 1; i <= m; i++) {
+						dp[i] = [0]
+						for (var j = 1; j <= n; j++) {
+							if (str1[i - 1] === str2[j - 1]) {
+								dp[i][j] = dp[i - 1][j - 1] + 1
+							} else {
+								dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1])
+							}
+						}
+					}
+					var s = this.printAllLCS(dp, str1, str2, m, n)
+					console.log(this.printAllLCSTime)
+					const first = s.values().next()
+					if (typeof(first.value) != 'undefined') {
+						return first.value
+					}
+				},
+				doWordParse() {
+					let rs = this.LCS(this.parseText1, this.parseText2)
+					let index = 1
+					const na = []
+					while (rs.indexOf('#{key}') != -1) {
+						const value = '#{key' + index + '}'
+						na.push({
+							key: value,
+							value: '',
+							array: [],
+						})
+						rs = rs.replace('#{key}', value)
+						index++
+						if (index > 50) {
+							//problem cycle 
+							break
+						}
+					}
+					this.inPutText = rs
+					this.replaceTable = na
+				},
+				appendComma(row) {
+					console.log(row.value)
+					if (!row.value.endsWith(',')) {
+						row.value = row.value + ','
+					}
+				},
+				loadData() {
+					const rs = $cookies.get("STORE_DATA")
+					if (rs != null) {
+						this.historyData = JSON.parse(rs)
+					} else {
+						console.log('no history')
+					}
+				},
+				saveToHistory() {
+					const his = {
+						inPutText: this.copyObject(this.inPutText),
+						replaceTable: this.copyObject(this.replaceTable)
+					}
+					if (this.historyData.length + 1 > this.historyLengthLimit) {
+						this.historyData = this.reduceHistory(this.historyData, this.historyLengthLimit)
+					}
+					this.historyData.push(his)
+					$cookies.set("STORE_DATA", JSON.stringify(this.historyData))
+				},
+				reduceHistory(array, limit) {
+					let statIndex = this.historyData.length - limit
+					const newA = []
+					let index = 0
+					array.forEach(x => {
+						if (index > statIndex) {
+							newA.push(x)
+						}
+						index++
+					})
+					return newA
+				},
+				copyObject(obj) {
+					return JSON.parse(JSON.stringify(obj))
+				},
+				loadHistry(row) {
+					this.inPutText = row.inPutText
+					this.replaceTable = row.replaceTable
+				},
+				// deleteHistry(row) {
+				// 	const na = []
+				// 	let find = true
+				// 	this.historyData.forEach(x => {
+				// 		if (x.inPutText === row.inPutText && find) {
+				// 			find = false
+				// 		} else {
+				// 			na.push(x)
+				// 		}
+				// 	})
+				// 	this.historyData = na
+				// 	//this.saveToHistory()
+				// },
+				valueChange(row) {
+					const array = row.value.split(',');
+					row.array = array
+				},
+				deleteReplaceWord(row) {
+					const na = []
+					let find = true
+					this.replaceTable.forEach(x => {
+						if (x.key === row.key && x.value === x.value && find) {
+							find = false
+						} else {
+							na.push(x)
+						}
+					})
+					this.replaceTable = na
+				},
+				addReplaceWord() {
+					this.replaceTable.push({
+						key: '',
+						value: '',
+						array: []
+					})
+				},
+				numChange(value) {
+					this.repeatNum = value
+					this.reProduceData()
+				},
+				reProduceData() {
+					let rs = ''
+					rs = this.doWordReplace(this.inPutText)
+					console.log(rs)
+					rs = this.doRepeat(rs)
+					this.outPutText = rs
+					this.saveToHistory()
+				},
+				doWordReplace(str) {
+					const baseModel = str
+					let max = 0
+					this.replaceTable.forEach(x => {
+						if (x.array.length > max) {
+							max = x.array.length
+						}
+					})
+					max = max - 1
+					let rs = ''
+					while (max > -1) {
+						str = baseModel
+						console.log('========================', max, '========================')
+						this.replaceTable.forEach(x => {
+							const key = x.key
+							let value = x.array[max]
+							if (typeof(value) === 'undefined') {
+								value = 'nil'
+							}
+							console.log(str, ':', key, '===>', value)
+							const regExp = new RegExp(key, "g");
+							str = str.replace(regExp, value);
+						})
+						console.log('结果：', str)
+						if (str === baseModel) {
+							str = baseModel
+						} else {
+							rs += str + '\n\r'
+						}
+						max--
+					}
+					if ('' === rs) {
+						rs = baseModel
+					}
+					return rs
+				},
+				doRepeat(str) {
+					if (!this.repeatEnable) {
+						return str
+					}
+					let rs = ''
+					let i = 0
+					while (i < this.repeatNum) {
+						rs += str + '\n'
+						i++
+					}
+					return rs
+				}
+			}
+		})
+	</script>
+</html>
