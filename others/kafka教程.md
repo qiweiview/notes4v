@@ -1,5 +1,13 @@
 # kafka教程
 
+## 允许远程连接
+```
+listeners=PLAINTEXT://:9092
+
+
+advertised.listeners=PLAINTEXT://114.67.111.177:9092
+```
+
 ## jmx接入
 * 修改kafka-run-class.sh 
 * 顶部增加JMX_PORT=port
