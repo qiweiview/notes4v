@@ -7,7 +7,7 @@ ALTER TABLE auth_company_profile ADD COLUMN medicalType VARCHAR(50) DEFAULT NULL
 ```
 
 ## 表拼接
-* ![](https://i.stack.imgur.com/VQ5XP.png)
+* ![图片](https://i.stack.imgur.com/VQ5XP.png)
 
 ###  mysql 没有 full join
 
