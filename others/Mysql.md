@@ -1,8 +1,12 @@
 ## Mysql内容
 
+## 添加表字段
+```
+ALTER TABLE auth_company_profile ADD COLUMN codeType VARCHAR(50) DEFAULT NULL COMMENT '结算码，电子凭证' ;
+ALTER TABLE auth_company_profile ADD COLUMN medicalType VARCHAR(50) DEFAULT NULL COMMENT '就医渠道(40药店，20住院，10门诊)';
+```
+
 ## 表拼接
-
-
 * ![](https://i.stack.imgur.com/VQ5XP.png)
 
 ###  mysql 没有 full join
