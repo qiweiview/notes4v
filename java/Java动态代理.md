@@ -54,6 +54,12 @@ public class MyInvocationHandler implements InvocationHandler {
 
 
 ### 源码解析
+
+* 设置debug模式输出代理类
+```
+System.getProperties().put("jdk.proxy.ProxyGenerator.saveGeneratedFiles", "true");
+```
+
 * newProxyInstance
 ```
 public static Object newProxyInstance(ClassLoader loader,
@@ -231,6 +237,8 @@ static byte[] generateProxyClass(final String name,
         return classFile;
     }
 ```
+
+
 
 ### 代理类结构
 ```
