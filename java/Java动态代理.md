@@ -80,6 +80,7 @@ public static Object newProxyInstance(ClassLoader loader,
     }
 ```
 * getProxyConstructor
+* 这里存在缓存
 ```
 private static Constructor<?> getProxyConstructor(Class<?> caller,
                                                       ClassLoader loader,
