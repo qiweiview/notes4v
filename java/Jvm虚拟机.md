@@ -40,6 +40,8 @@ package core.object_create;
 public class ObjectTest {
     private String name = "v2";
     public void add() {
+        double d1=20.12;
+        long l1=111l;
         int i10 = -1;
         int i0 = 5;
         int i1 = 6;
@@ -47,8 +49,11 @@ public class ObjectTest {
         int i3 = 32767;
         int i4 = 32768;
         int sum = i10 + i0 + i1 + i2 + i3+i4;
+        double sum2=d1+l1;
+        sum= (int) (sum2+111);
     }
 }
+
 ```
 ### 字节码
 ```
@@ -71,7 +76,7 @@ public class core/object_create/ObjectTest {
     LINENUMBER 4 L1
     ALOAD 0
     LDC "v2"
-    PUTFIELD core/object_create/ObjectTest.name : Ljava/lang/String; //为指定的类的实例域赋值
+    PUTFIELD core/object_create/ObjectTest.name : Ljava/lang/String;
     RETURN
    L2
     LOCALVARIABLE this Lcore/object_create/ObjectTest; L0 L2 0
@@ -82,56 +87,81 @@ public class core/object_create/ObjectTest {
   public add()V
    L0
     LINENUMBER 6 L0
-    ICONST_M1 //将int型-1推送至栈顶
-    ISTORE 1
+    LDC 20.12 //将int, float或String型常量值从常量池中推送至栈顶
+    DSTORE 1 //将栈顶double型数值存入指定本地变量,下标为1
    L1
     LINENUMBER 7 L1
-    ICONST_5 //将int型5推送至栈顶
-    ISTORE 2
+    LDC 111 //将int, float或String型常量值从常量池中推送至栈顶
+    LSTORE 3 //将栈顶long型数值存入指定本地变量,下标为3
    L2
     LINENUMBER 8 L2
-    BIPUSH 6
-    ISTORE 3
+    ICONST_M1 //将int型-1推送至栈顶
+    ISTORE 5 将栈顶int型数值存入指定本地变量,下标为5
    L3
     LINENUMBER 9 L3
-    BIPUSH 127 //将单字节的常量值(-128~127)推送至栈顶
-    ISTORE 4
+    ICONST_5 //将int型5推送至栈顶
+    ISTORE 6 //将栈顶int型数值存入指定本地变量,下标为6
    L4
     LINENUMBER 10 L4
-    SIPUSH 32767 //将一个短整型常量值(-32768~32767)推送至栈顶
-    ISTORE 5
+    BIPUSH 6 //将单字节的常量值(-128~127)推送至栈顶
+    ISTORE 7 //将栈顶int型数值存入指定本地变量,下标为7
    L5
     LINENUMBER 11 L5
-    LDC 32768 //将int, float或String型常量值从常量池中推送至栈顶
-    ISTORE 6
+    BIPUSH 127 //将单字节的常量值(-128~127)推送至栈顶
+    ISTORE 8 //将栈顶int型数值存入指定本地变量,下标为8
    L6
     LINENUMBER 12 L6
-    ILOAD 1
-    ILOAD 2
-    IADD
-    ILOAD 3
-    IADD
-    ILOAD 4
-    IADD
-    ILOAD 5
-    IADD
-    ILOAD 6
-    IADD
-    ISTORE 7
+    SIPUSH 32767 //将一个短整型常量值(-32768~32767)推送至栈顶
+    ISTORE 9 //将栈顶int型数值存入指定本地变量,下标为9
    L7
     LINENUMBER 13 L7
-    RETURN
+    LDC 32768 //将int, float或String型常量值从常量池中推送至栈顶
+    ISTORE 10 //将栈顶int型数值存入指定本地变量,下标为10
    L8
-    LOCALVARIABLE this Lcore/object_create/ObjectTest; L0 L8 0
-    LOCALVARIABLE i10 I L1 L8 1
-    LOCALVARIABLE i0 I L2 L8 2
-    LOCALVARIABLE i1 I L3 L8 3
-    LOCALVARIABLE i2 I L4 L8 4
-    LOCALVARIABLE i3 I L5 L8 5
-    LOCALVARIABLE i4 I L6 L8 6
-    LOCALVARIABLE sum I L7 L8 7
-    MAXSTACK = 2
-    MAXLOCALS = 8
+    LINENUMBER 14 L8
+    ILOAD 5 //将指定的int型本地变量推送至栈顶
+    ILOAD 6
+    IADD //将栈顶两int型数值相加并将结果压入栈顶
+    ILOAD 7
+    IADD //将栈顶两int型数值相加并将结果压入栈顶
+    ILOAD 8
+    IADD //将栈顶两int型数值相加并将结果压入栈顶
+    ILOAD 9
+    IADD //将栈顶两int型数值相加并将结果压入栈顶
+    ILOAD 10
+    IADD //将栈顶两int型数值相加并将结果压入栈顶
+    ISTORE 11 //将栈顶int型数值存入指定本地变量,下标为11
+   L9
+    LINENUMBER 15 L9
+    DLOAD 1 //将指定的double型本地变量推送至栈顶
+    LLOAD 3 //将指定的long型本地变量推送至栈顶
+    L2D //将栈顶long型数值强制转换成double型数值并将结果压入栈顶
+    DADD //将栈顶两double型数值相加并将结果压入栈顶
+    DSTORE 12 //将栈顶double型数值存入指定本地变量,下标为12
+   L10
+    LINENUMBER 16 L10
+    DLOAD 12 //将指定的double型本地变量推送至栈顶
+    LDC 111.0 //将int, float或String型常量值从常量池中推送至栈顶
+    DADD //将栈顶两double型数值相加并将结果压入栈顶
+    D2I //将栈顶double型数值强制转换成int型数值并将结果压入栈顶
+    ISTORE 11 //将栈顶int型数值存入指定本地变量,下标为1
+   L11
+    LINENUMBER 17 L11
+    RETURN
+   L12
+    LOCALVARIABLE this Lcore/object_create/ObjectTest; L0 L12 0
+    LOCALVARIABLE d1 D L1 L12 1   //申明变量对应下标
+    LOCALVARIABLE l1 J L2 L12 3
+    LOCALVARIABLE i10 I L3 L12 5
+    LOCALVARIABLE i0 I L4 L12 6
+    LOCALVARIABLE i1 I L5 L12 7
+    LOCALVARIABLE i2 I L6 L12 8
+    LOCALVARIABLE i3 I L7 L12 9
+    LOCALVARIABLE i4 I L8 L12 10
+    LOCALVARIABLE sum I L9 L12 11
+    LOCALVARIABLE sum2 D L10 L12 12
+    MAXSTACK = 4
+    MAXLOCALS = 14
 }
 
 ```
