@@ -44,8 +44,9 @@ public class ObjectTest {
         int i0 = 5;
         int i1 = 6;
         int i2 = 127;
-        int i3 = 150;
-        int sum = i10 + i0 + i1 + i2 + i3;
+        int i3 = 32767;
+        int i4 = 32768;
+        int sum = i10 + i0 + i1 + i2 + i3+i4;
     }
 }
 ```
@@ -64,65 +65,73 @@ public class core/object_create/ObjectTest {
   public <init>()V
    L0
     LINENUMBER 3 L0
-    ALOAD 0 //将指定的引用类型本地变量推送至栈顶
-    INVOKESPECIAL java/lang/Object.<init> ()V //调用超类构造方法，实例初始化方法，私有方法
+    ALOAD 0
+    INVOKESPECIAL java/lang/Object.<init> ()V
    L1
     LINENUMBER 4 L1
     ALOAD 0
-    LDC "v2" //将int, float或String型常量值从常量池中推送至栈顶
+    LDC "v2"
     PUTFIELD core/object_create/ObjectTest.name : Ljava/lang/String; //为指定的类的实例域赋值
-    RETURN //从当前方法返回void
+    RETURN
    L2
     LOCALVARIABLE this Lcore/object_create/ObjectTest; L0 L2 0
-    MAXSTACK = 2 //代表了操作数栈（Operand Stacks）深度的最大值
-    MAXLOCALS = 1 //代表了局部变量表所需的存储空间
+    MAXSTACK = 2
+    MAXLOCALS = 1
 
   // access flags 0x1
   public add()V
-   L0 //表示一个局部变量
-    LINENUMBER 6 L0 //标识变量对应行
+   L0
+    LINENUMBER 6 L0
     ICONST_M1 //将int型-1推送至栈顶
-    ISTORE 1 //将栈顶int型数值存入指定本地变量
+    ISTORE 1
    L1
     LINENUMBER 7 L1
     ICONST_5 //将int型5推送至栈顶
     ISTORE 2
    L2
     LINENUMBER 8 L2
-    BIPUSH 6  //将单字节的常量值(-128~127)推送至栈顶
+    BIPUSH 6
     ISTORE 3
    L3
     LINENUMBER 9 L3
-    BIPUSH 127
+    BIPUSH 127 //将单字节的常量值(-128~127)推送至栈顶
     ISTORE 4
    L4
     LINENUMBER 10 L4
-    SIPUSH 150
+    SIPUSH 32767 //将一个短整型常量值(-32768~32767)推送至栈顶
     ISTORE 5
    L5
     LINENUMBER 11 L5
-    ILOAD 1 //将指定的int型本地变量推送至栈顶
-    ILOAD 2 
-    IADD  //将栈顶两int型数值相加并将结果压入栈顶
+    LDC 32768 //将int, float或String型常量值从常量池中推送至栈顶
+    ISTORE 6
+   L6
+    LINENUMBER 12 L6
+    ILOAD 1
+    ILOAD 2
+    IADD
     ILOAD 3
     IADD
     ILOAD 4
     IADD
     ILOAD 5
     IADD
-    ISTORE 6
-   L6
-    LINENUMBER 12 L6
-    RETURN
+    ILOAD 6
+    IADD
+    ISTORE 7
    L7
-    LOCALVARIABLE this Lcore/object_create/ObjectTest; L0 L7 0
-    LOCALVARIABLE i10 I L1 L7 1
-    LOCALVARIABLE i0 I L2 L7 2
-    LOCALVARIABLE i1 I L3 L7 3
-    LOCALVARIABLE i2 I L4 L7 4
-    LOCALVARIABLE i3 I L5 L7 5
-    LOCALVARIABLE sum I L6 L7 6
+    LINENUMBER 13 L7
+    RETURN
+   L8
+    LOCALVARIABLE this Lcore/object_create/ObjectTest; L0 L8 0
+    LOCALVARIABLE i10 I L1 L8 1
+    LOCALVARIABLE i0 I L2 L8 2
+    LOCALVARIABLE i1 I L3 L8 3
+    LOCALVARIABLE i2 I L4 L8 4
+    LOCALVARIABLE i3 I L5 L8 5
+    LOCALVARIABLE i4 I L6 L8 6
+    LOCALVARIABLE sum I L7 L8 7
     MAXSTACK = 2
-    MAXLOCALS = 7
+    MAXLOCALS = 8
 }
+
 ```
