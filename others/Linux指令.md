@@ -1,6 +1,11 @@
 # Linux指令
 
 
+### firewall 添加端口
+```
+firewall-cmd --add-port=80/tcp --permanent     ##永久添加80端口 
+```
+
 ### 远程文件传输
 ```
  sshpass -p xxxpassws scp /home/scp/hi ubuntu@qw607.com:
