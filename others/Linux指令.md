@@ -1,6 +1,11 @@
 # Linux指令
 
 
+### 磁盘大小排行
+```
+du -s * | sort -nr | head
+```
+
 ### firewall 添加端口
 ```
 firewall-cmd --add-port=80/tcp --permanent     ##永久添加80端口 
