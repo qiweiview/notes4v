@@ -1,6 +1,11 @@
 # Linux指令
 
 
+# 统计文件数
+```
+ls -l | grep "^-" | wc -l
+```
+
 ### 磁盘大小排行
 ```
 du -s * | sort -nr | head
