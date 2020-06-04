@@ -1,5 +1,38 @@
 # Java多线程
 
+## Join的使用
+```
+
+        Runnable runnable=()->{
+            int i=0;
+            while (i<5){
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println(i);
+                i++;
+            }
+        };
+        Runnable runnable2=()->{
+            System.out.println(2);
+        };
+        Runnable runnable3=()->{
+            System.out.println(3);
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
+        thread.join();
+
+
+        new Thread(runnable2).start();//等待第一个线程
+        new Thread(runnable3).start();//等待第一个线程
+
+
+```
+
+
 ## 用户线程和守护线程
 * JVM会在只剩下守护线程的时候关闭（守护线程不会阻止jvm关闭，普通线程会），如果不存在守护线程，只有用户线程未完成，那么就会一直阻塞
 ```
