@@ -1,5 +1,31 @@
 # vue综合
 
+## 异步
+```
+uploadFile(blob, index, start, end) {
+						var xhr;
+						var fd;
+						var chunk;
+						var sliceIndex = blob.name + index;
+						chunk = blob.slice(start, end); //切割文件 
+						this.blob2Base64(chunk).then(function(result) {
+							console.log(result)
+						})
+
+
+					},
+					blob2Base64(blob) {
+						return new Promise(function(resolve, reject) {
+							var reader = new FileReader();
+							reader.readAsDataURL(blob);
+							reader.onloadend = function() {
+								var base64data = reader.result;
+								resolve(base64data.substr(base64data.indexOf(',') + 1))
+							}
+						})
+
+					}
+```
 ## 标准格式
 ```
   var vm = new Vue({
