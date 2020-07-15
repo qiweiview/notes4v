@@ -1,5 +1,54 @@
 # Java多线程
 
+## 循环定时任务
+```
+package thread;
+
+import java.util.concurrent.*;
+
+public class ThreadPool {
+    public static int i = 0;
+    public static ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(new MyThreadFactory());
+    public static Runnable runnable = () -> {
+
+        i++;
+        if (i == 5) {
+            i = 0;
+            throw new NullPointerException();
+        } else {
+            System.out.println(i);
+        }
+    };
+
+    public static void main(String[] args) {
+
+        int i = 0;
+        while (true) {
+            startOne();
+            i++;
+            if (i == 3) {
+                scheduledExecutorService.shutdown();
+            }
+
+        }
+
+
+    }
+
+    public static void startOne() {
+        ScheduledFuture<?> scheduledFuture = scheduledExecutorService.scheduleWithFixedDelay(runnable, 1, 1, TimeUnit.SECONDS);
+        try {
+            Object o = scheduledFuture.get();
+        } catch (Exception e) {
+            System.out.println("抛出：" + e);
+        }
+    }
+
+
+}
+
+```
+
 ## Join的使用
 * A,B两线程运行，B线程中调用A.join()，则B线程会在A线程执行完后执行
 ```
