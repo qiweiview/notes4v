@@ -1,6 +1,7 @@
 # Java多线程
 
 ## Join的使用
+* A,B两线程运行，B线程中调用A.join()，则B线程会在A线程执行完后执行
 ```
 
         Runnable runnable=()->{
