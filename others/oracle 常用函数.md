@@ -26,6 +26,9 @@ from 'xxxtable'
 ```
 to_date('2005-01-01 13:14:20','YYYY-MM-DD HH24:MI:SS')
 ```
+```
+to_char(sysdate,'yyyy-mm-dd hh24:mi:ss')
+```
 * 模糊查询
 ```
 REGEXP_LIKE(xxx,'xxx')
