@@ -8,7 +8,6 @@
 * [Java类库阅读笔记(sourceCode/java)](https://github.com/qiweiview/notes4v/tree/master/sourceCode/java)
 * [Tcp/Ip网络基础学习笔记(courseNotes/tcpIp)](https://github.com/qiweiview/notes4v/tree/master/courseNotes/tcpIp)
 * [刷题笔记(leetCode)](https://github.com/qiweiview/notes4v/tree/master/leetCode)
-* [零零碎碎的工具(toolPages)](https://github.com/qiweiview/notes4v/tree/master/toolPages)
 * [部署脚本(script)](https://github.com/qiweiview/notes4v/tree/master/script)
 
 
