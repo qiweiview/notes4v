@@ -23,6 +23,7 @@ public class ThreadQueue {
     private final ThreadLocal<InnerTask> threadLocal = new ThreadLocal();//线程变量
     private Thread worker;//启动线程
     private ThreadQueue nextLevelThreadQueue;//下一级队列
+    private ThreadQueue successLogThreadQueue;//日志队列
     private volatile boolean init = false;//初始化标志
 
 
@@ -61,6 +62,9 @@ public class ThreadQueue {
                     InnerTask take = linkedBlockingQueue.take();
                     take.register(this);
                     executorService.execute(take);
+                    if (successLogThreadQueue!=null){
+                            successLogThreadQueue.submit(take);
+                        }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -186,6 +190,7 @@ public class ThreadQueue {
 
 ### jdk 7 support
 ```
+
 import java.util.UUID;
 import java.util.concurrent.*;
 
@@ -199,7 +204,8 @@ public class ThreadQueue {
     private ExecutorService executorService;//线程池
     private final ThreadLocal<InnerTask> threadLocal = new ThreadLocal();//线程变量
     private Thread worker;//启动线程
-    private ThreadQueue nextLevelThreadQueue;//下一级队列
+    private ThreadQueue nextLevelThreadQueue;//下一级失败队列
+    private ThreadQueue successLogThreadQueue;//日志队列
     private volatile boolean init = false;//初始化标志
 
 
@@ -242,6 +248,9 @@ public class ThreadQueue {
                         InnerTask take = linkedBlockingQueue.take();
                         take.register(threadQueue);
                         executorService.execute(take);
+                        if (successLogThreadQueue!=null){
+                            successLogThreadQueue.submit(take);
+                        }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -291,6 +300,8 @@ public class ThreadQueue {
     }
 
 
+
+
     /**
      * 线程工厂
      */
@@ -303,6 +314,7 @@ public class ThreadQueue {
             Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
                 @Override
                 public void uncaughtException(Thread t, Throwable e) {
+                    e.printStackTrace();
                     try {
                         TimeUnit.SECONDS.sleep(1);
                     } catch (InterruptedException interruptedException) {
@@ -332,8 +344,10 @@ public class ThreadQueue {
      */
     public static abstract class InnerTask implements Runnable {
 
+
         public ThreadQueue threadQueue;
         private Integer failTime = 0;
+        
 
 
         private void register(ThreadQueue threadQueue) {
@@ -364,6 +378,5 @@ public class ThreadQueue {
         }
     }
 }
-
 
 ```
