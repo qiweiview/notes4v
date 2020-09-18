@@ -1,5 +1,19 @@
 ## Mysql内容
 
+## delete in select 
+```
+DELETE 
+FROM
+	app_message_record_bind 
+WHERE
+	id IN (
+	SELECT
+		* 
+	FROM
+	( SELECT amrb.id FROM app_message_record_bind amrb LEFT JOIN app_message am ON amrb.mId = am.id WHERE am.id IS NULL ) n 
+	)
+```
+
 ## 添加表字段
 ```
 ALTER TABLE auth_company_profile ADD COLUMN codeType VARCHAR(50) DEFAULT NULL COMMENT '结算码，电子凭证' ;
