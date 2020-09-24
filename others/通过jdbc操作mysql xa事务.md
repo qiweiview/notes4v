@@ -1,5 +1,7 @@
 ## 通过jdbc操作mysql xa事务
 
+* 前我们还没有接触到TM，那么我们不妨做一回"人肉事务管理器"，用你智慧的大脑，来控制多个mysql实例上xa事务分支的执行，提交/回滚。通过直接操作这些接口，你将对xa事务有更深刻的认识
+* MySQL Connector/J 中提供的XA操作接口，如上面提到的XAConnection、XAResource、Xid等，实际上都遵循了JTA规范，关于JTA规范将在下一节讲解
 ```
 import com.mysql.jdbc.jdbc2.optional.MysqlXAConnection;
 import com.mysql.jdbc.jdbc2.optional.MysqlXid;
