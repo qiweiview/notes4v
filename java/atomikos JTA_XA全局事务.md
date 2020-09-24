@@ -1,6 +1,7 @@
 # atomikos JTA/XA全局事务
 
-## Atomikos公司官方网址为：https://www.atomikos.com/。其旗下最著名的产品就是事务管理器。产品分两个版本：
+## Atomikos公司官方网址为：[https://www.atomikos.com](https://www.atomikos.com)
+其旗下最著名的产品就是事务管理器。产品分两个版本：
 
 * TransactionEssentials：开源的免费产品
 
