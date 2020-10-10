@@ -3,7 +3,7 @@
 
 * 修改密码
 ```
-alter user ag identified  by  123456 account unlock; ----不用换新密码
+alter user xxa identified  by  123456 account unlock; ----不用换新密码
 ```
 
 * 字符串变为数字（数字比对时）:
