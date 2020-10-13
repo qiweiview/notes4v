@@ -5,7 +5,51 @@
 keytool -genkeypair -keyalg RSA -alias selfsigned -keystore keystore.jks  -storepass pass_for_self_signed_cert  -dname "CN=localhost, OU=Developers, O=Bull Bytes, L=Linz, C=AT"
 ```
 
-## 服务器
+## 核心
+```
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import java.io.FileInputStream;
+import java.security.KeyStore;
+
+public class SslUtils {
+
+    /**
+     * 返回ssl上下用
+     * @param keystoreInputStream
+     * @param keyStorePass
+     * @return
+     * @throws Exception
+     */
+    public static SSLContext getSslContext( FileInputStream keystoreInputStream, char[] keyStorePass) throws Exception {
+
+        //var keyStorePath = Path.of("C:\\Users\\刘启威\\Desktop\\新建文件夹\\keystore.jks");
+        //char[] keyStorePass = "pass_for_self_signed_cert".toCharArray();
+        //FileInputStream fileInputStream = new FileInputStream(keyStorePath.toFile());
+
+        KeyStore keyStore = KeyStore.getInstance("JKS");
+        keyStore.load(keystoreInputStream, keyStorePass);
+        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
+        keyManagerFactory.init(keyStore, keyStorePass);
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(keyManagerFactory.getKeyManagers(), null, null);
+        
+        return sslContext;
+    }
+}
+
+```
+* 创建服务器
+```
+int backlog = 0;//套接字上待处理连接的最大数量，0表示使用特定于实现的默认值
+char[] keyStorePassword = "pass_for_self_signed_cert".toCharArray();
+SSLContext sslContext = SslUtils.getSslContext(new FileInputStream(new File("C:\\Users\\xxxx\\Desktop\\xxxx\\keystore.jks")), keyStorePassword);
+SSLServerSocketFactory serverSocketFactory = sslContext.getServerSocketFactory();
+ServerSocket serverSocket = serverSocketFactory.createServerSocket(address.getPort(), backlog, address.getAddress());
+```
+
+## 范例：
 ```
 
 import javax.net.ssl.KeyManagerFactory;
