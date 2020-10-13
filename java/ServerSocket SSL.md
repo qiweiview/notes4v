@@ -10,32 +10,90 @@ keytool -genkeypair -keyalg RSA -alias selfsigned -keystore keystore.jks  -store
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import java.io.FileInputStream;
+import javax.net.ssl.SSLServerSocketFactory;
+import java.io.*;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
+import java.util.Base64;
 
 public class SslUtils {
 
+    public static final String STATIC_JKS = "MIIKAwxxs";
+    public static final String STATIC_JKS_PASS = "xxa";
+
     /**
      * 返回ssl上下用
+     *
      * @param keystoreInputStream
      * @param keyStorePass
      * @return
      * @throws Exception
      */
-    public static SSLContext getSslContext( FileInputStream keystoreInputStream, char[] keyStorePass) throws Exception {
-
-        //var keyStorePath = Path.of("C:\\Users\\刘启威\\Desktop\\新建文件夹\\keystore.jks");
-        //char[] keyStorePass = "pass_for_self_signed_cert".toCharArray();
-        //FileInputStream fileInputStream = new FileInputStream(keyStorePath.toFile());
-
+    public static SSLContext getSslContext(InputStream keystoreInputStream, char[] keyStorePass) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("JKS");
         keyStore.load(keystoreInputStream, keyStorePass);
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         keyManagerFactory.init(keyStore, keyStorePass);
         SSLContext sslContext = SSLContext.getInstance("TLS");
         sslContext.init(keyManagerFactory.getKeyManagers(), null, null);
-        
         return sslContext;
+    }
+
+
+    /**
+     * 默认测试使用静态证数
+     * @return
+     */
+    public static SSLContext getSslContext() {
+        Base64.Decoder decoder = Base64.getDecoder();
+        byte[] decode = decoder.decode(STATIC_JKS);
+
+
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(decode);
+        char[] chars = STATIC_JKS_PASS.toCharArray();
+        try {
+            SSLContext sslContext = getSslContext(byteArrayInputStream, chars);
+            return sslContext;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return null;
+        }
+    }
+
+
+    public static void main(String[] args) throws IOException {
+        SSLContext sslContext = getSslContext();
+        SSLServerSocketFactory serverSocketFactory = sslContext.getServerSocketFactory();
+        InetSocketAddress inetSocketAddress = new InetSocketAddress("127.0.0.1", 8443);
+
+        ServerSocket serverSocket = serverSocketFactory.createServerSocket(inetSocketAddress.getPort(), 0, inetSocketAddress.getAddress());
+        var body = "The server says hi 👋\r\n";
+        var contentLength = body.getBytes(StandardCharsets.UTF_8).length;
+
+        String out= "HTTP/1.1 200 OK\r\n" +
+                String.format("Content-Length: %d\r\n", contentLength) +
+                String.format("Content-Type: text/plain; charset=%s\r\n",
+                        StandardCharsets.UTF_8.displayName()) +
+                "\r\n" +
+                body;
+        
+        while (true){
+           try {
+               Socket accept = serverSocket.accept();
+               OutputStream outputStream = accept.getOutputStream();
+               outputStream.write(out.getBytes());
+               outputStream.flush();
+               outputStream.close();
+           }catch (Exception e){
+               System.out.println("错误");
+           }
+       }
+
+
+
     }
 }
 
