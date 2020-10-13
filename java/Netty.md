@@ -1079,3 +1079,303 @@ ChannelInbound-Handler ，所以这个操作有轻微的开销。其所带来的
 * 引 入 这 种 自 动 聚 合 机 制 只 不 过 是 向 ChannelPipeline 中 添 加 另 外 一 个
 ChannelHandler 罢了
 
+
+## HTTP压缩
+* 使用重复率高的返回数据测试效果明显
+```
+pipeline.addLast("compressor", new HttpContentCompressor());//← -- 如果是服务器，则添加HttpContentCompressor来压缩数据（如果客户端支持它）
+```
+
+## 使用HTTPS
+* 暂未理解
+
+
+## WebSocket
+* [![0Djl4g.md.png](https://s1.ax1x.com/2020/10/09/0Djl4g.md.png)](https://imgchr.com/i/0Djl4g)
+
+## 空闲的连接和超时
+
+* IdleStateHandler
+当连接空闲时间太长时，将会触发一个 IdleStateEvent 事件。然后，你可以通过在你的 ChannelInboundHandler 中重
+写 userEvent- Triggered() 方法来处理该 IdleStateEvent 事件
+* ReadTimeoutHandler
+如果在指定的时间间隔内没有收到任何的入站数据，则抛出一个 Read- TimeoutException 并关闭对应的 Channel 。可
+以通过重写你的 ChannelHandler 中的 exceptionCaught() 方法来检测该 Read- TimeoutException
+* WriteTimeoutHandler
+如果在指定的时间间隔内没有任何出站数据写入，则抛出一个 Write- TimeoutException 并关闭对应的 Channel 。可以
+通过重写你的 ChannelHandler 的 exceptionCaught() 方法检测该 WriteTimeout- Exception
+
+
+### 基于分隔符的协议
+
+* DelimiterBasedFrameDecoder 使用任何由用户提供的分隔符来提取帧的通用解码器
+* LineBasedFrameDecoder 提取由行尾符（ \n 或者 \r\n ）分隔的帧的解码器。这个解码器比DelimiterBasedFrameDecoder 更快
+* [![02q9rd.md.png](https://s1.ax1x.com/2020/10/12/02q9rd.md.png)](https://imgchr.com/i/02q9rd)
+
+### 基于长度的协议
+* FixedLengthFrameDecoder 提取在调用构造函数时指定的定长帧
+* LengthFieldBasedFrameDecoder 根据编码进帧头部中的长度值提取帧；该字段的偏移量以及长度在构造函数中指定
+* [![02XGJP.md.png](https://s1.ax1x.com/2020/10/12/02XGJP.md.png)](https://imgchr.com/i/02XGJP)
+* [![0RAwcj.md.png](https://s1.ax1x.com/2020/10/12/0RAwcj.md.png)](https://imgchr.com/i/0RAwcj)
+
+### LengthFieldBasedFrameDecoder
+```
+maxFrameLength：最大帧长度。也就是可以接收的数据的最大长度。如果超过，此次数据会被丢弃。
+lengthFieldOffset：长度域偏移。就是说数据开始的几个字节可能不是表示数据长度，需要后移几个字节才是长度域。
+lengthFieldLength：长度域字节数。用几个字节来表示数据长度。
+lengthAdjustment：数据长度修正。因为长度域指定的长度可以使header+body的整个长度，也可以只是body的长度。如果表示header+body的整个长度，那么我们需要修正数据长度。
+initialBytesToStrip：跳过的字节数。如果你需要接收header+body的所有数据，此值就是0，如果你只想接收body数据，那么需要跳过header所占用的字节数
+```
+* 范例
+
+[![0WljeS.png](https://s1.ax1x.com/2020/10/12/0WljeS.png)](https://imgchr.com/i/0WljeS)
+```
+
+import com.utils.FlexibleServer;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.*;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.util.CharsetUtil;
+
+import java.nio.ByteOrder;
+
+public class LengthBasedInitializer extends ChannelInitializer<Channel> {
+
+
+    @Override
+    protected void initChannel(Channel ch) throws Exception {
+        ChannelPipeline pipeline = ch.pipeline();
+        //设置长度描述字段为两个字节，并且跳过两个字节（最终内容不包含长度描述字段）
+        pipeline.addLast(new LengthFieldBasedFrameDecoder(ByteOrder.BIG_ENDIAN,1024,0, 2, 0,2,true));
+        pipeline.addLast(new FrameHandler());//添加FrameHandler以处理每个帧
+    }
+
+    public static final class FrameHandler extends SimpleChannelInboundHandler<ByteBuf> {
+        @Override
+        public void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
+            // Do something with the frame //处理帧的数据
+            int i = msg.readableBytes();
+            System.out.println(msg.toString(CharsetUtil.UTF_8));
+        }
+    }
+
+    public static void main(String[] args) {
+        FlexibleServer.server(new LengthBasedInitializer());
+    }
+}
+```
+* 调用
+```
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.Socket;
+
+
+public class SimpleClient {
+    public static void main(String[] args) throws IOException {
+        Socket serverSocket = new Socket("127.0.0.1", 80);
+        OutputStream outputStream = serverSocket.getOutputStream();
+        while (true) {
+        //服务器约定，长度占两字节，即十六位，使用十六进制数表示
+            outputStream.write(0x00000000);
+            outputStream.write(0x00000004);
+            //写入不定长数据
+            outputStream.write('h');
+            outputStream.write('i');
+            outputStream.write('v');
+            outputStream.write('i');
+            outputStream.write('e');
+            outputStream.write('w');
+            outputStream.write('8');
+            outputStream.write('8');
+            outputStream.write('8');
+            outputStream.write('8');
+            //再次写入长度描述数据，如果这个位子没有及时再次写入长度描述数据，而是继续传上一份报文的数据，那么继续传的数据的前两位会被误当作长度描述数据，那么后续就都乱了
+            outputStream.write(0x00000000);
+            outputStream.write(0x00000004);
+            outputStream.write('o');
+            outputStream.write('j');
+            outputStream.write('b');
+            outputStream.write('k');
+            System.out.println("ff");
+        }
+    }
+}
+```
+
+
+### 写大型数据
+* 通 过 从 FileInputStream 创 建 一 个DefaultFileRegion ，并将其写入Channel ，从而利用零拷贝特性来传输一个文件的内容
+* 减少两次 IO 的复制：
+ 1. 第一次 IO：读取文件的时间从系统内存中拷贝到 jvm 内存中。
+ 2. 第二次 IO：从 jvm 内存中写入 Socket 时，再 Copy 到系统内存中。
+* 这就是所谓的零拷贝技术。
+
+```
+ public class FileInputHandle extends ChannelInboundHandlerAdapter {
+        @Override
+        public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+            Channel channel = ctx.pipeline().channel();
+
+            File file = new File("D:\\FrontTestSpace\\hBuilderTest\\hBuilderTest\\index.html");
+            FileInputStream in = new FileInputStream(file); //创建一个FileInputStream
+            FileRegion region = new DefaultFileRegion(in.getChannel(), 0, file.length());//以该文件的完整长度创建一个新的DefaultFileRegion
+
+            ChannelFutureListener channelFutureListener = new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
+                    if (future.isSuccess()) {
+                        future.channel().close();
+                    }else {
+                        Throwable cause = future.cause();//处理失败
+                    }
+                }
+            };
+
+            //发送该DefaultFile-Region，并注册一个ChannelFutureListener
+            channel.writeAndFlush(region).addListener(channelFutureListener);
+
+        }
+    }
+```
+
+### ChunkedWriteHandler
+* 上面示例只适用于文件内容的直接传输，不包括应用程序对数据的任何处理。
+* 在需要将数据从文件系统复制到户内存中时，可以使用ChunkedWriteHandler ，它支持异步写大型数据流，而又不会导致大量的内存消耗
+* 关键是interface ChunkedInput<B> ，其中类型参数B 是readChunk() 方法返
+回的类型。Netty预置了该接口的4个实现，如表11-7中所列出的。每个都代表了一个将由
+Chunked-WriteHandler 处理的不定长度的数据流
+```
+ChunkedFile
+从文件中逐块获取数据，当你的平台不支持零拷贝或者你需要转换数据时使用
+
+ChunkedNioFile
+和 ChunkedFile 类似，只是它使用了 FileChannel
+
+ChunkedStream
+从 InputStream 中逐块传输内容
+
+ChunkedNioStream
+从 ReadableByteChannel 中逐块传输内容
+```
+
+* 当Channel 的状态变为活动的时，WriteStreamHandler 将会逐块地把来自文件中的数据作为ChunkedStream 写入。数据在传输之前将会由SslHandler 加密
+
+### 序列化数据
+```
+CompatibleObjectDecoder 
+和使用JDK序列化的非基于Netty的远程节点进行互操作的解码器
+
+CompatibleObjectEncoder
+和使用JDK序列化的非基于Netty的远程节点进行互操作的编码器
+
+ObjectDecoder
+构建于JDK序列化之上的使用自定义的序列化来解码的解码器；当没有其他的外部依赖时，它提供了速度上的改进。否则其他的序列化实现更加可取
+
+ObjectEncoder
+构建于JDK序列化之上的使用自定义的序列化来编码的编码器；当没有其他的外部依赖时，它提供了速度上的改进。否则其他的序列化实现更加可取
+```
+
+### 使用JBoss Marshalling进行序列化
+
+### 通过Protocol Buffers序列化
+
+
+## WebSocket
+* 从标准的HTTP或者HTTPS协议切换到WebSocket时，将会使用一种称为升级握手 [3]
+的机制。因此，使用WebSocket的应用程序将始终以HTTP/S作为开始，然后再执行升级。
+***这个升级动作发生的确切时刻特定于应用程序；它可能会发生在启动时，也可能会发生在
+请求了某个特定的URL之后***
+* 我们的应用程序将采用下面的约定：如果被请求的URL以/ws 结尾，那么我们将会把
+该协议升级为WebSocket；否则，服务器将使用基本的HTTP/S。在连接已经升级完成之
+后，所有数据都将会使用WebSocket进行传输
+* [![0hA4m9.md.png](https://s1.ax1x.com/2020/10/13/0hA4m9.md.png)](https://imgchr.com/i/0hA4m9)
+
+### 处理WebSocket帧
+* 由IETF发布的WebSocket RFC，定义了6种帧，Netty为它们每种都提供了一个POJO实
+现
+```
+BinaryWebSocketFrame
+包含了二进制数据
+
+TextWebSocketFrame
+包含了文本数据
+
+ContinuationWebSocketFrame
+包含属于上一个 BinaryWebSocketFrame 或 TextWebSocket- Frame 的文本数据或者二进制数据
+
+CloseWebSocketFrame
+表示一个 CLOSE 请求，包含一个关闭的状态码和关闭的原因
+
+PingWebSocketFrame
+请求传输一个 PongWebSocketFrame
+
+PongWebSocketFrame
+作为一个对于 PingWebSocketFrame 的响应被发送
+```
+
+* WebSocket协议升级之前的ChannelPipeline 的状态如图12-3所示。这代表了刚刚
+被ChatServerInitializer 初始化之后的ChannelPipeline 
+* [![0hrwjK.md.png](https://s1.ax1x.com/2020/10/13/0hrwjK.md.png)](https://imgchr.com/i/0hrwjK)
+* 当WebSocket协议升级完成之后，WebSocketServerProtocolHandler 将会把
+Http- RequestDecoder 替 换 为 WebSocketFrameDecoder ， 把
+HttpResponseEncoder 替换为WebSocketFrameEncoder 。为了性能最大化，它将移
+除任何不再被WebSocket连接所需要的ChannelHandler 。这也包括了图12-3所示的
+HttpObjectAggregator 和HttpRequest-Handler 。
+* 图12-4展示了这些操作完成之后的ChannelPipeline 。需要注意的是，Netty目前支
+持4个版本的WebSocket协议，它们每个都具有自己的实现类。Netty将会根据客户端（这里
+指浏览器）所支持的版本 [4] ，自动地选择正确版本的WebSocketFrameDecoder 和
+WebSocket-FrameEncoder 
+* [![0hryAH.md.png](https://s1.ax1x.com/2020/10/13/0hryAH.md.png)](https://imgchr.com/i/0hryAH)
+
+* 引导
+```
+
+import com.utils.FlexibleServer;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.codec.http.HttpServerCodec;
+import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
+import io.netty.handler.stream.ChunkedWriteHandler;
+import io.netty.util.concurrent.ImmediateEventExecutor;
+
+public class ChatServerInitializer extends ChannelInitializer<Channel> { // 扩展了ChannelInitializer
+    private final ChannelGroup group;
+
+    public ChatServerInitializer(ChannelGroup group) {
+        this.group = group;
+    }
+
+    @Override
+    protected void initChannel(Channel ch) throws Exception {// 将所有需要的ChannelHandler 添加到ChannelPipeline 中
+        ChannelPipeline pipeline = ch.pipeline();
+        //将 字 节 解 码 为 HttpRequest 、 HttpContent 和 LastHttp- Content 。
+        // 并 将 HttpRequest 、 HttpContent 和 LastHttpContent 编码为字节
+        pipeline.addLast(new HttpServerCodec());
+
+        //写入一个文件的内容
+        pipeline.addLast(new ChunkedWriteHandler());
+
+        //将一个 HttpMessage 和跟随它的多个 HttpContent 聚合为单个 FullHttpRequest 或者 FullHttpResponse （取决于它是被
+        //用来处理请求还是响应）。安装了这个之后， ChannelPipeline 中的下一个 ChannelHandler 将只会收到完整的HTTP请
+        //求或响应
+        pipeline.addLast(new HttpObjectAggregator(64 * 1024));
+        //处理协议升级
+        pipeline.addLast(new HttpRequestHandler("/ws"));
+        //处理其他类型的帧
+        pipeline.addLast(new WebSocketServerProtocolHandler("/ws"));
+        //处理文本帧
+        pipeline.addLast(new TextWebSocketFrameHandler(group));
+    }
+
+    public static void main(String[] args) {
+        ChannelGroup channelGroup =new DefaultChannelGroup(ImmediateEventExecutor.INSTANCE);
+        FlexibleServer.server(new ChatServerInitializer(channelGroup));
+    }
+}
+```
