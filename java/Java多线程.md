@@ -1,5 +1,35 @@
 # Java多线程
 
+
+## ExecutorService 异常
+* execute出现异常时，会把异常跑出来
+* submit出现异常时，会把异常存储，并把状态值改为异常，在Future调用get()时候检验
+```
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+public class ExecutorsTest {
+    public static void main(String[] args) throws Exception {
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
+
+        Future<Object> submit = executorService.submit(() -> {
+            System.out.println("submit");
+            throw new RuntimeException("submit exception");
+        });
+        Object o = submit.get();
+        System.out.println(o);
+        
+        executorService.execute(()->{
+            System.out.println("execute");
+            throw new RuntimeException("execute exception");
+        });
+    }
+}
+
+```
+
 ## 循环定时任务
 ```
 package thread;
