@@ -1,5 +1,32 @@
 # SpringBoot外部war部署
 
+
+## 启动类
+```
+package view.boot_in_wild_fly;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+
+@SpringBootApplication
+public class ServletStart  extends SpringBootServletInitializer {
+
+
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(ServletStart.class);
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(ServletStart.class, args);
+    }
+}
+
+```
+
+## pom
 ```
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
