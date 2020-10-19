@@ -6,7 +6,7 @@
 * Servlet的生命周期主要包括加载实例化、初始化、处理客户端请求、销毁。
 * 加载实例化主要由Web容器完成，而其他三个阶段则对应Servlet的init、service和destroy方法
 
-## 会话#
+## 会话
 * Servlet没有提出协议无关的会话规定，而是每个通信协议自己规定，HTTP对应的会话接口是HttpSession
 * Cookie是常用的会话跟踪机制，其中Cookie的标准名字必须为JSESSIONID
 * 另外一种会话跟踪机制则是URL重写，即在URL后面添加一个jsessionid参数，***当支持Cookie和SSL会话的情况下，不应该使用URL重写作为会话跟踪机制***
