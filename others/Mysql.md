@@ -1,5 +1,11 @@
 ## Mysql内容
 
+
+## 格式化日期
+```
+DATE_FORMAT(belongDate,'%Y-%m-%d')
+```
+
 ## delete in select 
 ```
 DELETE 
