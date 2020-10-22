@@ -1,6 +1,13 @@
 # oracle 常用
 
 
+* 数据恢复
+```
+insert into AG_WORKER_RANDOM_RULE
+
+select * from AG_WORKER_RANDOM_RULE as of timestamp  TO_TIMESTAMP('2020-10-22 15:40:00', 'yyyy-mm-dd hh24:mi:ss') where main_rule_id='0d7911d119134d5c8aa47dcb1167a058'
+```
+
 * 修改密码
 ```
 alter user xxa identified  by  123456 account unlock; ----不用换新密码
