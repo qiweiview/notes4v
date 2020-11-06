@@ -192,9 +192,9 @@ public class RequestListener implements ServletRequestListener {
 ```
 
 
-## ServletContainerInitializer机制
-* 在web容器启动时为提供给第三方组件机会做一些初始化的工
+## ServletContainerInitializer机制(在web容器启动时为提供给第三方组件机会做一些初始化的工)
 * Servlet容器启动会扫描，当前应用里面每一个jar包的ServletContainerInitializer的实现并运行
+* 只扫jar包，不扫项目目录
 * 会把@HandlesTypes注释里的类的实现类，作为第一个参数传进来
 ```
 import javax.servlet.ServletContainerInitializer;
