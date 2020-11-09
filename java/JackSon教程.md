@@ -1,5 +1,6 @@
 # JackSon教程
 
+* ObjectMapper 对象是线程安全的
 ## 依赖
 ```
 <dependency>
