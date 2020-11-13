@@ -39,20 +39,22 @@ ObjectMapper objectMapper = new ObjectMapper();
 HashMap hashMap = objectMapper.readValue(jsonStr, HashMap.class);
 ```
 
-## 字符串转数组
-```
-JsonNode jsonNode = objectMapper.readTree(jsonStr);
-        JsonNode result = jsonNode.get("result");
-       for(JsonNode o:result){
-           System.out.println(o);
-       }
-```
+
 
 ## 对象转字符串
 ```
 ObjectMapper objectMapper = new ObjectMapper();
 Car car = new Car("yellow", "renault");
 objectMapper.writeValue(new File("target/car.json"), car);
+```
+
+## 查询其中某个值
+```
+JsonNode jsonNode = objectMapper.readTree(jsonStr);
+        JsonNode result = jsonNode.get("result");
+       for(JsonNode o:result){
+           System.out.println(o);
+       }
 ```
 
 
