@@ -24,8 +24,8 @@ public class ThreadQueue {
     private ThreadQueue successLogThreadQueue;//日志队列
     private volatile boolean init = false;//初始化标志
     private ProxyAction proxyAction;
-
-
+    private final int DEFAULT_FAIL_TIMES=3;
+    
     public ThreadQueue() {
     }
 
@@ -85,6 +85,26 @@ public class ThreadQueue {
 
     }
 
+    public void submit(Runnable runnable) {
+        ThreadQueue.InnerTask innerTask = new ThreadQueue.InnerTask() {
+            @Override
+            public void runDetail() {
+                runnable.run();
+            }
+
+            @Override
+            public Integer configTakRunFailTimes() {
+                return DEFAULT_FAIL_TIMES;
+            }
+
+            @Override
+            public String uniqueTag() {
+                return UUID.randomUUID().toString();
+            }
+        };
+        submit(innerTask);
+    }
+    
     /**
      * 提交任务
      *
