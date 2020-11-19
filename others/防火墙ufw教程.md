@@ -24,6 +24,11 @@ sudo ufw status numbered
 sudo ufw delete 规则号
 ```
 
+## 批量删除
+```
+for i in 6 5 3 2;do yes|ufw delete $i;done
+```
+
 ## 查看状态
 ```
 ufw status
