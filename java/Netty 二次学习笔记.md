@@ -49,6 +49,18 @@ channelUnregistered
 
 ## Http服务器篇
 
+### websocket
+* WebSocketServerProtocolHandler中的WebSocketServerProtocolHandshakeHandler会验证uri，如果uri和构造方法不同则不进行解析
+* 因此如果websocket的uri有带参数，需要在上一步将uri替换回构造函数传入的uri
+```
+例：
+new WebSocketServerProtocolHandler("/ws")
+
+则websocket地址必须是/ws不能是/ws?auth=123
+```
+
+
+
 ### 重定向
 ```
 public static class RedirectHandle extends ChannelInboundHandlerAdapter {
