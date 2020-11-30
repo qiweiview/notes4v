@@ -49,6 +49,97 @@ channelUnregistered
 
 ## Http服务器篇
 
+### https支持
+* [参考文档](https://www.jianshu.com/p/710f70a99cbc)
+#### 创建jsk证书
+* 生成Netty服务器公钥、私钥和证书仓库：
+
+* -alias server：服务器证书仓库关联的别名为
+* -keypass nettyDemo：服务器私钥密码
+* -storepass nettyDemo：服务器秘钥库密码
+* -keystore serverStore.jks：服务器秘钥库的文件名（默认放在用户主目录下）
+```
+keytool -genkey -alias server -keysize 2048 -validity 3650 -keyalg RSA -dname "CN=localhost" -keypass nettyDemo -storepass nettyDemo -keystore serverStore.jks
+```
+
+* 导出Netty服务端签名证书：
+```
+keytool -export -alias server -keystore serverStore.jks -storepass nettyDemo -file server.cer
+```
+
+* 生成Netty客户端的公钥、私钥和证书仓库：
+
+* -alias client：客户端证书仓库关联的别名；
+
+* -keypass nettyDemo：客户端私钥密码；
+
+* -storepass nettyDemo：客户端秘钥库密码
+
+* -keystore clientStore.jks：客户端秘钥库的文件名（默认放在用户主目录下）
+```
+keytool -genkey -alias client -keysize 2048 -validity 3650 -keyalg RSA -dname "CN=localhost" -keypass nettyDemo -storepass nettyDemo -keystore clientStore.jks
+```
+* 将Netty服务端的证书导入到客户端的证书仓库中：
+```
+keytool -import -trustcacerts -alias server -file server.cer -storepass nettyDemo -keystore clientStore.jks
+```
+* 最终生成文件：
+```
+conf/oneway/clientStore.jks：客户端的证书仓库（包含公钥、私钥、信任的证书仓库（服务端的证书））
+conf/oneway/serverStore.jks：服务端的证书仓库（包含公钥、私钥、信任的证书仓库（无证书））
+conf/oneway/server.cer：服务端字签名证书的导出文件
+```
+
+#### SSLContext获取
+* 工具类
+```
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import java.io.InputStream;
+import java.security.KeyStore;
+
+public final class SslOneWayContextFactory {
+
+    private static final String PROTOCOL = "TLS";
+
+
+    public static SSLContext getServerContext(InputStream stream, char[]  keyStore)throws Exception {
+
+
+        //密钥管理器
+        KeyStore ks = KeyStore.getInstance("JKS");
+
+        //加载服务端的KeyStore  ；sNetty是生成仓库时设置的密码，用于检查密钥库完整性的密码
+        ks.load(stream,keyStore);
+
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+        //初始化密钥管理器
+        kmf.init(ks, keyStore);
+
+        //获取安全套接字协议（TLS协议）的对象
+        SSLContext instance = SSLContext.getInstance(PROTOCOL);
+
+        //初始化此上下文
+        //参数一：认证的密钥      参数二：对等信任认证  参数三：伪随机数生成器 。 由于单向认证，服务端不用验证客户端，所以第二个参数为null
+        instance.init(kmf.getKeyManagers(), null, null);
+
+        if (stream != null) {
+            stream.close();
+        }
+        return instance;
+    }
+
+}
+```
+
+* netty中使用调用
+```
+SSLEngine sslEngine = serverSSLContext.createSSLEngine();
+sslEngine.setUseClientMode(false);//设置为服务器模式
+pipeline.addFirst(CustomSslHandler.NAME, new CustomSslHandler(sslEngine));
+```
+
 ### websocket
 * WebSocketServerProtocolHandler中的WebSocketServerProtocolHandshakeHandler会验证uri，如果uri和构造方法不同则不进行解析
 * 因此如果websocket的uri有带参数，需要在上一步将uri替换回构造函数传入的uri
