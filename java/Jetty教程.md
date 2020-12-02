@@ -2,6 +2,17 @@
 
 ## 应用内嵌入
 
+* 依赖
+```
+<!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-server -->
+<dependency>
+    <groupId>org.eclipse.jetty</groupId>
+    <artifactId>jetty-server</artifactId>
+    <version>9.4.35.v20201120</version>
+</dependency>
+
+```
+
 ### Servlet应用
 * 启动
 ```
