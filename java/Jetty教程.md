@@ -12,6 +12,15 @@
 </dependency>
 
 ```
+```
+<!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-servlet -->
+<dependency>
+    <groupId>org.eclipse.jetty</groupId>
+    <artifactId>jetty-servlet</artifactId>
+    <version>9.4.35.v20201120</version>
+</dependency>
+
+```
 
 ### Servlet应用
 * 启动
