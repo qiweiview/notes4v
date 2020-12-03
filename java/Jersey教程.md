@@ -71,7 +71,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 
-@Path("/hello")
+@Path("/task")
 public class HelloWeb {
 
     public HelloWeb() {
@@ -80,6 +80,7 @@ public class HelloWeb {
 
     // This method is called if TEXT_PLAIN is request
     @GET
+    @Path("/response")
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.TEXT_PLAIN)
     public String sayPlainTextHello() {
@@ -87,29 +88,36 @@ public class HelloWeb {
     }
 
     @GET
+    @Path("/response")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public String sayJSONHello() {
         return "{\"NAME\":\"123\"}";
     }
 
-    // This method is called if XML is request
-    @GET
-    @Produces(MediaType.TEXT_XML)
-    @Consumes(MediaType.TEXT_XML)
-    public String sayXMLHello() {
-        return "<?xml version=\"1.0\"?>" + "<hello> Hello Jersey" + "</hello>";
+    @POST
+    @Path("/{name}")
+    public String save(@PathParam("name")String name) {
+        return "save name "+name;
     }
 
-    // This method is called if HTML is request
     @GET
-    @Produces(MediaType.TEXT_HTML)
-    @Consumes(MediaType.TEXT_HTML)
-    public String sayHtmlHello() {
-        return "<html> " + "<title>" + "Hello Jersey" + "</title>"
-                + "<body><h1>" + "Hello Jersey" + "</body></h1>" + "</html> ";
+    @Path("/{name}")
+    public String get(@PathParam("name")String name) {
+        return "get name "+name;
     }
 
+    @DELETE
+    @Path("/{name}")
+    public String delete(@PathParam("name")String name) {
+        return "delete name "+name;
+    }
+
+    @PUT
+    @Path("/{name}")
+    public String update(@PathParam("name")String name) {
+        return "update name "+name;
+    }
 }
 ```
 
