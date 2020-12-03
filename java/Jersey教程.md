@@ -1,4 +1,4 @@
-# Jersey教程
+# jersey教程
 
 ## 依赖
 * 这个版本依赖是可以，再高没有测试通过
@@ -58,67 +58,166 @@ http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
 </web-app>
 ```
 
-## 处理类
+## 请求流程
+* [![D7toZV.png](https://s3.ax1x.com/2020/12/03/D7toZV.png)](https://imgchr.com/i/D7toZV)
+
+## 过滤器
+* 请求
+```
+
+@Provider
+public class RequestFilter implements ContainerRequestFilter {
+    public RequestFilter() {
+        System.out.println("init MyContainerResponseFilter");
+    }
+
+
+
+    @Override
+    public void filter(ContainerRequestContext containerRequestContext) throws IOException {
+        containerRequestContext.getHeaders().add("view","happy");
+    }
+}
+```
+* 响应
+```
+@Provider
+public class ResponseFilter implements ContainerResponseFilter {
+    public ResponseFilter() {
+        System.out.println("init MyContainerResponseFilter");
+    }
+
+    @Override
+    public void filter(ContainerRequestContext containerRequestContext, ContainerResponseContext containerResponseContext) throws IOException {
+        containerResponseContext.getHeaders().add("X-Powered-By", "Jersey :-)");
+
+    }
+}
+```
+
+## 拦截器
+* 读取
+```
+@Provider
+public class MReaderInterceptor implements ReaderInterceptor {
+    @Override
+    public Object aroundReadFrom(ReaderInterceptorContext readerInterceptorContext) throws IOException, WebApplicationException {
+        System.out.println("go to ReaderInterceptor");
+        return readerInterceptorContext.proceed();
+    }
+}
+```
+* 写出
+```
+@Provider
+public class WReaderInterceptor implements WriterInterceptor {
+    @Override
+    public void aroundWriteTo(WriterInterceptorContext writerInterceptorContext) throws IOException, WebApplicationException {
+        System.out.println("go to WriterInterceptor");
+        writerInterceptorContext.proceed();
+    }
+}
+
+```
+
+## 请求报文复合赋值
+* 使用@BeanParam注解
+* 支持多对象
+```
+
+    @POST
+    @Path("/{name}")
+    public String save(@BeanParam User user) {
+       return "save with Integral "+user;
+    }
+```
+* 对象
+```
+public class User {
+
+    @PathParam(value = "name")
+    private String name;
+
+    @QueryParam("age")
+    private int age;
+
+    @HeaderParam("User-Agent")
+    private String userAgent;
+
+```
+
+## 请求头获取
+```
+    @POST
+    @Path("/{name}")
+    public String save(@Context HttpHeaders hh) {
+        MultivaluedMap<String, String> headerParams = hh.getRequestHeaders();
+        Map<String, Cookie> pathParams = hh.getCookies();
+       return "save with header "+headerParams+"and cookie "+pathParams;
+    }
+```
+
+## 参数获取
+### URL参数获取（地址参数和查询参数）
+* 可以设置默认值
+```
+ @POST
+    @Path("/{name}")
+    public String save(@PathParam("name")String name,@DefaultValue("18")@QueryParam("age") int age) {
+        return "save name "+name+" age "+age;
+    }
+```
+* 使用@Context注解
+```
+    @POST
+    @Path("/{name}")
+    public String save(@Context UriInfo ui) {
+        MultivaluedMap<String, String> queryParams = ui.getQueryParameters();
+        MultivaluedMap<String, String> pathParams = ui.getPathParameters();
+        return "save data with "+queryParams+" and "+pathParams;
+    }
+```
+
+### 表单参数获取
+* 使用@FormParam
+```
+ @POST
+    @Consumes("application/x-www-form-urlencoded")
+    public String save(@FormParam("name") String name) {
+        return "save name "+name+" age ";
+    }
+```
+* 使用MultivaluedMap
+```
+@POST
+@Consumes("application/x-www-form-urlencoded")
+public void post(MultivaluedMap<String, String> formParams) {
+    // Store the message
+}
+```
+
+## 映射
+
+### 媒体类型映射
+* 可用字符串，虽然不合规
 * @Produces响应的媒体类型
 * @Consumes请求的媒体类型
 ```
-package com.web;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
-
-@Path("/task")
-public class HelloWeb {
-
-    public HelloWeb() {
-        System.out.println("init HelloWeb");
-    }
-
-    // This method is called if TEXT_PLAIN is request
-    @GET
-    @Path("/response")
+ @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.TEXT_PLAIN)
     public String sayPlainTextHello() {
         return "Hello Jersey";
     }
+```
 
-    @GET
-    @Path("/response")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public String sayJSONHello() {
-        return "{\"NAME\":\"123\"}";
-    }
-
-    @POST
-    @Path("/{name}")
-    public String save(@PathParam("name")String name) {
-        return "save name "+name;
-    }
-
-    @GET
-    @Path("/{name}")
-    public String get(@PathParam("name")String name) {
-        return "get name "+name;
-    }
-
-    @DELETE
+### 请求方法映射
+```
+  @DELETE
     @Path("/{name}")
     public String delete(@PathParam("name")String name) {
         return "delete name "+name;
     }
-
-    @PUT
-    @Path("/{name}")
-    public String update(@PathParam("name")String name) {
-        return "update name "+name;
-    }
-}
 ```
 
 
