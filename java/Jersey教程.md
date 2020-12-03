@@ -221,5 +221,36 @@ public void post(MultivaluedMap<String, String> formParams) {
 ```
 
 
+## 支持multipart/form-data
+* 依赖
+```
+ <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-multipart</artifactId>
+            <version>2.19</version>
+        </dependency>
+```
 
+* 配置
+```
+ <init-param>
+            <param-name>jersey.config.server.provider.classnames</param-name>
+            <param-value>org.glassfish.jersey.media.multipart.MultiPartFeature</param-value>
+        </init-param>
+```
+
+* 调用
+```
+ @POST
+    @Path("/{name}")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public String save(FormDataMultiPart formDataMultiPart) {
+        Map<String, List<FormDataBodyPart>> fields = formDataMultiPart.getFields();
+        fields.forEach((k,v)->{
+            System.out.println(k);
+        });
+
+        return "save with Integral ";
+    }
+```
 
