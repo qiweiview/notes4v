@@ -28,6 +28,35 @@
 ```
 
 ## web.xml
+### 配置一
+* 类
+```
+public class JerseyApplication  extends ResourceConfig {
+
+    public JerseyApplication() {
+        packages("com.web");
+    }
+}
+```
+* 配置
+```
+<servlet>
+        <servlet-name>jersey-servlet</servlet-name>
+        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>javax.ws.rs.Application</param-name>
+            <param-value>com.web.JerseyApplication</param-value>
+        </init-param>
+
+    </servlet>
+
+    <!-- Url mapping, usage-http://domainname:port/appname/api/ -->
+    <servlet-mapping>
+        <servlet-name>jersey-servlet</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+```
+### 配置二
 ```
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -56,6 +85,16 @@ http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
         <welcome-file>index.htm</welcome-file>
     </welcome-file-list>
 </web-app>
+```
+### 无web.xml配置
+```
+@ApplicationPath("/*")
+public class JerseyApplication  extends ResourceConfig {
+
+    public JerseyApplication() {
+        packages("com.web");
+    }
+}
 ```
 
 ## 请求流程
