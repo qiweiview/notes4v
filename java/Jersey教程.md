@@ -27,7 +27,8 @@
     </dependencies>
 ```
 
-## web.xml
+## web.xml配置
+* [参考](https://stackoverflow.com/questions/45625925/what-exactly-is-the-resourceconfig-class-in-jersey-2)
 ### 配置一
 * 类
 ```
