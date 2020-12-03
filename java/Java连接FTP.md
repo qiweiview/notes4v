@@ -15,6 +15,8 @@
 ```
 
 ## 实现
+* 默认主动模式
+* [模式区别参照](https://github.com/qiweiview/notes4v/blob/master/others/FTP%E7%9A%84%E4%B8%BB%E5%8A%A8%E6%A8%A1%E5%BC%8F%E5%92%8C%E8%A2%AB%E5%8A%A8%E6%A8%A1%E5%BC%8F.md)
 ```
  final FTPClient ftp = new FTPClient();
         ftp.connect("192.168.216.216", 21);
@@ -33,6 +35,8 @@
 
         }
         ftp.setFileType(FTP.BINARY_FILE_TYPE);
+
+        //ftp.enterLocalPassiveMode(); //进入被动模式
 
         boolean b = ftp.storeFile("/daqi/hi2", new ByteArrayInputStream("hi daqi 222".getBytes()));
 
