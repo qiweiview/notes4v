@@ -1,5 +1,28 @@
 # Java Nio教程
 
+
+## Demo
+```
+   ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+        serverSocketChannel.bind(new InetSocketAddress(888));
+        serverSocketChannel.configureBlocking(false);
+        while (true){
+            SocketChannel accept = serverSocketChannel.accept();
+           if (accept==null){
+               continue;
+           }else {
+               ByteBuffer allocate = ByteBuffer.allocate(1024 * 1024);
+               int read = accept.read(allocate);
+               allocate.flip();
+               byte[] bytes=new byte[read];
+               allocate.get(bytes,0,read);
+               new String(bytes);
+           }
+        }
+
+
+```
+
 ## Buffer缓冲区
 ```
 public abstract class Buffer｛
