@@ -24,6 +24,7 @@
 ```
 
 ## Buffer缓冲区
+* Buffer有效的区间为position到limit
 ```
 public abstract class Buffer｛
     private int mark = -1;//标志位
