@@ -356,63 +356,55 @@ public static void openUdpServer() throws IOException {
 
 ### 开启服务器
 ```
-        ByteBuffer writeBuffer = ByteBuffer.allocate(2*1024);
-        ByteBuffer readBuffer = ByteBuffer.allocate(1024);
-
-        ServerSocketChannel ssc = ServerSocketChannel.open();
-        ssc.socket().bind(new InetSocketAddress("127.0.0.1", 80));
-        ssc.configureBlocking(false);
 
         Selector selector = Selector.open();
-        ssc.register(selector, SelectionKey.OP_ACCEPT);
-        System.out.println("服务器启动...");
-
+        ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+        serverSocketChannel.bind(new InetSocketAddress(888));
+        serverSocketChannel.configureBlocking(false);
+        serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
 
         while (true) {
-            int readyNum = selector.select();
-            if (readyNum == 0) {
+            int select = selector.select();
+            if (select == 0) {
                 continue;
             }
+            Set<SelectionKey> selectionKeys = selector.selectedKeys();
+            Iterator<SelectionKey> iterator = selectionKeys.iterator();
+            while (iterator.hasNext()) {
+                SelectionKey x1 = iterator.next();
 
-            Set<SelectionKey> selectedKeys = selector.selectedKeys();
-            Iterator<SelectionKey> it = selectedKeys.iterator();
-
-            while (it.hasNext()) {
-                SelectionKey key = it.next();
-
-                if (key.isAcceptable()) {
-                    ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
-                    SocketChannel socketChannel = serverSocketChannel.accept();
+                if (x1.isReadable()) {
+                    SocketChannel socketChannel = (SocketChannel) x1.channel();
+                    ByteBuffer allocate = ByteBuffer.allocate(1024);
+                    int read = socketChannel.read(allocate);
+                    allocate.flip();
+                    byte[] rs = new byte[read];
+                    allocate.get(rs);
+                    System.out.println(new String(rs));
+                }
+                if (x1.isAcceptable()) {
+                    ServerSocketChannel channel = (ServerSocketChannel) x1.channel();
+                    SocketChannel socketChannel = channel.accept();
                     socketChannel.configureBlocking(false);
                     socketChannel.register(selector, SelectionKey.OP_READ);
-
-                    // 接受连接
-                } else if (key.isReadable()) {
-                    SocketChannel socketChannel = (SocketChannel) key.channel();
-
-                    int read = socketChannel.read(readBuffer);
-                    num++;
-                    System.out.println(num);
                     socketChannel.register(selector, SelectionKey.OP_WRITE);
-                    // 通道可读
-                } else if (key.isWritable()) {
-                    SocketChannel socketChannel = (SocketChannel) key.channel();
-                    writeBuffer.clear();
-                    String response="HTTP/1.1 200 OK\n\r" +
-                            "Date: Sat, 31 Dec 2019 23:59:59 GMT\n\r" +
-                            "Content-Type: text/html;charset=UTF-8\n\r" +
-                            "Content-Length: 122\n\r" +
-                            "Set-Cookie: ZD_ENTRY=google; path=/; domain=.vv.com\n\r"+
-                            "\n\r" +
-                            "123456789";
-                    writeBuffer.put(response.getBytes());
-                    writeBuffer.flip();
-                    socketChannel.write(writeBuffer);
-                    socketChannel.close();
-                    // 通道可写
                 }
 
-                it.remove();
+                if (x1.isWritable()) {
+                    x1.cancel();
+                    SocketChannel socketChannel = (SocketChannel) x1.channel();
+                    socketChannel.write(ByteBuffer.wrap("HI".getBytes()));
+                    System.out.println("可以写出了");
+                }
+
+                iterator.remove();
+
+
             }
+
+
         }
+
+
+    
 ```
