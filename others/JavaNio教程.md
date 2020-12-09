@@ -363,7 +363,6 @@ public static void openUdpServer() throws IOException {
         serverSocketChannel.bind(new InetSocketAddress(888));
         serverSocketChannel.configureBlocking(false);
         serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
-
         while (true) {
             int select = selector.select();
             if (select == 0) {
@@ -378,34 +377,31 @@ public static void openUdpServer() throws IOException {
                     SocketChannel socketChannel = (SocketChannel) x1.channel();
                     ByteBuffer allocate = ByteBuffer.allocate(1024);
                     int read = socketChannel.read(allocate);
-                    allocate.flip();
+                    allocate.rewind();
                     byte[] rs = new byte[read];
                     allocate.get(rs);
-                    System.out.println(new String(rs));
+                    System.out.println(x1.attachment() + ":" + Thread.currentThread() + ":" + new String(rs));
                 }
                 if (x1.isAcceptable()) {
                     ServerSocketChannel channel = (ServerSocketChannel) x1.channel();
                     SocketChannel socketChannel = channel.accept();
+
+                    Socket socket = socketChannel.socket();
+                    SocketAddress remoteSocketAddress = socket.getRemoteSocketAddress();
+
+
                     socketChannel.configureBlocking(false);
-                    socketChannel.register(selector, SelectionKey.OP_READ);
-                    socketChannel.register(selector, SelectionKey.OP_WRITE);
+                    SelectionKey register1 = socketChannel.register(selector, SelectionKey.OP_READ);
+                    register1.attach(remoteSocketAddress);
                 }
 
                 if (x1.isWritable()) {
-                    x1.cancel();
+                    // x1.cancel();
                     SocketChannel socketChannel = (SocketChannel) x1.channel();
                     socketChannel.write(ByteBuffer.wrap("HI".getBytes()));
                     System.out.println("可以写出了");
                 }
-
                 iterator.remove();
-
-
             }
-
-
-        }
-
-
-    
+        }  
 ```
