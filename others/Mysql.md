@@ -1,5 +1,8 @@
 ## Mysql内容
 
+## 踏坑 limit 可能会影响索引的选择 
+
+
 ## sql分析
 * explain
 ```
