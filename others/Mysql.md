@@ -1,5 +1,42 @@
 ## Mysql内容
 
+## sql分析
+* explain
+```
+explain select * from xxx
+```
+* show profile
+```
+show profiles
+show profile for query 102
+```
+* 分析结果
+```
+starting	0.000242
+checking permissions	0.000030
+Opening tables	0.000130
+init	0.000043
+System lock	0.000027
+optimizing	0.000025
+optimizing	0.000042
+statistics	0.001707
+preparing	0.000079
+Sorting result	0.000030
+statistics	0.000029
+preparing	0.000029
+executing	0.000050
+Sending data	0.000039
+executing	0.000024
+Sending data	70.696065
+end	0.000151
+query end	0.000032
+closing tables	0.000025
+removing tmp table	0.000038
+closing tables	0.000052
+freeing items	0.000109
+logging slow query	0.000160
+cleaning up	0.000634
+```
 
 ## 格式化日期
 ```
