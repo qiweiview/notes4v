@@ -1,13 +1,9 @@
-# Notes 4 View 
-[个人主页](https://qw607.com)    
+# Notes 4 View
 
-## 目录结构
+* 内容为个人笔记
+* 或许存在错误理解
 
-* [Java相关(java)](https://github.com/qiweiview/notes4v/tree/master/java)
-* [其他相关(others)](https://github.com/qiweiview/notes4v/tree/master/others)
-* [Java类库阅读(sourceCode/java)](https://github.com/qiweiview/notes4v/tree/master/sourceCode/java)
-* [Tcp/Ip网络基础学习(courseNotes/tcpIp)](https://github.com/qiweiview/notes4v/tree/master/courseNotes/tcpIp)
-* [刷题记录(leetCode)](https://github.com/qiweiview/notes4v/tree/master/leetCode)
-* [部署脚本(script)](https://github.com/qiweiview/notes4v/tree/master/script)
+
+
 
 
