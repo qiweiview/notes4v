@@ -4,9 +4,9 @@
 ## 死锁事务处理
 ```
 SELECT * FROM `information_schema`.`innodb_trx` ORDER BY `trx_started`
-
-## 找到死锁事务的 trx_mysql_thread_id 
-
+```
+* 找到死锁事务的 trx_mysql_thread_id 
+```
 KILL trx_mysql_thread_id;
 ```
 
