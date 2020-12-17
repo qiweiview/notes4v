@@ -55,6 +55,10 @@ cleaning up	0.000634
 ```
 DATE_FORMAT(belongDate,'%Y-%m-%d')
 ```
+* 字符串转日期
+```
+str_to_date(date,'%Y-%m-%d') 
+```
 
 ## delete in select 
 ```
