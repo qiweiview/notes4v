@@ -1,5 +1,10 @@
 # oracle 常用
 
+## char 类型定长
+```
+RPAD(idCard,19) -- 右边补齐
+LPAD(idCard,19) -- 左边补齐
+```
 
 * 数据恢复
 ```
