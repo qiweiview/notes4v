@@ -4,9 +4,18 @@
 
 * 查询哪些对象被锁：
 ```
-select object_name,machine,s.sid,s.serial#
- from v$locked_object l,dba_objects o ,v$session s
- where l.object_id　=　o.object_id and l.session_id=s.sid;
+SELECT
+	object_name,
+	machine,
+	s.sid,
+	s.serial # 
+FROM
+	v$locked_object l,
+	dba_objects o,
+	v$session s 
+WHERE
+	l.object_id　 =　 o.object_id 
+	AND l.session_id = s.sid;
 ```
 
 * 杀死一个进程：
