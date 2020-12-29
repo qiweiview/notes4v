@@ -1,5 +1,7 @@
 # javassist教程
 
+## [文档地址](https://www.javassist.org/tutorial/tutorial.html)
+
 ## 依赖
 ```
         <dependency>
