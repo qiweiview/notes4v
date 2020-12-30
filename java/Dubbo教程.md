@@ -4,6 +4,39 @@
 * 关注对象的值，不关注对象的方法
 * 消费端类加载器加载不到类接口的类，会使用map去装结果集
 
+
+## Url Key值
+```
+dubbo://192.168.31.5:889/123?anyhost=true&
+application=hello_dubbo&
+bind.ip=192.168.31.5&
+bind.port=889&
+deprecated=false&
+dubbo=2.0.2&
+dynamic=true&
+generic=true&
+group=g_20201230&
+interface=123&
+methods=*&
+pid=21496&
+release=2.7.8&
+side=provider&
+timestamp=1609308397514&
+version=v_20201230
+```
+* method在使用泛化时候会是*否则用逗号隔开
+```
+methods=sayHi2,sayHi3,sayHi
+```
+* version,group 不设置默认是没有的
+* 端口没有绑定会用默认的20880
+```
+public class DubboProtocol extends AbstractProtocol {
+ public int getDefaultPort() {
+        return 20880;
+    }
+```
+
 ## Dubbo范例
 
 ## 依赖
@@ -202,6 +235,9 @@ public class GenericServiceImpl implements GenericService {
         </dependency>
     </dependencies>
 ```
+
+# --------------------------------------旧笔记分割线----------------------------------
+
 
 ## Xml配置
 
