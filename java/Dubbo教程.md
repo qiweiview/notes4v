@@ -6,7 +6,12 @@
 
 ## 协议
 * [![rLOsRf.png](https://s3.ax1x.com/2020/12/30/rLOsRf.png)](https://imgchr.com/i/rLOsRf)
-* header总包含了16个字节的数据,其中前两个字节为魔数
+* header总包含了16个字节的数据
+
+|  magic(2)    | requstflag/serializationId(1)  |  responseCode(1)  | requestid(8)  | dataLength(4)  |
+
+
+* 前两个字节为魔数
 * 后面紧这的一个字节是请求和序列化标记的组合结果requstflag|serializationId。
 * 其中高四位标示请求的requstflag
 ```
