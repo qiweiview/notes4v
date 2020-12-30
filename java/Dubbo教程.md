@@ -118,6 +118,23 @@ Method parameter types，参数类型
 Method arguments，参数值
 Attachments，附录
 ```
+* 范例（反序列化出的对象）
+```
+public  int sayHi(int i,String s,Long l,Double d,int i2);
+
+class java.lang.String--->2.0.2
+class java.lang.String--->com.config.dubbo.producer.ViewInter
+class java.lang.String--->0.0.0
+class java.lang.String--->sayHi
+class java.lang.String--->ILjava/lang/String;Ljava/lang/Long;Ljava/lang/Double;I
+class java.lang.Integer--->123777
+class java.lang.String--->sss
+class java.lang.Long--->5
+class java.lang.Double--->5.0
+class java.lang.Integer--->888
+class java.util.HashMap--->{path=com.config.dubbo.producer.ViewInter, remote.application=yyy, interface=com.config.dubbo.producer.ViewInter, version=0.0.0}
+```
+
 
 * 如果是响应包（Req/Res = 0），则每个部分依次为：
 ```
