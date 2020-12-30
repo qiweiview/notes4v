@@ -98,6 +98,8 @@ public class JobImpl implements JobInterface {
 
 
 ## 泛化
+### 通过一个字符串绑定GenericService接口实现
+
 * provider
 ```
  @Bean
