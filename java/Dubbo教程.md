@@ -13,6 +13,27 @@
 |  魔数    | 请求和序列化标记的组合结果  |  响应的结果码  | 请求id  | body内容大小，单位是byte  |
 
 
+* 范例
+```
+0000: DA BB C2 00 00 00 00 00   00 00 00 00 00 00 00 E8  ................
+0010: 05 32 2E 30 2E 32 03 31   32 33 05 30 2E 30 2E 30  .2.0.2.123.0.0.0
+0020: 07 24 69 6E 76 6F 6B 65   30 38 4C 6A 61 76 61 2F  .$invoke08Ljava/
+0030: 6C 61 6E 67 2F 53 74 72   69 6E 67 3B 5B 4C 6A 61  lang/String;[Lja
+0040: 76 61 2F 6C 61 6E 67 2F   53 74 72 69 6E 67 3B 5B  va/lang/String;[
+0050: 4C 6A 61 76 61 2F 6C 61   6E 67 2F 4F 62 6A 65 63  Ljava/lang/Objec
+0060: 74 3B 0B 67 65 74 55 73   65 72 49 6E 66 6F 72 07  t;.getUserInfor.
+0070: 5B 73 74 72 69 6E 67 11   6A 61 76 61 2E 6C 61 6E  [string.java.lan
+0080: 67 2E 49 6E 74 65 67 65   72 10 6A 61 76 61 2E 6C  g.Integer.java.l
+0090: 61 6E 67 2E 53 74 72 69   6E 67 72 07 5B 6F 62 6A  ang.Stringr.[obj
+00A0: 65 63 74 91 08 67 75 6F   78 69 2E 6C 69 48 04 70  ect..guoxi.liH.p
+00B0: 61 74 68 03 31 32 33 12   72 65 6D 6F 74 65 2E 61  ath.123.remote.a
+00C0: 70 70 6C 69 63 61 74 69   6F 6E 03 79 79 79 09 69  pplication.yyy.i
+00D0: 6E 74 65 72 66 61 63 65   03 31 32 33 07 76 65 72  nterface.123.ver
+00E0: 73 69 6F 6E 05 30 2E 30   2E 30 07 67 65 6E 65 72  sion.0.0.0.gener
+00F0: 69 63 04 74 72 75 65 5A   
+```
+
+
 ### 组合结果requstflag|serializationId
 * 高四位标示请求的requstflag
 ```
@@ -81,26 +102,6 @@ JavaSerialization：0011
   public static final byte SERVER_THREADPOOL_EXHAUSTED_ERROR = 100;
 ```
 
-
-* 范例
-```
-0000: DA BB C2 00 00 00 00 00   00 00 00 00 00 00 00 E8  ................
-0010: 05 32 2E 30 2E 32 03 31   32 33 05 30 2E 30 2E 30  .2.0.2.123.0.0.0
-0020: 07 24 69 6E 76 6F 6B 65   30 38 4C 6A 61 76 61 2F  .$invoke08Ljava/
-0030: 6C 61 6E 67 2F 53 74 72   69 6E 67 3B 5B 4C 6A 61  lang/String;[Lja
-0040: 76 61 2F 6C 61 6E 67 2F   53 74 72 69 6E 67 3B 5B  va/lang/String;[
-0050: 4C 6A 61 76 61 2F 6C 61   6E 67 2F 4F 62 6A 65 63  Ljava/lang/Objec
-0060: 74 3B 0B 67 65 74 55 73   65 72 49 6E 66 6F 72 07  t;.getUserInfor.
-0070: 5B 73 74 72 69 6E 67 11   6A 61 76 61 2E 6C 61 6E  [string.java.lan
-0080: 67 2E 49 6E 74 65 67 65   72 10 6A 61 76 61 2E 6C  g.Integer.java.l
-0090: 61 6E 67 2E 53 74 72 69   6E 67 72 07 5B 6F 62 6A  ang.Stringr.[obj
-00A0: 65 63 74 91 08 67 75 6F   78 69 2E 6C 69 48 04 70  ect..guoxi.liH.p
-00B0: 61 74 68 03 31 32 33 12   72 65 6D 6F 74 65 2E 61  ath.123.remote.a
-00C0: 70 70 6C 69 63 61 74 69   6F 6E 03 79 79 79 09 69  pplication.yyy.i
-00D0: 6E 74 65 72 66 61 63 65   03 31 32 33 07 76 65 72  nterface.123.ver
-00E0: 73 69 6F 6E 05 30 2E 30   2E 30 07 67 65 6E 65 72  sion.0.0.0.gener
-00F0: 69 63 04 74 72 75 65 5A   
-```
 
 ## Url Key值
 ```
