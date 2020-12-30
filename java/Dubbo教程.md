@@ -1,7 +1,9 @@
 # Dubbo教程
 
-* 关注对象的值，不关注对象的方法
+* dubbo的调用返回关注对象的值，不关注调用对象的方法
 * 消费端类加载器加载不到类接口的类，会使用map去装结果集
+* 在 Provider 端配置后，Consumer 端不配置则会使用 Provider 端的配置，即 Provider 端的配置可以作为 Consumer 的缺省值 
+* 否则，Consumer 会使用 Consumer 端的全局设置，这对于 Provider 是不可控的
 
 
 ## 协议
