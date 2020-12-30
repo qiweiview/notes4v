@@ -1,7 +1,7 @@
 # javassist教程
 
 
-* 在jdk8以上会有问题，模块化后get可能会报找不到类
+* 在jdk8以上使用要注意依赖版本要对,例如dubbbo默认使用的javassist:3.20.0-GA就会报错
 
 
 ## [文档地址](https://www.javassist.org/tutorial/tutorial.html)
