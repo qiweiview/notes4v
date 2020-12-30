@@ -9,7 +9,7 @@
 * header总包含了16个字节的数据
 
 |  magic(2)    | requstflag/serializationId(1)  |  responseCode(1)  | requestid(8)  | dataLength(4)  |
-
+|  ----  | ----  |
 
 * 前两个字节为魔数
 * 后面紧这的一个字节是请求和序列化标记的组合结果requstflag|serializationId。
