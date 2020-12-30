@@ -12,22 +12,23 @@
 |  ----  | ----  | ----  | ----  | ----  |
 |  魔数    | 请求和序列化标记的组合结果  |  响应的结果码  | 请求id  | body内容大小，单位是byte  |
 
-* 前两个字节为魔数
-* 后面紧这的一个字节是请求和序列化标记的组合结果requstflag|serializationId。
-* 其中高四位标示请求的requstflag
+
+### 组合结果requstflag|serializationId
+* 高四位标示请求的requstflag
 ```
   protected static final byte FLAG_REQUEST = (byte) 0x80;//1000
   protected static final byte FLAG_TWOWAY = (byte) 0x40;//0100
   protected static final byte FLAG_EVENT = (byte) 0x20;//0010
 ```
-* 其中低四位标示序列化方式serializationId：
+* 低四位标示序列化方式serializationId：
 ```
 DubboSerialization：0001
 FastJsonSerialization：0110
 Hessian2Serialization：0010
 JavaSerialization：0011
 ```
-* 后面一个字节是响应报文里面才设置（请求报文里面不设置），用来标示响应的结果码
+### 响应的结果码
+* 请求报文里面不设置，用来标示响应的结果码
 ```
 /**
    * ok.
@@ -79,8 +80,7 @@ JavaSerialization：0011
    */
   public static final byte SERVER_THREADPOOL_EXHAUSTED_ERROR = 100;
 ```
-* 后面8个字节是请求id
-* 后面4个字节是body内容大小，单位是byte.
+
 
 * 范例
 ```
