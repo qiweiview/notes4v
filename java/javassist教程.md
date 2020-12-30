@@ -1,5 +1,9 @@
 # javassist教程
 
+
+* 在jdk8以上会有问题，模块化后get可能会报找不到类
+
+
 ## [文档地址](https://www.javassist.org/tutorial/tutorial.html)
 
 ## 依赖
