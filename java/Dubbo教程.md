@@ -5,6 +5,8 @@
 
 
 ## 协议
+
+### 协议头
 * [![rLOsRf.png](https://s3.ax1x.com/2020/12/30/rLOsRf.png)](https://imgchr.com/i/rLOsRf)
 * header总包含了16个字节的数据
 
@@ -37,7 +39,7 @@
 ```
 
 
-### 组合结果requstflag|serializationId
+#### 组合结果requstflag|serializationId
 * 高四位标示请求的requstflag
 ```
   protected static final byte FLAG_REQUEST = (byte) 0x80;//1000
@@ -51,7 +53,7 @@ FastJsonSerialization：0110
 Hessian2Serialization：0010
 JavaSerialization：0011
 ```
-### 响应的结果码
+#### 响应的结果码
 * 请求报文里面不设置，用来标示响应的结果码
 ```
 /**
@@ -105,6 +107,33 @@ JavaSerialization：0011
   public static final byte SERVER_THREADPOOL_EXHAUSTED_ERROR = 100;
 ```
 
+### 协议体
+* 请求包 ( Req/Res = 1)，则每个部分依次为：
+```
+Dubbo version，dubbo协议版本号，比如在2.7.5版本里面，dubbo version是2.0.2
+Service name，服务接口名
+Service version，服务的group值
+Method name，方法名
+Method parameter types，参数类型
+Method arguments，参数值
+Attachments，附录
+```
+
+* 如果是响应包（Req/Res = 0），则每个部分依次为：
+```
+返回值类型(byte)，标识从服务器端返回的值类型：
+
+异常：RESPONSE_WITH_EXCEPTION=0
+正常响应值： RESPONSE_VALUE=1
+返回空值：RESPONSE_NULL_VALUE=2
+带附录的异常返回值：RESPONSE_WITH_EXCEPTION_WITH_ATTACHMENTS=3
+带附录的正常响应值：RESPONSE_VALUE_WITH_ATTACHMENTS=4
+带附录的空值：RESPONSE_NULL_VALUE_WITH_ATTACHMENTS=5
+
+返回值：从服务端返回的响应bytes，如果返回值类型是2或者5，该字段是空
+
+Attachments：当返回值类型是3、4、5时，则在响应包里面添加附录信息，在2.7.5版本里面，附录值只有dubbo协议的版本号，也就是2.0.2。
+```
 
 ## Url Key值
 ```
