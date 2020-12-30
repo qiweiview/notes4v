@@ -1,9 +1,100 @@
 # Dubbo教程
 
-## 关键
 * 关注对象的值，不关注对象的方法
 * 消费端类加载器加载不到类接口的类，会使用map去装结果集
 
+
+## 协议
+* [![rLOsRf.png](https://s3.ax1x.com/2020/12/30/rLOsRf.png)](https://imgchr.com/i/rLOsRf)
+* header总包含了16个字节的数据,其中前两个字节为魔数
+* 后面紧这的一个字节是请求和序列化标记的组合结果requstflag|serializationId。
+* 其中高四位标示请求的requstflag
+```
+  protected static final byte FLAG_REQUEST = (byte) 0x80;//1000
+  protected static final byte FLAG_TWOWAY = (byte) 0x40;//0100
+  protected static final byte FLAG_EVENT = (byte) 0x20;//0010
+```
+* 其中低四位标示序列化方式serializationId：
+```
+DubboSerialization：0001
+FastJsonSerialization：0110
+Hessian2Serialization：0010
+JavaSerialization：0011
+```
+* 后面一个字节是响应报文里面才设置（请求报文里面不设置），用来标示响应的结果码
+```
+/**
+   * ok.
+   */
+  public static final byte OK = 20;
+
+  /**
+   * clien side timeout.
+   */
+  public static final byte CLIENT_TIMEOUT = 30;
+
+  /**
+   * server side timeout.
+   */
+  public static final byte SERVER_TIMEOUT = 31;
+
+  /**
+   * request format error.
+   */
+  public static final byte BAD_REQUEST = 40;
+
+  /**
+   * response format error.
+   */
+  public static final byte BAD_RESPONSE = 50;
+
+  /**
+   * service not found.
+   */
+  public static final byte SERVICE_NOT_FOUND = 60;
+
+  /**
+   * service error.
+   */
+  public static final byte SERVICE_ERROR = 70;
+
+  /**
+   * internal server error.
+   */
+  public static final byte SERVER_ERROR = 80;
+
+  /**
+   * internal server error.
+   */
+  public static final byte CLIENT_ERROR = 90;
+
+  /**
+   * server side threadpool exhausted and quick return.
+   */
+  public static final byte SERVER_THREADPOOL_EXHAUSTED_ERROR = 100;
+```
+* 后面8个字节是请求id
+* 后面4个字节是body内容大小，单位是byte.
+
+* 范例
+```
+0000: DA BB C2 00 00 00 00 00   00 00 00 00 00 00 00 E8  ................
+0010: 05 32 2E 30 2E 32 03 31   32 33 05 30 2E 30 2E 30  .2.0.2.123.0.0.0
+0020: 07 24 69 6E 76 6F 6B 65   30 38 4C 6A 61 76 61 2F  .$invoke08Ljava/
+0030: 6C 61 6E 67 2F 53 74 72   69 6E 67 3B 5B 4C 6A 61  lang/String;[Lja
+0040: 76 61 2F 6C 61 6E 67 2F   53 74 72 69 6E 67 3B 5B  va/lang/String;[
+0050: 4C 6A 61 76 61 2F 6C 61   6E 67 2F 4F 62 6A 65 63  Ljava/lang/Objec
+0060: 74 3B 0B 67 65 74 55 73   65 72 49 6E 66 6F 72 07  t;.getUserInfor.
+0070: 5B 73 74 72 69 6E 67 11   6A 61 76 61 2E 6C 61 6E  [string.java.lan
+0080: 67 2E 49 6E 74 65 67 65   72 10 6A 61 76 61 2E 6C  g.Integer.java.l
+0090: 61 6E 67 2E 53 74 72 69   6E 67 72 07 5B 6F 62 6A  ang.Stringr.[obj
+00A0: 65 63 74 91 08 67 75 6F   78 69 2E 6C 69 48 04 70  ect..guoxi.liH.p
+00B0: 61 74 68 03 31 32 33 12   72 65 6D 6F 74 65 2E 61  ath.123.remote.a
+00C0: 70 70 6C 69 63 61 74 69   6F 6E 03 79 79 79 09 69  pplication.yyy.i
+00D0: 6E 74 65 72 66 61 63 65   03 31 32 33 07 76 65 72  nterface.123.ver
+00E0: 73 69 6F 6E 05 30 2E 30   2E 30 07 67 65 6E 65 72  sion.0.0.0.gener
+00F0: 69 63 04 74 72 75 65 5A   
+```
 
 ## Url Key值
 ```
@@ -37,9 +128,14 @@ public class DubboProtocol extends AbstractProtocol {
     }
 ```
 
+## 消费者直连
+```
+reference.setUrl("dubbo://localhost:889");
+```
+
 ## Dubbo范例
 
-## 依赖
+### 依赖
 ```
  <dependency>
             <groupId>org.apache.dubbo</groupId>
@@ -63,7 +159,7 @@ public class DubboProtocol extends AbstractProtocol {
 
 
 
-## 配置
+### 配置
 * 接口
 ```
 public interface JobInterface {
