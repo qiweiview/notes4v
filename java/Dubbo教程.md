@@ -143,16 +143,23 @@ class java.util.HashMap--->{path=com.config.dubbo.producer.ViewInter, remote.app
 ```
 返回值类型(byte)，标识从服务器端返回的值类型：
 
-异常：RESPONSE_WITH_EXCEPTION=0
-正常响应值： RESPONSE_VALUE=1
-返回空值：RESPONSE_NULL_VALUE=2
-带附录的异常返回值：RESPONSE_WITH_EXCEPTION_WITH_ATTACHMENTS=3
-带附录的正常响应值：RESPONSE_VALUE_WITH_ATTACHMENTS=4
-带附录的空值：RESPONSE_NULL_VALUE_WITH_ATTACHMENTS=5
+ 异常：RESPONSE_WITH_EXCEPTION=0
+ 正常响应值： RESPONSE_VALUE=1
+ 返回空值：RESPONSE_NULL_VALUE=2
+ 带附录的异常返回值：RESPONSE_WITH_EXCEPTION_WITH_ATTACHMENTS=3
+ 带附录的正常响应值：RESPONSE_VALUE_WITH_ATTACHMENTS=4
+ 带附录的空值：RESPONSE_NULL_VALUE_WITH_ATTACHMENTS=5
 
 返回值：从服务端返回的响应bytes，如果返回值类型是2或者5，该字段是空
 
 Attachments：当返回值类型是3、4、5时，则在响应包里面添加附录信息，在2.7.5版本里面，附录值只有dubbo协议的版本号，也就是2.0.2。
+```
+
+* 范例（反序列化出的对象）
+```
+class java.lang.Integer-->4
+class java.lang.Integer-->123
+class java.util.HashMap-->{dubbo=2.0.2}
 ```
 
 ## Url Key值
