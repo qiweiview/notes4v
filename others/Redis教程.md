@@ -47,6 +47,8 @@
         jedis.hset(key,map); //低版本不支持多参数
         
         Long view = jedis.hset(key, "view", "88");
+        
+        jedis.hincrBy(key,"lily",5);//自增
 ```
 
 ### 验证密码是否正确
