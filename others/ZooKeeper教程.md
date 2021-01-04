@@ -13,11 +13,13 @@
 | ------------- | ------------- | ------------- | ------------- | ------------- |
 |4|4|4|4|n|
 
+* xid用于记录客户端请求发起的先后序号，用来确保单个客户端请求的响应顺序
+* type代表请求的操作类型，如创建节点（OpCode.create）、删除节点（OpCode.delete）、获取节点数据（OpCode.getData）
 ### 请求协议头
 ```
  class RequestHeader {
-        int xid;//xid用于记录客户端请求发起的先后序号，用来确保单个客户端请求的响应顺序
-        int type;//type代表请求的操作类型，如创建节点（OpCode.create）、删除节点（OpCode.delete）、获取节点数据（OpCode.getData）
+        int xid;//
+        int type;//
     }
     
 ```
@@ -28,16 +30,19 @@
 
 
 ### 响应报文
-|length_head|xid|xxid|err|length_body|
+|length_head|xid|zxid|err|length_body|
 | ------------- | ------------- | ------------- | ------------- | ------------- |
 |4|4|8|4|4|
 
+* xid用于记录客户端请求发起的先后序号，用来确保单个客户端请求的响应顺序
+* zxid表示Zookeeper服务器上当前最新的事务ID
+* err则是一个错误码，表示当请求处理过程出现异常情况时，就会在错误码中标识出来，常见的包括处理成功（Code.OK）、节点不存在（Code.NONODE）、没有权限（Code.NOAUTH）
 ### 响应头
 ```
  class ReplyHeader {
         int xid;
-        long zxid; //zxid表示Zookeeper服务器上当前最新的事务ID
-        int err; //err则是一个错误码，表示当请求处理过程出现异常情况时，就会在错误码中标识出来，常见的包括处理成功（Code.OK）、节点不存在（Code.NONODE）、没有权限（Code.NOAUTH）
+        long zxid; //
+        int err; //
     }
 ```
 
