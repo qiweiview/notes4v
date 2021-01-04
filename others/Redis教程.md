@@ -51,6 +51,24 @@
         jedis.hincrBy(key,"lily",5);//自增
 ```
 
+* 分布式锁
+```
+        for (int i = 0; i < 50; i++) {
+            final int z=i;
+            new Thread(() -> {
+                Jedis jedis = new Jedis("localhost", 6379);
+                jedis.auth("123456");
+
+                String key = "name_set";
+
+                Long clock = jedis.setnx(key, "clock_"+z);
+                System.out.println(clock);
+
+            }).start();
+        }
+
+```
+
 ### 验证密码是否正确
 ```
 auth password
