@@ -13,6 +13,24 @@
 
 ```
 
+* 订阅广播
+```
+        new Thread(()->{
+            Jedis jedis2 = new Jedis("localhost",6379);
+            jedis2.auth("123456");
+            while (true){
+                jedis2.publish("c_1","广播");
+            }
+        }).start();
+        
+        Jedis jedis = new Jedis("localhost",6379);
+        jedis.auth("123456");
+        jedis.subscribe(new MyJedisPubSub(),"c_1");
+
+```
+
+
+
 ### 验证密码是否正确
 ```
 auth password
