@@ -1,6 +1,41 @@
 
 # ZooKeeper教程
 
+## 通信协议
+![](https://images2015.cnblogs.com/blog/616953/201611/616953-20161124103957878-1344513149.png)
+![](https://images2015.cnblogs.com/blog/616953/201611/616953-20161124103957878-1344513149.png)
+
+### 请求协议头
+```
+ class RequestHeader {
+        int xid;//xid用于记录客户端请求发起的先后序号，用来确保单个客户端请求的响应顺序
+        int type;//type代表请求的操作类型，如创建节点（OpCode.create）、删除节点（OpCode.delete）、获取节点数据（OpCode.getData）
+    }
+    
+```
+
+### 请求请求体
+* 不同请求请求体不一样
+* 类都在org.apache.zookeeper.proto包下
+
+
+### 响应报文
+![](https://images2015.cnblogs.com/blog/616953/201611/616953-20161124105254362-1595181138.png)
+
+### 响应头
+```
+ class ReplyHeader {
+        int xid;
+        long zxid; //zxid表示Zookeeper服务器上当前最新的事务ID
+        int err; //err则是一个错误码，表示当请求处理过程出现异常情况时，就会在错误码中标识出来，常见的包括处理成功（Code.OK）、节点不存在（Code.NONODE）、没有权限（Code.NOAUTH）
+    }
+```
+
+### 响应体
+* 不同响应响应体不一样
+
+
+
 ## 添加监听器 3.6版本后特性
 * ERSISTENT是不监听子孙节点
 * PERSISTENT_RECURSIVE是递归监听子孙节点
@@ -23,6 +58,7 @@
         },AddWatchMode.PERSISTENT_RECURSIVE);
 
 ```
+
 
 
 ## ======================= 笔记分割线 ===========================
