@@ -50,11 +50,11 @@ then
 * PERSISTENT-持久化目录节点
 客户端与zookeeper断开连接后，该节点依旧存在
 * PERSISTENT_SEQUENTIAL-持久化顺序编号目录节点
-客户端与zookeeper断开连接后，该节点依旧存在，只是Zookeeper给该节点名称进行顺序编号
+客户端与zookeeper断开连接后，该节点依旧存在，只是Zookeeper给该节点名称进行顺序编号，会追加数字后缀
 * EPHEMERAL-临时目录节点
 客户端与zookeeper断开连接后，该节点被删除，主节点是临时的话，就不能构建其子节点
 * EPHEMERAL_SEQUENTIAL-临时顺序编号目录节点
-客户端与zookeeper断开连接后，该节点被删除，只是Zookeeper给该节点名称进行顺序编号
+客户端与zookeeper断开连接后，该节点被删除，只是Zookeeper给该节点名称进行顺序编号，会追加数字后缀
  
 ## ACL
 每个znode被创建时都会带有一个ACL列表，用于决定谁可以对它执行何种操作。
