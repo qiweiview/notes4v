@@ -4,7 +4,10 @@
 ## 通信协议
 
 ### 请求报文
-![](https://images2015.cnblogs.com/blog/616953/201611/616953-20161124103957878-1344513149.png)
+
+|length_head|xid|type|length_body|body|
+|  ----  | ----  |
+|4|4|4|4|n|
 
 ### 请求协议头
 ```
