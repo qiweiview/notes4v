@@ -1,7 +1,7 @@
 # Redis教程
 
 ## 协议
-[文档](http://redisdoc.com/topic/protocol.html)
+[参考材料](http://redisdoc.com/topic/protocol.html)
 
 * 客户端和服务器发送的命令或数据一律以 \r\n （CRLF）结尾
 
