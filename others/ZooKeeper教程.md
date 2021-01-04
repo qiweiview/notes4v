@@ -1,6 +1,20 @@
 
 # ZooKeeper教程
 
+## 添加监听器 3.6版本后特性
+* ERSISTENT是不监听子孙节点
+* PERSISTENT_RECURSIVE是递归监听子孙节点
+```
+ ZooKeeper zk = new ZooKeeper("127.0.0.1:2181", 2 * 1000, watcher);
+
+        zk.addWatch("/",x->{
+            System.out.println(x.getPath()+"："+x.getType());
+        },AddWatchMode.PERSISTENT_RECURSIVE);
+ //监听模式，PERSISTENT是不监听子孙节点，PERSISTENT_RECURSIVE是递归监听子孙节点
+```
+
+## ======================= 笔记分割线 ===========================
+
 ## 设置jmx监控
 * 修改ZOOMAIN块
 ```
