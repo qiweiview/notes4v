@@ -1,4 +1,18 @@
 ## redis系统操作
+
+
+
+## 客户端
+* jedis: apid和原生近乎相同，但存在线程安全问题
+```
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>3.3.0</version>
+        </dependency>
+
+```
+
 ### 验证密码是否正确
 ```
 auth password
