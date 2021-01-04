@@ -29,7 +29,25 @@
 
 ```
 
+* 列表操作
+```
+        String key="l_1";
+        jedis.rpush(key, UUID.randomUUID().toString());
+        List<String> l_1 = jedis.lrange(key, 0, 5);
+```
 
+* 哈希操作
+```
+  Jedis jedis = new Jedis("localhost",6379);
+        jedis.auth("123456");
+        String key="name_set";
+        Map<String,String> map=new HashMap<>();
+        map.put("lily", "60");
+        map.put("brush", "77");
+        jedis.hset(key,map); //低版本不支持多参数
+        
+        Long view = jedis.hset(key, "view", "88");
+```
 
 ### 验证密码是否正确
 ```
