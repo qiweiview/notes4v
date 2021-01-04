@@ -4,14 +4,26 @@
 ## 添加监听器 3.6版本后特性
 * ERSISTENT是不监听子孙节点
 * PERSISTENT_RECURSIVE是递归监听子孙节点
-```
- ZooKeeper zk = new ZooKeeper("127.0.0.1:2181", 2 * 1000, watcher);
 
-        zk.addWatch("/",x->{
-            System.out.println(x.getPath()+"："+x.getType());
-        },AddWatchMode.PERSISTENT_RECURSIVE);
- //监听模式，PERSISTENT是不监听子孙节点，PERSISTENT_RECURSIVE是递归监听子孙节点
 ```
+        ZooKeeper zk = new ZooKeeper("127.0.0.1:2181", 2 * 1000, watcher);
+
+        zk.addWatch(key,x->{
+            Stat stat = new Stat();
+            try {
+                byte[] data = zk.getData(x.getPath(), false, stat);
+                System.out.println(x.getPath()+"发生变化："+" 值变更为："+new String(data));
+            } catch (KeeperException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+
+        },AddWatchMode.PERSISTENT_RECURSIVE);
+
+```
+
 
 ## ======================= 笔记分割线 ===========================
 
