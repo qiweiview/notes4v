@@ -10,11 +10,14 @@
 
 
 ```
-$<参数 1 的字节数量> CR LF
-<参数 1 的数据> CR LF
+* <参数数量> CR LF
+$ <参数 1 的字节数量> CR LF
+  <参数 1 的数据> CR LF
 ...
-$<参数 N 的字节数量> CR LF
-<参数 N 的数据> CR LF
+...
+
+$ <参数 N 的字节数量> CR LF
+  <参数 N 的数据> CR LF
 ```
 * 例如 set mykey myvalue 的报文
 ```
