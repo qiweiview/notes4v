@@ -52,7 +52,7 @@
 
 
 ## 添加监听器 3.6版本后特性
-* ERSISTENT是不监听子孙节点
+* PERSISTENT是不监听子孙节点
 * PERSISTENT_RECURSIVE是递归监听子孙节点
 
 ```
