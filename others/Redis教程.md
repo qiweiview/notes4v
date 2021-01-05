@@ -1,5 +1,16 @@
 # Redis教程
 
+## 过期策略
+
+* EXPIRE和PERSIST 分别设置过期和永久
+* 定时过期(但是会占用大量的CPU资源去处理过期的数据，从而影响缓存的响应时间和吞吐量)
+* 惰性过期(极端情况可能出现大量的过期key没有再次被访问，从而不会被清除，占用大量内存)
+* 定期过期
+
+## 持久化
+* Redis DataBase (RDB) :一定的时间将内存的数据以快照的形式保存到硬盘中，对应产生的数据文件为dump.rdb
+* Append Only File (AOF) :将Redis执行的每次写命令记录到单独的日志文件中
+
 ## 协议
 [参考材料](http://redisdoc.com/topic/protocol.html)
 
