@@ -24,7 +24,7 @@ http://www.springframework.org/schema/tx/spring-tx.xsd
         BaseMapper mapper = sqlSessionTemplate.getMapper(BaseMapper.class);
         mapper.job2("1111111111111" + UUID.randomUUID().toString());
         service2.doBusiness();
-        throw new RuntimeException();
+        throw new RuntimeException();//到这一步上面service2.doBusiness()的事务已经提交完成了
     }
     
     
