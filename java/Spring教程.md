@@ -12,8 +12,31 @@ http://www.springframework.org/schema/tx/spring-tx.xsd
 
 ```
 
-### 传播机制
+### 传播(Propagation)机制
+
 * REQUIRED(默认): 支持当前事务，如果当前没有事务，则新建事务,如果当前存在事务，则加入当前事务，合并成一个事务
+```
+    @Transactional
+    public void doBusiness() {
+        BaseMapper mapper = sqlSessionTemplate.getMapper(BaseMapper.class);
+        mapper.job2("1111111111111" + UUID.randomUUID().toString());
+        try{//REQUIRED级别下，这里try catch了,也没有用，已经合并成一个事务，任何位置有异常都会回滚
+            service2.doBusiness();
+        }catch (RuntimeException e){
+            System.out.println(e);
+        }
+
+    }
+
+
+    @Transactional
+    public void doBusiness(){
+        BaseMapper mapper = sqlSessionTemplate.getMapper(BaseMapper.class);
+        mapper.job2("22222222"+UUID.randomUUID().toString());
+        throw new RuntimeException();
+    }
+
+```
 * REQUIRES_NEW：新建事务，如果当前存在事务，则把当前事务挂起，这个方法会独立提交事务，不受调用者的事务影响，父级异常，它也是正常提交
 ```
     @Autowired
@@ -38,10 +61,86 @@ http://www.springframework.org/schema/tx/spring-tx.xsd
     
 ```
 * NESTED: 如果当前存在事务，它将会成为父级事务的一个子事务，方法结束后并没有提交，只有等父事务结束才提交,如果当前没有事务，则新建事务,如果它异常，父级可以捕获它的异常而不进行回滚，正常提交,但如果父级异常，它必然回滚，这就是和 REQUIRES_NEW 的区别
-* SUPPORTS: 如果当前存在事务，则加入事务,如果当前不存在事务，则以非事务方式运行，这个和不写没区别
+```
+    @Transactional
+    public void doBusiness() {
+        BaseMapper mapper = sqlSessionTemplate.getMapper(BaseMapper.class);
+        mapper.job2("1111111111111" + UUID.randomUUID().toString());
+        try{//NESTED级别下，这里try catch了，父事务就能正常运行，否则就不行
+            service2.doBusiness();
+        }catch (RuntimeException e){
+            System.out.println(e);
+        }
+
+    }
+
+
+    @Transactional(propagation = Propagation.NESTED)
+    public void doBusiness(){
+        BaseMapper mapper = sqlSessionTemplate.getMapper(BaseMapper.class);
+        mapper.job2("22222222"+UUID.randomUUID().toString());
+        throw new RuntimeException();
+    }
+
+```
+* SUPPORTS: 如果当前存在事务，则加入事务,如果当前不存在事务，则以非事务方式运行，这个和不写 @Transactional注解没区别
 * NOT_SUPPORTED: 以非事务方式运行,如果当前存在事务，则把当前事务挂起
+```
+
+//这里会回滚
+    @Transactional
+    public void doBusiness() {
+        BaseMapper mapper = sqlSessionTemplate.getMapper(BaseMapper.class);
+        mapper.job2("1111111111111" + UUID.randomUUID().toString());
+        service2.doBusiness();
+
+    }
+
+
+//这里的事务会被取消，依然入库
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    public void doBusiness(){
+        BaseMapper mapper = sqlSessionTemplate.getMapper(BaseMapper.class);
+        mapper.job2("22222222"+UUID.randomUUID().toString());
+        throw new RuntimeException();
+    }
+
+```
 * MANDATORY: 如果当前存在事务，则运行在当前事务中,如果当前无事务，则抛出异常，也即父级方法必须有事务
+```
+    public void doBusiness() {
+        BaseMapper mapper = sqlSessionTemplate.getMapper(BaseMapper.class);
+        mapper.job2("1111111111111" + UUID.randomUUID().toString());
+        service2.doBusiness();
+    }
+    
+    @Transactional(propagation = Propagation.MANDATORY)
+    public void doBusiness(){
+        BaseMapper mapper = sqlSessionTemplate.getMapper(BaseMapper.class);
+        mapper.job2("22222222"+UUID.randomUUID().toString());
+        throw new RuntimeException();
+    }
+
+//抛出异常IllegalTransactionStateException: No existing transaction found for transaction marked with propagation 'mandatory'
+```
 * NEVER:以非事务方式运行，如果当前存在事务，则抛出异常，即父级方法必须无事务
+```
+    @Transactional
+    public void doBusiness() {
+        BaseMapper mapper = sqlSessionTemplate.getMapper(BaseMapper.class);
+        mapper.job2("1111111111111" + UUID.randomUUID().toString());
+        service2.doBusiness();
+    }
+
+    @Transactional(propagation = Propagation.NEVER)
+    public void doBusiness(){
+        BaseMapper mapper = sqlSessionTemplate.getMapper(BaseMapper.class);
+        mapper.job2("22222222"+UUID.randomUUID().toString());
+        throw new RuntimeException();
+    }
+
+//抛出异常IllegalTransactionStateException: Existing transaction found for transaction marked with propagation 'never'
+```
 
 ## 最小单位的项目
 * 依赖
