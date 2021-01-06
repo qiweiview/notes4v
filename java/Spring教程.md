@@ -1,5 +1,17 @@
 # Spring教程
 
+## 事务配置
+```
+xmlns:tx="http://www.springframework.org/schema/tx"
+
+http://www.springframework.org/schema/tx
+http://www.springframework.org/schema/tx/spring-tx.xsd
+
+ <!-- 开启事务注解@Transactional支持 -->
+ <tx:annotation-driven transaction-manager="transactionManager" />
+
+```
+
 ## 最小单位的项目
 * 依赖
 ```
