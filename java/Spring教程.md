@@ -13,6 +13,19 @@ http://www.springframework.org/schema/tx/spring-tx.xsd
 ```
 ### 只读事务@Transactional(readOnly = true)
 * 进行一系列的查询，查询间有关联性，需要保持一致（查询中不受新的提交影响）
+```
+    @Transactional(readOnly = true)
+    public void doBusiness() {
+        BaseMapper mapper = sqlSessionTemplate.getMapper(BaseMapper.class);
+        
+        //数据库中有n条数据，在进入方法后手动数据库中插入1条
+        
+        new Thread(()->{
+            List<Map> maps = mapper.job1();//线程内无事务查询出n+1条
+        }).start();
+        List<Map> maps = mapper.job1();//只读事务，依然查询出的是n条
+    }
+```
 * readOnly = true中执行写操作会抛出异常
 ```
 SQLException: Connection is read-only. Queries leading to data modification are not allowed
