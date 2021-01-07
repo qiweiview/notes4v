@@ -13,6 +13,10 @@ http://www.springframework.org/schema/tx/spring-tx.xsd
 ```
 ### 只读事务@Transactional(readOnly = true)
 * 进行一系列的查询，查询间有关联性，需要保持一致（查询中不受新的提交影响）
+* readOnly = true中执行写操作会抛出异常
+```
+SQLException: Connection is read-only. Queries leading to data modification are not allowed
+```
 
 ### 传播(Propagation)机制
 
