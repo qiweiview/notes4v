@@ -4,9 +4,84 @@
 ## [参考1](https://www.ibm.com/developerworks/cn/java/j-lo-jse61/index.html)
 ## [参考2](https://zhuanlan.zhihu.com/p/51909016)
 
+* 示例客户端
+```
+
+public class Premain {
+
+    /**
+     * 启动前客户端方法（只会运行一次）
+     * @param agentArgs
+     * @param inst
+     */
+    public static void premain(String agentArgs, Instrumentation inst) {
+        System.out.println("premain:"+ Arrays.toString(inst.getAllLoadedClasses()));
+    }
+
+    public static void premain(String agentArgs) {
+
+    }
+
+    /**
+     * 运行时客户端方法
+     * @param agentArgs
+     * @param inst
+     */
+    public static void agentmain (String agentArgs, Instrumentation inst) {
+        System.out.println("agentmain:"+ Arrays.toString(inst.getAllLoadedClasses()));
+    }
+    public static void agentmain (String agentArgs) {
+
+
+    }
+}
+
+```
+
+
+## jdk6虚拟机启动后的动态 instrument
+* 应用启动后，连接至应用
+
+### 客户端MANIFEST.MF配置
+```
+Manifest-Version: 1.0
+Created-By: 12.0.1 (Oracle Corporation)
+Agent-Class: Agentmain
+```
+
+
+### Attach API 连接虚拟机
+```
+package t2;
+
+
+import com.sun.tools.attach.*;
+
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+
+public class JVMMonitor {
+    public static void main(String[] args) throws IOException, AttachNotSupportedException, AgentLoadException, AgentInitializationException {
+
+        HashSet<VirtualMachineDescriptor> set = new HashSet<>();
+        List<VirtualMachineDescriptor> list = VirtualMachine.list();
+        for (VirtualMachineDescriptor l : list) {
+            if ("Job".equals(l.displayName())){
+                VirtualMachine attach = VirtualMachine.attach(l);
+                attach.loadAgent("Agentmain.jar");//加载工作目录下的
+                attach.detach();
+            }
+        }
+
+
+    }
+}
+```
+
 
 ## jdk5代理客户端
-
+* 需要在main启动前绑定
 
 
 ### Premain
@@ -75,100 +150,3 @@ public class Premain {
 }
 ```
 
-## jdk6虚拟机启动后的动态 instrument
-
-
-### 客户端MANIFEST.MF配置
-```
-Manifest-Version: 1.0
-Created-By: 12.0.1 (Oracle Corporation)
-Premain-Class: Agentmain
-Agent-Class: Agentmain
-Can-Retransform-Classes: true
-```
-
-### 执行语句 
-```
-java -javaagent:Agentmain.jar=666  -cp Job.jar Job
-```
-
-### 客户端
-```
-
-
-
-import java.io.IOException;
-import java.lang.instrument.ClassFileTransformer;
-import java.lang.instrument.IllegalClassFormatException;
-import java.lang.instrument.Instrumentation;
-import java.lang.instrument.UnmodifiableClassException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.security.ProtectionDomain;
-
-
-public class Agentmain {
-    public static void agentmain(String agentArgs, Instrumentation inst) throws UnmodifiableClassException {
-        System.out.println("agentArgs----->" + agentArgs);
-        inst.addTransformer(new InnerTransformer(), true);
-        inst.retransformClasses(Job.class);
-    }
-
-    public static void premain(String agentArgs, Instrumentation inst) {
-        System.out.println("agentArgs----->" + agentArgs);
-    }
-
-    public static class InnerTransformer implements ClassFileTransformer {
-        @Override
-        public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
-
-            if ("Job".equals(className)) {
-                try {
-                    byte[] bytes = Files.readAllBytes(Paths.get("D:\\class_test_home\\t3\\cc"));
-                    return bytes;
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return null;
-                }
-            } else {
-                System.out.println("---------->" + className);
-                return null;
-            }
-
-        }
-    }
-
-
-}
-
-```
-
-### Attach API 连接虚拟机
-```
-package t2;
-
-
-import com.sun.tools.attach.*;
-
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-
-public class JVMMonitor {
-    public static void main(String[] args) throws IOException, AttachNotSupportedException, AgentLoadException, AgentInitializationException {
-
-        HashSet<VirtualMachineDescriptor> set = new HashSet<>();
-        List<VirtualMachineDescriptor> list = VirtualMachine.list();
-        for (VirtualMachineDescriptor l : list) {
-            if ("Job".equals(l.displayName())){
-                VirtualMachine attach = VirtualMachine.attach(l);
-                attach.loadAgent("Agentmain.jar");
-                attach.detach();
-            }
-        }
-
-
-    }
-}
-```
