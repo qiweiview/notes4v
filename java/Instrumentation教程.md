@@ -22,17 +22,36 @@ public class Premain {
 
     }
 
-    /**
+ /**
      * 运行时客户端方法
+     *
      * @param agentArgs
      * @param inst
      */
-    public static void agentmain (String agentArgs, Instrumentation inst) {
-        System.out.println("agentmain:"+ Arrays.toString(inst.getAllLoadedClasses()));
-    }
-    public static void agentmain (String agentArgs) {
+    public static void agentmain(String agentArgs, Instrumentation inst) {
+        
+        //添加转换器
+        inst.addTransformer(new MyClassFileTransformer(),true);
+        try {
+            inst.retransformClasses(  Class.forName("java_ssist_test.crate_method.Egg"));//重新转换类
+        } catch (Exception e) {
+            System.out.println(" not found java_ssist_test.crate_method.Egg on  agentmain");
+        }
 
+        System.out.println("try transformer:"+inst.isRetransformClassesSupported());
 
+        try {
+            Class<?> aClass2 = Class.forName("java_ssist_test.crate_method.Egg");
+            Method sayHi = aClass2.getDeclaredMethod("fly", String.class);
+            Object o = aClass2.newInstance();
+            Object invoke = sayHi.invoke(o, "view");
+            System.out.println("get return: " + invoke);
+
+        } catch (Exception e) {
+            System.out.println("for name fail cause " + e);
+        }
+
+        System.out.println("agentmain:" + Arrays.toString(inst.getAllLoadedClasses()));
     }
 }
 
