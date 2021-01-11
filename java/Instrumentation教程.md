@@ -46,8 +46,10 @@ public class Premain {
 ```
 Manifest-Version: 1.0
 Created-By: 12.0.1 (Oracle Corporation)
-Agent-Class: Agentmain
+Agent-Class: instrumentation.Premain
+Can-Retransform-Classes: true
 ```
+
 
 
 ### Attach API 连接虚拟机
