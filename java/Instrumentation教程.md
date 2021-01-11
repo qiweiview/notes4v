@@ -9,40 +9,45 @@
 ```
 
 public class Premain {
+    public static int count = 0;
+    public static Class tClass;
 
     /**
      * 启动前客户端方法（只会运行一次）
+     *
      * @param agentArgs
      * @param inst
      */
     public static void premain(String agentArgs, Instrumentation inst) {
-        System.out.println("premain:"+ Arrays.toString(inst.getAllLoadedClasses()));
+        System.out.println("premain:" + Arrays.toString(inst.getAllLoadedClasses()));
     }
 
     public static void premain(String agentArgs) {
 
     }
 
- /**
+    /**
      * 运行时客户端方法
      *
      * @param agentArgs
      * @param inst
      */
     public static void agentmain(String agentArgs, Instrumentation inst) {
-        
-        //添加转换器
-        inst.addTransformer(new MyClassFileTransformer(),true);
+        MyClassFileTransformer myClassFileTransformer = new MyClassFileTransformer();
+        inst.addTransformer(myClassFileTransformer, true);
         try {
-            inst.retransformClasses(  Class.forName("java_ssist_test.crate_method.Egg"));//重新转换类
+            inst.retransformClasses(Class.forName("java_ssist_test.crate_method.Egg"));
         } catch (Exception e) {
             System.out.println(" not found java_ssist_test.crate_method.Egg on  agentmain");
         }
+        inst.removeTransformer(myClassFileTransformer);
 
-        System.out.println("try transformer:"+inst.isRetransformClassesSupported());
+        System.out.println("try transformer:" + inst.isRetransformClassesSupported());
 
         try {
             Class<?> aClass2 = Class.forName("java_ssist_test.crate_method.Egg");
+            System.out.println(count + ":" + (tClass == aClass2));
+            tClass = aClass2;
             Method sayHi = aClass2.getDeclaredMethod("fly", String.class);
             Object o = aClass2.newInstance();
             Object invoke = sayHi.invoke(o, "view");
@@ -54,9 +59,35 @@ public class Premain {
 
         System.out.println("agentmain:" + Arrays.toString(inst.getAllLoadedClasses()));
     }
-}
 
-```
+
+    public static void agentmain(String agentArgs) {
+
+
+    }
+
+
+    public static class MyClassFileTransformer implements ClassFileTransformer {
+
+
+        @Override
+        public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
+            if (!className.equals("java_ssist_test/crate_method/Egg")) {
+                System.out.println("pass class ---------->" + className);
+                return null;
+            } else {
+                count++;
+
+                System.out.println("do recode by" + count);
+                try {
+                    return Files.readAllBytes(Paths.get("D:\\WorkSpace\\java_focus\\java_ssist_test\\crate_method\\Egg.class"));
+                } catch (Exception exception) {
+                    throw new RuntimeException();
+                }
+            }
+        }
+    }
+}```
 
 
 ## jdk6虚拟机启动后的动态 instrument
