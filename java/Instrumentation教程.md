@@ -4,7 +4,110 @@
 ## [参考1](https://www.ibm.com/developerworks/cn/java/j-lo-jse61/index.html)
 ## [参考2](https://zhuanlan.zhihu.com/p/51909016)
 
-## 示例客户端
+
+## 打印已加载类的字节码的客户端
+```
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.IllegalClassFormatException;
+import java.lang.instrument.Instrumentation;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.security.ProtectionDomain;
+
+
+public class ClassDumper {
+
+    public static void agentmain(String agentArgs, Instrumentation inst) {
+        System.out.println(agentArgs);
+
+        DumpClassFileTransformer dumpClassFileTransformer = new DumpClassFileTransformer();
+
+        MyInvocationHandler inter = new MyInvocationHandler(new MyFly());
+        Class[] classes = {FlyInterface.class, Comparable.class};
+        FlyInterface sell = (FlyInterface) Proxy.newProxyInstance(FlyInterface.class.getClassLoader(), classes, inter);
+        sell.fly();
+        Class<? extends FlyInterface> aClass = sell.getClass();
+
+        inst.addTransformer(dumpClassFileTransformer, true);
+        try {
+            inst.retransformClasses(aClass);
+        } catch (Exception e) {
+            System.out.println(" not found java_ssist_test.crate_method.Egg on  agentmain");
+        }
+        inst.removeTransformer(dumpClassFileTransformer);
+    }
+
+    public interface FlyInterface {
+        void fly();
+
+    }
+
+    public static class MyFly implements FlyInterface{
+
+        @Override
+        public void fly() {
+            System.out.println("im view i want to fly");
+        }
+    }
+
+    public static class MyInvocationHandler implements InvocationHandler {
+
+        private Object obj;
+
+        public MyInvocationHandler(Object obj) {
+            this.obj = obj;
+        }
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            System.out.println("before");
+            Object result = method.invoke(obj, args);
+            System.out.println("after");
+            return result;
+        }
+    }
+
+
+
+    public static class DumpClassFileTransformer implements ClassFileTransformer {
+        @Override
+        public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
+
+           String name="D:\\WorkSpace\\java_focus\\src\\main\\java\\instrumentation\\dump.class";
+            File file = new File(name);
+            System.out.println(file+"_"+name);
+            FileOutputStream fileOutputStream = null;
+            try {
+                if (!file.exists()) {
+                    file.createNewFile();
+                }
+                fileOutputStream = new FileOutputStream(file);
+                fileOutputStream.write(classfileBuffer);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (fileOutputStream != null) {
+                    try {
+                        fileOutputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            return null;
+        }
+    }
+}
+```
+
+
+## 示例客户端（包含pre 和agent）
 * 如果 canRetransform 为 true，那么重转换类时也将调用该转换器
 ```
 
