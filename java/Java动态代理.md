@@ -1,5 +1,23 @@
 ## Java动态代理
 
+
+### Proxy拼接的类
+* 接口方法fly则fly会被填充成
+* super.h是传入的InvocationHandler,把当前对象和对应方法引用以及参数传进去
+```
+public final void fly() {
+        try {
+            super.h.invoke(this, m3, (Object[])null);
+        } catch (RuntimeException | Error var2) {
+            throw var2;
+        } catch (Throwable var3) {
+            throw new UndeclaredThrowableException(var3);
+        }
+    }
+```
+
+
+
 ### 公共接口
 ```
 public interface FlyInterface {
