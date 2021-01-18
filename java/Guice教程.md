@@ -83,20 +83,24 @@ bind(String.class).annotatedWith(Names.named("secret")).toInstance("aavvcc_112")
 bindConstant().annotatedWith(ValueProviders.class).to(777d);
 ```
 
-### "@Provides 注解方法" 绑定
+### @Provides 注解方法 绑定
 * 方法需要申明在一个module里
 * 和注释一起使用则会使用：注释+类型作为key
 ```
+//------ 提供
 public class BillingModule extends AbstractModule {
 
-  @Provides
-  TransactionLog provideTransactionLog() {
-    DatabaseTransactionLog transactionLog = new DatabaseTransactionLog();
-    transactionLog.setJdbcUrl("jdbc:mysql://localhost/pizza");
-    transactionLog.setThreadPoolSize(30);
-    return transactionLog;
-  }
-}
+       @Provides
+        @Named("two")
+        public FunctionI getFunctionTwo(){
+            return new FunctionTwo();
+        }
+
+
+//------- 使用        
+    @Inject
+    @Named("two")
+    private FunctionI functionI;
 ```
 
 ### Provider 接口绑定
@@ -106,10 +110,12 @@ public interface Provider<T> {
   T get();
 }
 ```
-* 使用
+
+* 使用一
 ```
 bind(TransactionLog.class).toProvider(DatabaseTransactionLogProvider.class);
 ```
+
 
 ### 构造函数绑定
 * 不同的构造函数
