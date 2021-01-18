@@ -198,26 +198,23 @@ bind(BaseAction.class).toProvider(ActionProvider.class);
 
 
 ```
- public class ModuleSupport2 extends AbstractModule{
-            @Override
+    public static class ModuleSupport2 extends AbstractModule {
+        @Override
         protected void configure() {
+            Multibinder<FunctionI> uriBinder = Multibinder.newSetBinder(binder(), FunctionI.class);
+            uriBinder.addBinding().toInstance(new FunctionFour());
+            uriBinder.addBinding().toInstance(new FunctionFive());
+        }
+    }
 
- Multibinder<BaseAction> baseActionMultibinder = Multibinder.newSetBinder(binder(), BaseAction.class);
- 
-//不受影响 
-bind(BaseAction.class).to(Action3.class);
-
-baseActionMultibinder .addBinding().to(Action1.class);
-baseActionMultibinder .addBinding().to(Action2.class);
-}
 ```
 * 使用```Set<T>```获取
 ```
  @Inject
- public BaseAction baseAction;//不受影响
+ public FunctionI functionI;//不受影响
  
  @Inject
- public Set<BaseAction> baseActionSet;
+ public Set<FunctionI> functionISet;
 
 ```
 
@@ -228,6 +225,8 @@ baseActionMultibinder .addBinding().to(Action2.class);
         stringBaseActionMapBinder.addBinding("action2").to(Action2.class);
         stringBaseActionMapBinder.addBinding("action3").to(Action3.class);
 ```
+
+
 * 使用```Map<K,V>```获取
 ```
  @Inject
@@ -237,6 +236,8 @@ baseActionMultibinder .addBinding().to(Action2.class);
  public Map<String,BaseAction> baseActionMap;
 
 ```
+
+
 * @ProvidesIntoSet
 ```
     @ProvidesIntoSet
@@ -249,6 +250,8 @@ baseActionMultibinder .addBinding().to(Action2.class);
     }
 
 ```
+
+
 * @ProvidesIntoMap
 ```
     @ProvidesIntoMap
