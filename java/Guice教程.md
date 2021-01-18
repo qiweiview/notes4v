@@ -323,3 +323,18 @@ bindInterceptor(Matchers.any(), Matchers.annotatedWith(DbManage.class), new Data
 @ScopeAnnotation
 public @interface Singleton {}
 ```
+
+* 标注后对象将会是单例
+```
+       //始终获取到的是同一对象
+       while (true){
+           FunctionI instance = injector.getInstance(FunctionI.class);
+           instance.sayHi();
+       }
+```
+
+
+* 等同于
+```
+binder.bind(FunctionI.class).to(FunctionOne.class).in(Singleton.class);
+```
