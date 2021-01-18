@@ -313,13 +313,7 @@ bindInterceptor(Matchers.any(), Matchers.annotatedWith(DbManage.class), new Data
     }
 ```
 
-### 拦截器，拦截，拦截器
-```
- WeekendBlocker weekendBlocker = new WeekendBlocker();
-    requestInjection(weekendBlocker);
-    bindInterceptor(Matchers.any(), Matchers.annotatedWith(NotOnWeekends.class),
-       weekendBlocker);
-```
+
 
 ## 对象的生命周期
 * @Singleton
