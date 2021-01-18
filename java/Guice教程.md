@@ -326,6 +326,11 @@ public @interface Singleton {}
 
 * 标注后对象将会是单例
 ```
+       @Singleton
+       public class FunctionOne implements FunctionI{
+
+
+
        //始终获取到的是同一对象
        while (true){
            FunctionI instance = injector.getInstance(FunctionI.class);
@@ -337,4 +342,5 @@ public @interface Singleton {}
 * 等同于
 ```
 binder.bind(FunctionI.class).to(FunctionOne.class).in(Singleton.class);
+binder.bind(FunctionI.class).to(FunctionOne.class).in(Scopes.SINGLETON);
 ```
