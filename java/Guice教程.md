@@ -195,7 +195,13 @@ bind(BaseAction.class).toProvider(ActionProvider.class);
 * Multibinder
 * 不会影响原有的绑定
 * 多个集合会被合并
+
+
 ```
+ public class ModuleSupport2 extends AbstractModule{
+            @Override
+        protected void configure() {
+
  Multibinder<BaseAction> baseActionMultibinder = Multibinder.newSetBinder(binder(), BaseAction.class);
  
 //不受影响 
@@ -203,6 +209,7 @@ bind(BaseAction.class).to(Action3.class);
 
 baseActionMultibinder .addBinding().to(Action1.class);
 baseActionMultibinder .addBinding().to(Action2.class);
+}
 ```
 * 使用```Set<T>```获取
 ```
