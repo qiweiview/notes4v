@@ -44,6 +44,9 @@ public @interface Inject {
 bind(DatabaseTransactionLog.class).to(MySqlDatabaseTransactionLog.class);
 ```
 ### 注解绑定（适合同一类型多绑定）
+
+* 没有显示编码的类不会被扫注解，例如A中inject了B，B有注解，但是不会被扫描
+
 ```
 @Qualifier
 @Retention(RUNTIME)
