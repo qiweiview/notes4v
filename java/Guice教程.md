@@ -268,8 +268,10 @@ bind(BaseAction.class).toProvider(ActionProvider.class);
 ```
 
 ### 限制绑定
+
 * 则modules必须由@PermitAno注解注释
 ```
+//自定义注解，使用RestrictedBindingSource进行修饰
 @RestrictedBindingSource(explanation = "need be ano", permits = {PermitAno.class})
 @Qualifier
 @Retention(RUNTIME)
@@ -277,6 +279,8 @@ public @interface ValueProviders {
 
 }
 ```
+
+* 则被注解类必须符合RestrictedBindingSource内规则
 ```
     @Inject
     @ValueProviders
