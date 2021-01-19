@@ -1,5 +1,9 @@
 # Redis教程
 
+## 批量删除
+```
+/redis-cli keys "xxxx*" | xargs ./redis-cli del
+```
 ## 过期策略
 
 * EXPIRE和PERSIST 分别设置过期和永久
