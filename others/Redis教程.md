@@ -1,8 +1,67 @@
 # Redis教程
 
+## redis-cli 参数
+```
+  -h <hostname>      Server hostname (default: 127.0.0.1). ip地址
+  -p <port>          Server port (default: 6379).　伺服器埠號
+  -s <socket>        Server socket (overrides hostname and port).
+  -a <password>      Password to use when connecting to the server.　密碼
+  -u <uri>           Server URI.　url格式的地址
+  -r <repeat>        Execute specified command N times.
+  -i <interval>      When -r is used, waits <interval> seconds per command.
+                     It is possible to specify sub-second times like -i 0.1.
+  -n <db>            Database number.　指定資料庫
+  -x                 Read last argument from STDIN.
+  -d <delimiter>     Multi-bulk delimiter in for raw formatting (default: \n).
+  -c                 Enable cluster mode (follow -ASK and -MOVED redirections).
+  --raw              Use raw formatting for replies (default when STDOUT is
+                     not a tty).
+  --no-raw           Force formatted output even when STDOUT is not a tty.
+  --csv              Output in CSV format.
+  --stat             Print rolling stats about server: mem, clients, ...　統計資料　連續輸出
+  --latency          Enter a special mode continuously sampling latency.
+                     If you use this mode in an interactive session it runs
+                     forever displaying real-time stats. Otherwise if --raw or
+                     --csv is specified, or if you redirect the output to a non
+                     TTY, it samples the latency for 1 second (you can use
+                     -i to change the interval), then produces a single output
+                     and exits.　延時統計
+  --latency-history  Like --latency but tracking latency changes over time.
+                     Default time interval is 15 sec. Change it using -i.
+  --latency-dist     Shows latency as a spectrum, requires xterm 256 colors.
+                     Default time interval is 1 sec. Change it using -i.
+  --lru-test <keys>  Simulate a cache workload with an 80-20 distribution.
+  --replica          Simulate a replica showing commands received from the master.
+  --rdb <filename>   Transfer an RDB dump from remote server to local file. 匯出rdb檔案
+  --pipe             Transfer raw Redis protocol from stdin to server.
+  管道模式
+  --pipe-timeout <n> In --pipe mode, abort with error if after sending all data.
+                     no reply is received within <n> seconds.
+                     Default timeout: 30. Use 0 to wait forever.
+                     管道超時
+  --bigkeys          Sample Redis keys looking for big keys.
+  --hotkeys          Sample Redis keys looking for hot keys.
+                     only works when maxmemory-policy is *lfu.
+  --scan             List all keys using the SCAN command.獲取伺服器所有的鍵
+  --pattern <pat>    Useful with --scan to specify a SCAN pattern.
+  正則表示式　用於scan命令中
+  --intrinsic-latency <sec> Run a test to measure intrinsic system latency.
+                     The test will run for the specified amount of seconds.
+  --eval <file>      Send an EVAL command using the Lua script at <file>.
+  --ldb              Used with --eval enable the Redis Lua debugger.
+  --ldb-sync-mode    Like --ldb but uses the synchronous Lua debugger, in
+                     this mode the server is blocked and script changes are
+                     not rolled back from the server memory.
+  --cluster <command> [args...] [opts...]
+                     Cluster Manager command and arguments (see below).
+  --verbose          Verbose mode.
+  --no-auth-warning  Don't show warning message when using password on command
+                     line interface.
+```
+
 ## 批量删除
 ```
-/redis-cli keys "xxxx*" | xargs ./redis-cli del
+/usr/local/redis/bin/redis-cli  -a xxxxx keys  view* | xargs /usr/local/redis/bin/redis-cli  -a xxx del
 ```
 ## 过期策略
 
