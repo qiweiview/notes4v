@@ -16,6 +16,41 @@
 
 ```
 
+
+## 添加注释
+```
+   ClassPool pool = ClassPool.getDefault();
+        CtClass ctClass = pool.get("java_ssist_test.TestAnnotation");
+
+
+
+        //属性添加注解
+        CtField name = ctClass.getDeclaredField("name");
+        FieldInfo fieldInfo = name.getFieldInfo();
+        ConstPool constPool = fieldInfo.getConstPool();
+
+        Annotation annotationNew2 = new Annotation(HelloGuys.class.getName(), constPool);
+        annotationNew2.addMemberValue("isAutoIncrement", new BooleanMemberValue(false, constPool));
+        AnnotationsAttribute attributeNew2 = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
+        attributeNew2.setAnnotation(annotationNew2);
+        fieldInfo.addAttribute(attributeNew2);
+
+
+
+        
+        //方法添加注解
+        CtMethod methodSetEid = ctClass.getDeclaredMethod("hi");
+        MethodInfo methodInfoGetEid = methodSetEid.getMethodInfo();
+        ConstPool cp = methodInfoGetEid.getConstPool();
+        
+        Annotation annotationNew = new Annotation(HelloGuys.class.getName(), cp);
+        annotationNew.addMemberValue("isAutoIncrement", new BooleanMemberValue(false, cp));
+        AnnotationsAttribute attributeNew = new AnnotationsAttribute(cp, AnnotationsAttribute.visibleTag);
+        attributeNew.setAnnotation(annotationNew);
+        methodSetEid.getMethodInfo().addAttribute(attributeNew);
+```
+
+
 ## 创建并加载类
 * toClass不带参数调用，使用当前线程下的类加载器加载生成的类， 可以通过setContextClassLoader()修改当前线程下类加载器
 * toClass先于代码内的同名包下的类加载，由于类加载机制，可能项目内原有的类永远不会被加载
