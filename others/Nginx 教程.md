@@ -1,5 +1,11 @@
 # Nginx教程
 
+
+## 重载配置
+```
+sudo nginx -s reload
+```
+
 ## nginx upload module
 * [下载nginx](http://nginx.org/download/nginx-1.17.9.tar.gz)
 * [下载nginx upload module](http://www.grid.net.ru/nginx/download/nginx_upload_module-2.2.0.tar.gz)
