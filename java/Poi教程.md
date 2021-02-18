@@ -140,6 +140,17 @@ public class ExcelExporter implements ObjectRelease {
                         //create merge
                         List<SheetDescription.MergeDescription> mergeDescriptions = x.getMergeDescriptions();
                         for (SheetDescription.MergeDescription mergeDescription : mergeDescriptions) {
+
+                            //title
+                            XSSFRow row2 = sheet.getRow(0);
+                            XSSFCell cell1 = row2.getCell(mergeDescription.getStartCell());
+                            if (cell1==null){
+                                cell1= row2.createCell(mergeDescription.getStartCell());
+                            }
+                            cell1.setCellValue(mergeDescription.getMergeTitle());
+
+
+                            //merge content
                             CellRangeAddress region = mergeDescription.createMerge();
                             sheet.addMergedRegion(region);
                             XSSFRow row1 = sheet.getRow(mergeDescription.getStartRow());
@@ -224,13 +235,14 @@ public class ExcelExporter implements ObjectRelease {
      * @param endCell 结束列
      * @param sheetName sheet名
      * @param mergeContent 合并填充内容
+     * @param mergeTitle 列标题
      */
-    public void addMergedRegion(int startRow, int endRow, int startCell, int endCell, String sheetName, String mergeContent) {
+    public void addMergedRegion(int startRow, int endRow, int startCell, int endCell, String sheetName, String mergeContent, String mergeTitle) {
 
         for (SheetDescription sheetDescription : list) {
             if (sheetName.equals(sheetDescription.getSheetName())) {
                 List<SheetDescription.MergeDescription> mergeDescriptions = sheetDescription.getMergeDescriptions();
-                mergeDescriptions.add(new SheetDescription.MergeDescription(startRow, endRow, startCell, endCell, mergeContent));
+                mergeDescriptions.add(new SheetDescription.MergeDescription(startRow, endRow, startCell, endCell, mergeContent,mergeTitle));
                 return;
             }
         }
@@ -360,6 +372,8 @@ public class SheetDescription implements ObjectRelease {
     }
 
     public  static class MergeDescription {
+
+
         private int startRow;
 
         private int endRow;
@@ -368,20 +382,31 @@ public class SheetDescription implements ObjectRelease {
 
         private int endCell;
 
+        private String mergeTitle;
+
         private String mergeContent;
 
 
-        public  MergeDescription(int startRow, int endRow, int startCell, int endCell, String mergeContent) {
+        public  MergeDescription(int startRow, int endRow, int startCell, int endCell, String mergeContent,String mergeTitle) {
             this.startRow = startRow;
             this.endRow = endRow;
             this.startCell = startCell;
             this.endCell = endCell;
             this.mergeContent = mergeContent;
+            this.mergeTitle = mergeTitle;
         }
 
         public CellRangeAddress createMerge() {
             CellRangeAddress cellRangeAddress = new CellRangeAddress(startRow,endRow,startCell,endCell);
             return cellRangeAddress;
+        }
+
+        public String getMergeTitle() {
+            return mergeTitle;
+        }
+
+        public void setMergeTitle(String mergeTitle) {
+            this.mergeTitle = mergeTitle;
         }
 
         public int getStartRow() {
