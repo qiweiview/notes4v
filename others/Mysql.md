@@ -1,7 +1,8 @@
 ## Mysql内容
 
 ## DELETE和TRUNCATE区别
-
+* DML(Data Manipulation Language)数据操纵语言
+* DDL(Data Definition Language)数据定义语言
 ### DELETE
 
 * DELETE是DML命令。
