@@ -1,14 +1,22 @@
 # Java多线程
 ## 守护线程
 * main线程不是守护线程
-* 虚拟机里存在守护线程则虚拟机不会关闭
+* 当所有非守护线程都结束了，虚拟机才会退出，不管当前是不是main线程
+* main运行结束，如果其他线程都是守护线程，jvm会使这些线程停止，同时退出，但如果存在一个非守护线程，则需要等待其结束，jvm才会关闭。
 * 线程开启后无法设置daemon值
 ```
-        Thread thread = new Thread();
+  public static void main(String[] args) {
 
+        Thread thread = new Thread(()->{
+            while (true){
+
+            }
+        });
+        //此处设置了守护线程，所以即使线程在死循环，无法结束，也会因为main线程的结束而被停止
         thread.setDaemon(true);
-
         thread.start();
+
+    }
 ```
 
 ## ExecutorService 异常
