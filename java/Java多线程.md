@@ -1,5 +1,15 @@
 # Java多线程
+## 守护线程
+* main线程不是守护线程
+* 虚拟机里存在守护线程则虚拟机不会关闭
+* 线程开启后无法设置daemon值
+```
+        Thread thread = new Thread();
 
+        thread.setDaemon(true);
+
+        thread.start();
+```
 
 ## ExecutorService 异常
 * execute出现异常时，会把异常跑出来
