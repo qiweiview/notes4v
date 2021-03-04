@@ -1,4 +1,17 @@
 # oracle 常用
+## 工具登录
+```
+sqlplus system/oracle
+```
+
+## ORA-12514异常
+* 服务未被监听
+```
+# 检索当前监听的服务
+select value from v$parameter where name='service_names'
+```
+* 修改连接的服务名
+
 
 ## ORA-00972异常
 ```
