@@ -1,5 +1,10 @@
 ## Mysql内容
 
+## 链接编码和时区
+```
+?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+```
+
 ## DELETE和TRUNCATE区别
 * DML(Data Manipulation Language)数据操纵语言
 * DDL(Data Definition Language)数据定义语言
