@@ -1,4 +1,16 @@
 # oracle 常用
+
+## 修改字段类型
+```
+alter table SYNC_DATA modify(BATCH_NO VARCHAR2(32));
+```
+
+## 修改字段名
+```
+alter table AUTH_INFO_SERV_TOP5 rename column SUCC_RATE_0X12 to SUCC_RATE_0X06;
+```
+
+
 ## 工具登录
 ```
 sqlplus system/oracle
