@@ -1,5 +1,5 @@
 # oracle 常用
-## 表空间使用查看
+## 表空间使用查看与设置
 ```
 SELECT
 	a.tablespace_name "表空间名",
@@ -14,6 +14,24 @@ WHERE
 	a.tablespace_name = b.tablespace_name 
 ORDER BY
 	(( a.bytes - b.bytes ) / a.bytes ) DESC
+```
+
+* 查看指定的表空间是否为自动扩展
+
+```
+select file_name,autoextensible,increment_by from dba_data_files where tablespace_name = '表空间名'; 
+```
+
+* 改为自动扩展的话需要操作
+
+```
+alter database datafile '/u01/app/oracle/oradata/XXX/XXXX01.dbf' autoextend on;
+```
+
+
+* 关闭自动扩展
+```
+alter database datafile '/u01/app/oracle/oradata/XXX/XXXX01.dbf' autoextend off;
 ```
 
 ## 修改字段类型
