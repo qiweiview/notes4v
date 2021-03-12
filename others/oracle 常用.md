@@ -39,6 +39,15 @@ alter database datafile '/u01/app/oracle/oradata/XXX/XXXX01.dbf' autoextend off;
 alter table SYNC_DATA modify(BATCH_NO VARCHAR2(32));
 ```
 
+## 增加列
+```
+ALTER TABLE APP_WIDGET_PACKAGE ADD (
+	EFFECTIVE_DATE_FORMAL DATE,
+	EXPIRATION_DATE_FORMAL DATE,
+VALIDITY_PERIOD_FORMAL NUMBER 
+)
+```
+
 ## 修改字段名
 ```
 alter table AUTH_INFO_SERV_TOP5 rename column SUCC_RATE_0X12 to SUCC_RATE_0X06;
