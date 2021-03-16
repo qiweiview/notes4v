@@ -10,3 +10,8 @@ HeapDumpOnOutOfMemoryError
 ```
 jmap -dump:format=b,file=heapdump.phrof pid
 ```
+
+##  线程分析 jhat
+```
+jhat -l pid >> thread_dump
+```
