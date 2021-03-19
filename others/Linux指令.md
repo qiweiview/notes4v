@@ -1,5 +1,37 @@
 # Linux指令
 
+## 启动禁止脚本
+* 启动
+```
+
+if [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]]; then
+  JAVA="$JAVA_HOME/bin/java"
+elif type -p java; then
+  JAVA=java
+else
+  echo "Error: JAVA_HOME is not set and java could not be found in PATH." 1>&2
+  exit 1
+fi
+
+NDC="${BASH_SOURCE-$0}"
+NDC="$(dirname "${NDC}")"
+NDCDIR="$(
+  cd "${ZOOBIN}"
+  pwd
+)"
+CONIFG="$NDCDIR/config.yml"
+LIB="$NDCDIR/jndc_server-1.0.jar"
+
+nohup  "$JAVA" -jar "$LIB" "$CONIFG"  "jndcccccccccc" >/dev/null 2>&1  &
+
+#echo 'start jndc success'
+```
+
+* 停止
+```
+ps -ef | grep jndcccccccccc | grep -v grep | cut -c 9-15 | xargs kill -s 9;
+echo 'stop jnfc success'
+```
 
 # 统计文件数
 ```
