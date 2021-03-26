@@ -1,5 +1,127 @@
 # Spring教程
 
+
+## BaseController 处理入参
+```
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class BaseController {
+    private static final ThreadLocal<Map<String, Object>> mapThreadLocal = new ThreadLocal<>();
+
+
+    public void init() {
+        mapThreadLocal.set(new HashMap<>());
+    }
+
+    public void release() {
+        mapThreadLocal.remove();
+    }
+
+    public Map<String, Object> getRequestData() {
+        Map<String, Object> stringObjectMap = mapThreadLocal.get();
+        return stringObjectMap;
+    }
+
+    public void addData(String key, Object value) {
+        Map<String, Object> stringObjectMap = mapThreadLocal.get();
+        stringObjectMap.put(key, value);
+    }
+}
+```
+
+```
+
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.io.IOUtils;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.stream.Stream;
+
+@Aspect
+@Component
+public class BaseControllerAspect {
+
+
+    @Before("execution(* cn.anicert.university.training_manage..*Controller.*(..))") // expression
+    public void before(JoinPoint call) {
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = (HttpServletRequest) requestAttributes.resolveReference(RequestAttributes.REFERENCE_REQUEST);
+
+        BaseController target = (BaseController) call.getTarget();
+        target.init();
+        String contentType = request.getContentType();
+
+
+        //parse query
+        Stream.of(request.getQueryString().split("&")).forEach(x->{
+            String[] split = x.split("=");
+            if (split.length>1){
+                target.addData(split[0], split[1]);
+            }
+        });
+
+
+        if ("application/json".equals(contentType)){
+            try {
+                String s = IOUtils.toString(request.getInputStream());
+                JSONObject jsonObject = JSON.parseObject(s);
+                jsonObject.forEach((k,v)->{
+                    target.addData(k, v);
+                });
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if ("application/x-www-form-urlencoded".equals(contentType)){
+            try {
+                String s = IOUtils.toString(request.getInputStream());
+                Stream.of(s.split("&")).forEach(x->{
+                    String[] split = x.split("=");
+                    if (split.length>1){
+                        target.addData(split[0], split[1]);
+                    }
+                });
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        if (contentType.indexOf("multipart/form-data")!=-1){
+            request.getParameterMap().forEach((k, v) -> {
+                target.addData(k, v);
+            });
+        }
+
+
+
+    }
+
+    @After("execution(* cn.anicert.university.training_manage..*Controller.*(..))") // expression
+    public void after(JoinPoint call) {
+        BaseController target = (BaseController) call.getTarget();
+        target.release();
+    }
+}
+
+```
+
 ## AOP表达式
 
 ```
