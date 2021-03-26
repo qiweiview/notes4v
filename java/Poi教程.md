@@ -18,6 +18,261 @@
 
 
 ## XSSFWorkbook
+### excel生成集合
+```
+
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
+
+public class ExcelImporter {
+
+
+    private static Map<Class, ConfigDescription> map = new ConcurrentHashMap<>();
+
+
+    public interface InnerChecker<T> {
+        public String check(T t);
+
+    }
+
+    public static <T> List<T> readExcelToList(byte[] bytes, Class<T> tClass) {
+        ConfigDescription<T> tConfigDescription = parseClass(tClass);
+
+
+        List<T> list = new ArrayList<>();
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+        try {
+            XSSFWorkbook xssfWorkbook = new XSSFWorkbook(byteArrayInputStream);
+            XSSFSheet sheetAt = xssfWorkbook.getSheetAt(0);
+            int lastRowNum = sheetAt.getLastRowNum();
+            for (int row = tConfigDescription.startRowIndex; row <= lastRowNum; row++) {
+                XSSFRow row1 = sheetAt.getRow(row);
+
+
+                if (row1 == null) {
+                    continue;
+                }
+                short lastCellNum = row1.getLastCellNum();
+                T t = tConfigDescription.newInstance();
+                list.add(t);
+
+
+                for (int cell = tConfigDescription.startCellIndex; cell <= lastCellNum; cell++) {
+                    InnerFieldBind value = tConfigDescription.getValue(cell);
+                    if (value != null) {
+                        XSSFCell cell1 = row1.getCell(cell);
+
+                        String rs = "";
+                        if (cell1 == null) {
+                            rs = "";
+                        } else {
+                            CellType cellType = cell1.getCellType();
+
+                            if (CellType.BLANK.equals(cellType)) {
+                                rs = "";
+                            }
+
+                            if (CellType.STRING.equals(cellType)) {
+                                rs = cell1.getStringCellValue();
+                            }
+
+                            if (CellType.NUMERIC.equals(cellType)) {
+                                Double d = cell1.getNumericCellValue();
+                                rs = d.toString();
+                            }
+                        }
+                        value.setValue(t, cell1 == null ? "" : rs);
+                    }
+                }
+            }
+
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            xssfWorkbook.write(byteArrayOutputStream);
+
+
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
+
+
+        return list;
+    }
+
+    private static <T> ConfigDescription<T> parseClass(Class<T> t) {
+        ConfigDescription configDescription = map.get(t);
+        if (configDescription == null) {
+            ExcelConvertRule annotation = t.getAnnotation(ExcelConvertRule.class);
+
+            if (annotation == null) {
+                throw new RuntimeException("class must be modified by 'ExcelConvertRule' annotation");
+            }
+
+
+            configDescription = new ConfigDescription(t);
+            configDescription.startCellIndex = annotation.startCellIndex();
+            configDescription.startRowIndex = annotation.startRowIndex();
+
+            Field[] declaredFields = t.getDeclaredFields();
+            ConfigDescription finalConfigDescription = configDescription;
+
+            Stream.of(declaredFields).forEach(x -> {
+                AttrsConvertRule declaredAnnotation = x.getDeclaredAnnotation(AttrsConvertRule.class);
+                if (declaredAnnotation != null) {
+                    if (declaredAnnotation.enable()) {
+                        InnerFieldBind innerFieldBind = new InnerFieldBind(x);
+                        if (!AttrsConvertRule.DEFAULT_VALUE.equals(declaredAnnotation.defaultValue())) {
+                            innerFieldBind.setDefaultValue(declaredAnnotation.defaultValue());
+                        }
+                        finalConfigDescription.addValue(declaredAnnotation.columnIndex(), innerFieldBind);
+                    }
+                }
+            });
+
+
+            map.put(t, configDescription);
+        }
+
+
+        return configDescription;
+    }
+
+    private static class InnerFieldBind {
+        private Field field;
+        private String defaultValue;
+
+        public void setValue(Object target, Object value) {
+
+
+            if (value == null) {
+                value = "";
+            }
+            try {
+                if (defaultValue != null) {
+                    value = defaultValue;
+                }
+                field.set(target, value);
+            } catch (Exception e) {
+                throw new RuntimeException("set value fail ,cause " + e);
+            }
+        }
+
+        public InnerFieldBind(Field field) {
+            this.field = field;
+            this.field.setAccessible(true);
+        }
+
+        public void setDefaultValue(String defaultValue) {
+            this.defaultValue = defaultValue;
+        }
+    }
+
+    private static class ConfigDescription<T> {
+        private Class<T> tClass;
+        private Constructor<T> constructor;
+        private int startRowIndex;
+        private int startCellIndex;
+        private Map<Integer, InnerFieldBind> map = new HashMap<>();
+
+        public T newInstance() {
+            try {
+                return constructor.newInstance();
+            } catch (Exception e) {
+                throw new RuntimeException("new instance fail ,cause " + e);
+            }
+
+        }
+
+        public ConfigDescription(Class<T> tClass) {
+            this.tClass = tClass;
+            try {
+                constructor = tClass.getConstructor(null);
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException("can not found the parameter-less construction method");
+            }
+        }
+
+        public InnerFieldBind getValue(Integer index) {
+            return map.get(index);
+        }
+
+        public void addValue(Integer index, InnerFieldBind innerFieldBind) {
+            if (map.containsKey(index)) {
+                throw new RuntimeException("duplicate index");
+            }
+            map.put(index, innerFieldBind);
+        }
+
+        public int getStartRowIndex() {
+            return startRowIndex;
+        }
+
+        public void setStartRowIndex(int startRowIndex) {
+            this.startRowIndex = startRowIndex;
+        }
+
+        public int getStartCellIndex() {
+            return startCellIndex;
+        }
+
+        public void setStartCellIndex(int startCellIndex) {
+            this.startCellIndex = startCellIndex;
+        }
+
+
+    }
+}
+```
+
+```
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ExcelConvertRule {
+    public int startRowIndex() default 0;
+
+    public int startCellIndex() default 0;
+}
+
+```
+
+```
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface AttrsConvertRule {
+    public static final String DEFAULT_VALUE = "1_DEFAULT_VALUE";
+
+    public String defaultValue() default DEFAULT_VALUE;
+
+    public int columnIndex() default -1;
+
+    public boolean enable() default true;
+
+}
+```
 ### 集合生成excel
 
 * 调用范例
