@@ -4,6 +4,7 @@
 ## BaseController 处理入参
 ```
 
+import com.alibaba.fastjson.JSON;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +23,14 @@ public class BaseController {
     public Map<String, Object> getRequestData() {
         Map<String, Object> stringObjectMap = mapThreadLocal.get();
         return stringObjectMap;
+    }
+
+    public <T>T getRequestData(Class<T> c) {
+        Map<String, Object> stringObjectMap = mapThreadLocal.get();
+        if (stringObjectMap==null){
+            return null;
+        }
+        return  JSON.parseObject(JSON.toJSONString(stringObjectMap),c);
     }
 
     public void addData(String key, Object value) {
