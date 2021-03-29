@@ -1,5 +1,20 @@
 # Linux指令
 
+## 系统信息查看
+```
+# cpu 信息
+cat /proc/cpuinfo | grep 'model name' | sort | uniq
+
+# cpu 内核数
+cat /proc/cpuinfo |grep "cores"|uniq|awk '{print $4}'
+
+# 内存
+cat /proc/meminfo
+
+# 磁盘
+
+```
+
 ## 启动禁止脚本
 * 启动
 ```
