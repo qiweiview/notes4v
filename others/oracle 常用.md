@@ -1,4 +1,10 @@
 # oracle 常用
+
+## 数据库备份
+```
+exp xx/xxfull=y file=/home/data/database.dmp log=/home/data/database.log
+```
+
 ## 表空间使用查看与设置
 ```
 SELECT
