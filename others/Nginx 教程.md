@@ -105,6 +105,7 @@ server{}            # 块定义了虚拟主机
 ```
 
 ## 前后端分离部署方案
+* proxy_pass 末尾带斜杆最终请求不会带上匹配路径，不带斜杆结尾会带上匹配路径
 ```
  upstream back{
     server 127.0.0.1:8081;
@@ -116,7 +117,7 @@ location / {
             index  index.html index.htm;
         }
 		
-		location ^~ /server-api/{
+		location ^~ /server-api/{	
             proxy_pass http://back/;
             proxy_send_timeout 1800;
             proxy_read_timeout 1800;
