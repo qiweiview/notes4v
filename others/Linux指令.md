@@ -1,5 +1,8 @@
 # Linux指令
-
+## 创建用户
+```
+useradd -d /home/cron/log -m develop
+```
 ## 设置私钥文件登录
 ```
 # step 1
