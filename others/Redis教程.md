@@ -1,5 +1,8 @@
 # Redis教程
-
+## 启动
+```
+redis-server ./redis.conf --daemonize yes --port 1123
+```
 ## redis-cli 参数
 ```
   -h <hostname>      Server hostname (default: 127.0.0.1). ip地址
