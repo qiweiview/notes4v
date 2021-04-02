@@ -1,5 +1,12 @@
 # Linux指令
 
+## ubunut 允许root登录
+```
+vim /etc/ssh/sshd_config
+PermitRootLogin yes 
+service ssh restart
+```
+
 ## 限制用户指令
 * 将脚本放入/etc/profile.d
 ```
