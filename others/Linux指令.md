@@ -1,4 +1,53 @@
 # Linux指令
+
+## 限制用户指令
+* 将脚本放入/etc/profile.d
+```
+#!/bin/bash
+m=`whoami`
+
+# 允许的指令集
+bin_allow=(ls ping cp rm mv)
+usr_bin_allow=(java)
+
+
+if [[ "${m}" == "develop" ]];then
+    echo -e "\e[01;33m* ** 欢迎登录，开发者。  ** *\e[00m"
+    ## 创建命令集合
+    mkdir -p $HOME/bin
+    rm -f $HOME/bin/*
+    
+    # 循环连接/bin
+    for bae in ${bin_allow[@]}
+    do
+	    ln -s /bin/$bae  $HOME/bin
+    done
+
+    # 循环连接/usr/bin
+    for ubae in ${usr_bin_allow[@]}
+    do
+	    ln -s /usr/bin/$ubae  $HOME/bin
+    done
+    
+
+    ## 设置环境变量
+    cat << EOF > $HOME/.newbash_profile
+		export HISTFILESIZE=500000000
+		export HISTSIZE=99999999
+		export HISTTIMEFORMAT="%Y/%m/%d_%H:%M:%S :"
+		export PATH=$HOME/bin
+EOF
+		## 使用自定义profile文件
+    chown ${m}:${m} $HOME/.newbash_profile
+    exec bash --restricted --noprofile --rcfile $HOME/.newbash_profile
+fi
+
+```
+## 修改bash
+```
+usermod -s /bin/bash
+```
+
 ## 创建用户
 ```
 useradd -d /home/cron/log -m develop
