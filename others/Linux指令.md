@@ -1,5 +1,22 @@
 # Linux指令
 
+## 设置私钥文件登录
+```
+# step 1
+ssh-keygen
+
+# step 2
+cd .ssh
+cat id_rsa.pub >> authorized_keys
+
+# step 3
+vim /etc/ssh/sshd_config 
+#PubkeyAuthentication yes
+
+# step 4
+service sshd restart
+```
+
 ## 系统信息查看
 ```
 # cpu 信息
