@@ -1,7 +1,12 @@
 # Nginx教程
 
+## 测试配置文件
+```
+nginx -t
+```
 
 ## 重载配置
+
 ```
 sudo nginx -s reload
 ```
