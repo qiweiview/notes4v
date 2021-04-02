@@ -1,4 +1,17 @@
 # Redis教程
+
+## 编译安装
+```
+# https://redis.io/download
+make
+make install 
+```
+
+## 允许远程访问
+```
+# 修改redis.conf注释
+```
+
 ## 启动
 ```
 redis-server ./redis.conf --daemonize yes --port 1123
