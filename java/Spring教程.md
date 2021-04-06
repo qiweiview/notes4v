@@ -303,6 +303,71 @@ SQLException: Connection is read-only. Queries leading to data modification are 
 </beans>
 ```
 
+* web.xml配置
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+
+    <display-name>Spring MVC Application</display-name>
+
+
+    <!--上下文监听，用来启动Spring的-->
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+
+    <!--没写默认会去找/WEB-INF/applicationContext.xml-->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:spring_config.xml</param-value>
+    </context-param>
+
+
+    <!--和MyWebApplicationInitializer效果一样-->
+     <servlet>
+         <servlet-name>spring_mvc</servlet-name>
+         <servlet-class>
+             org.springframework.web.servlet.DispatcherServlet
+         </servlet-class>
+         <init-param>
+             <param-name>contextConfigLocation</param-name>
+             <param-value>classpath:spring_mvc_config.xml</param-value>
+         </init-param>
+         <load-on-startup>1</load-on-startup>
+     </servlet>
+
+     <servlet-mapping>
+         <servlet-name>spring_mvc</servlet-name>
+         <url-pattern>/</url-pattern>
+     </servlet-mapping>
+
+</web-app>
+```
+
+* mvc配置
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd">
+
+    <context:component-scan base-package="web_support.controller"
+                            use-default-filters="false">
+        <context:include-filter type="annotation"
+                                expression="org.springframework.stereotype.Controller" />
+    </context:component-scan>
+
+</beans>
+```
+
 * 启动
 ```
   ClassPathXmlApplicationContext context =new ClassPathXmlApplicationContext("HelloWeb-servlet.xml");
