@@ -365,6 +365,31 @@ SQLException: Connection is read-only. Queries leading to data modification are 
                                 expression="org.springframework.stereotype.Controller" />
     </context:component-scan>
 
+    <bean id="jacksonObjectMapper" class="com.fasterxml.jackson.databind.ObjectMapper"/>
+
+    <!--参数解析-->
+    <mvc:annotation-driven >
+        <mvc:message-converters>
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <constructor-arg index="0" value="UTF-8"></constructor-arg>
+            </bean>
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                <property name="supportedMediaTypes">
+                    <list>
+                        <value>application/json</value>
+                        <value>application/javascript</value>
+                        <value>text/json</value>
+                        <value>text/javascript</value>
+                    </list>
+                </property>
+                <property name="objectMapper" ref="jacksonObjectMapper" />
+            </bean>
+            <bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter">
+            </bean>
+            <bean class="org.springframework.http.converter.ResourceHttpMessageConverter">
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
 </beans>
 ```
 
