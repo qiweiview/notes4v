@@ -1,5 +1,5 @@
 # Spring Session 教程
-## 原理
+## 相关原理
 
 ### tomcat session存储位置
 * Request里找不到就会到对应的ManagerBase实现类中的map里找
@@ -202,6 +202,52 @@ public class StandardSessionIdGenerator extends SessionIdGeneratorBase {
         return buffer.toString();
     }
 }
+```
+
+### spring session 实现
+
+* session id 生成方式，redis的实现是直接UUID,并未使用特殊算法
+```
+  final class RedisSession implements ExpiringSession {
+        private final MapSession cached;//内嵌了一个类
+        private Long originalLastAccessTime;
+        private Map<String, Object> delta;
+        private boolean isNew;
+        private String originalPrincipalName;
+        
+        
+    RedisSession() {
+            this(new MapSession());
+            this.delta.put("creationTime", this.getCreationTime());
+            this.delta.put("maxInactiveInterval", this.getMaxInactiveIntervalInSeconds());
+            this.delta.put("lastAccessedTime", this.getLastAccessedTime());
+            this.isNew = true;
+            this.flushImmediateIfNecessary();
+        }      
+```
+
+```
+
+public final class MapSession implements ExpiringSession, Serializable {
+    public static final int DEFAULT_MAX_INACTIVE_INTERVAL_SECONDS = 1800;
+    private String id;
+    private Map<String, Object> sessionAttrs;
+    private long creationTime;
+    private long lastAccessedTime;
+    private int maxInactiveInterval;
+    private static final long serialVersionUID = 7160779239673823561L;
+
+    public MapSession() {
+        this(UUID.randomUUID().toString());
+    }
+    
+    public MapSession(String id) {
+        this.sessionAttrs = new HashMap();
+        this.creationTime = System.currentTimeMillis();
+        this.lastAccessedTime = this.creationTime;
+        this.maxInactiveInterval = 1800;
+        this.id = id;
+    }
 ```
 
 * 通过过滤器实现,包装HttpServletRequest，重写getSession方法，改成从外部存储里拿
