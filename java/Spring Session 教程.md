@@ -42,7 +42,7 @@ public class Request implements HttpServletRequest {
         return session.getSession();
     }
 ```
-
+* doGetSession方法(核心)
 ```
  protected Session doGetSession(boolean create) {
 
