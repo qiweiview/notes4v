@@ -1,5 +1,8 @@
 # Tomcat及Servlet规范
 
+
+## [session 相关说明](https://github.com/qiweiview/notes4v/blob/master/java/Spring%20Session%20%E6%95%99%E7%A8%8B.md)
+
 * [![BR2OxS.png](https://s1.ax1x.com/2020/11/05/BR2OxS.png)](https://imgchr.com/i/BR2OxS)
 
 ## 容器组件
