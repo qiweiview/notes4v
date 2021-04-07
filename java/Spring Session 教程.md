@@ -1,6 +1,159 @@
 # Spring Session 教程
 ## 原理
 
+### tomcat session存储位置
+* Request里找不到就会到对应的ManagerBase实现类中的map里找
+```
+public abstract class ManagerBase extends LifecycleMBeanBase implements Manager {
+  /**
+     * The set of currently active Sessions for this Manager, keyed by
+     * session identifier.
+     */
+    protected Map<String, Session> sessions = new ConcurrentHashMap<>();
+    
+    @Override
+    public Session findSession(String id) throws IOException {
+        if (id == null) {
+            return null;
+        }
+        return sessions.get(id);
+    }
+```
+
+### tomcat 默认的HttpServletRequest实现是Request类
+* 调用getSession()方法
+
+```
+/**
+ * Wrapper object for the Coyote request.
+ *
+ * @author Remy Maucherat
+ * @author Craig R. McClanahan
+ */
+public class Request implements HttpServletRequest {
+
+    @Override
+    public HttpSession getSession(boolean create) {
+        Session session = doGetSession(create);//关键方法
+        if (session == null) {
+            return null;
+        }
+
+        return session.getSession();
+    }
+```
+
+```
+ protected Session doGetSession(boolean create) {
+
+        // There cannot be a session if no context has been assigned yet
+        Context context = getContext();
+        if (context == null) {
+            return null;
+        }
+
+        // Return the current session if it exists and is valid
+        if ((session != null) && !session.isValid()) {
+            session = null;
+        }
+        if (session != null) {//对象中缓存属性有则直接返回
+            return session;
+        }
+
+        // Return the requested session if it exists and is valid
+        Manager manager = context.getManager();
+        if (manager == null) {
+            return null;      // Sessions are not supported
+        }
+        if (requestedSessionId != null) {
+            try {
+                session = manager.findSession(requestedSessionId);//id 不为空则在ManagerBase实现类中调用方法找
+            } catch (IOException e) {
+                if (log.isDebugEnabled()) {
+                    log.debug(sm.getString("request.session.failed", requestedSessionId, e.getMessage()), e);
+                } else {
+                    log.info(sm.getString("request.session.failed", requestedSessionId, e.getMessage()));
+                }
+                session = null;
+            }
+            if ((session != null) && !session.isValid()) {
+                session = null;
+            }
+            if (session != null) {
+                session.access();
+                return session;
+            }
+        }
+
+        // Create a new session if requested and the response is not committed
+        if (!create) {
+            return null;
+        }
+        boolean trackModesIncludesCookie =
+                context.getServletContext().getEffectiveSessionTrackingModes().contains(SessionTrackingMode.COOKIE);
+        if (trackModesIncludesCookie && response.getResponse().isCommitted()) {
+            throw new IllegalStateException(sm.getString("coyoteRequest.sessionCreateCommitted"));
+        }
+
+        // Re-use session IDs provided by the client in very limited
+        // circumstances.
+        String sessionId = getRequestedSessionId();
+        if (requestedSessionSSL) {
+            // If the session ID has been obtained from the SSL handshake then
+            // use it.
+        } else if (("/".equals(context.getSessionCookiePath())
+                && isRequestedSessionIdFromCookie())) {
+            /* This is the common(ish) use case: using the same session ID with
+             * multiple web applications on the same host. Typically this is
+             * used by Portlet implementations. It only works if sessions are
+             * tracked via cookies. The cookie must have a path of "/" else it
+             * won't be provided for requests to all web applications.
+             *
+             * Any session ID provided by the client should be for a session
+             * that already exists somewhere on the host. Check if the context
+             * is configured for this to be confirmed.
+             */
+            if (context.getValidateClientProvidedNewSessionId()) {
+                boolean found = false;
+                for (Container container : getHost().findChildren()) {
+                    Manager m = ((Context) container).getManager();
+                    if (m != null) {
+                        try {
+                            if (m.findSession(sessionId) != null) {
+                                found = true;
+                                break;
+                            }
+                        } catch (IOException e) {
+                            // Ignore. Problems with this manager will be
+                            // handled elsewhere.
+                        }
+                    }
+                }
+                if (!found) {
+                    sessionId = null;
+                }
+            }
+        } else {
+            sessionId = null;
+        }
+        session = manager.createSession(sessionId);
+
+        // Creating a new session cookie based on that session
+        if (session != null && trackModesIncludesCookie) {
+            Cookie cookie = ApplicationSessionCookieConfig.createSessionCookie(
+                    context, session.getIdInternal(), isSecure());
+
+            response.addSessionCookieInternal(cookie);
+        }
+
+        if (session == null) {
+            return null;
+        }
+
+        session.access();
+        return session;
+    }
+```
 ### tomcat session id 生成算法
 ```
 
