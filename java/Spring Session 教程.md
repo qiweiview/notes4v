@@ -1,7 +1,7 @@
 # Spring Session 教程
 ## 原理
 
-* 通过过滤器实现
+* 通过过滤器实现,包装HttpServletRequest，重写getSession方法，改成从外部存储里拿
 ```
 public class SessionRepositoryFilter<S extends Session> extends OncePerRequestFilter {
 
@@ -23,22 +23,6 @@ public class SessionRepositoryFilter<S extends Session> extends OncePerRequestFi
 }
 ```
 
-* response封装
-```
-private final class SessionRepositoryResponseWrapper extends OnCommittedResponseWrapper {
-
-  SessionRepositoryResponseWrapper(SessionRepositoryRequestWrapper request, HttpServletResponse response) {
-    super(response);
-    this.request = request;
-  }
-
-  @Override
-  protected void onResponseCommitted() {
-    /** response 提交后提交 session */
-    this.request.commitSession();
-  }
-}
-```
 
 * request封装
 ```
@@ -121,6 +105,24 @@ private final class SessionRepositoryRequestWrapper extends HttpServletRequestWr
   }
 }
 ```
+
+* response封装
+```
+private final class SessionRepositoryResponseWrapper extends OnCommittedResponseWrapper {
+
+  SessionRepositoryResponseWrapper(SessionRepositoryRequestWrapper request, HttpServletResponse response) {
+    super(response);
+    this.request = request;
+  }
+
+  @Override
+  protected void onResponseCommitted() {
+    /** response 提交后提交 session */
+    this.request.commitSession();
+  }
+}
+```
+
 ## 依赖
 ```
 <?xml version="1.0" encoding="UTF-8"?>
