@@ -1,5 +1,126 @@
 # Spring Session 教程
+## 原理
 
+* 通过过滤器实现
+```
+public class SessionRepositoryFilter<S extends Session> extends OncePerRequestFilter {
+
+  @Override
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
+    /** 替换 request */
+    SessionRepositoryRequestWrapper wrappedRequest = new SessionRepositoryRequestWrapper(request, response, this.servletContext);
+    /** 替换 response */
+    SessionRepositoryResponseWrapper wrappedResponse = new SessionRepositoryResponseWrapper(wrappedRequest, response);
+    /** try-finally，finally 必定执行 */
+    try {
+      /** 执行后续过滤器链 */
+      filterChain.doFilter(wrappedRequest, wrappedResponse);
+    } finally {
+      /** 后续过滤器链执行完毕，提交 session，用于存储 session 信息并返回 set-cookie 信息 */
+      wrappedRequest.commitSession();
+    }
+  }
+}
+```
+
+* response封装
+```
+private final class SessionRepositoryResponseWrapper extends OnCommittedResponseWrapper {
+
+  SessionRepositoryResponseWrapper(SessionRepositoryRequestWrapper request, HttpServletResponse response) {
+    super(response);
+    this.request = request;
+  }
+
+  @Override
+  protected void onResponseCommitted() {
+    /** response 提交后提交 session */
+    this.request.commitSession();
+  }
+}
+```
+
+* request封装
+```
+private final class SessionRepositoryRequestWrapper extends HttpServletRequestWrapper {
+
+  private SessionRepositoryRequestWrapper(HttpServletRequest request, HttpServletResponse response, ServletContext servletContext) {
+    super(request);
+    this.response = response;
+    this.servletContext = servletContext;
+  }
+
+  /**
+   * 将 sessionId 写入 reponse，并持久化 session
+   */
+  private void commitSession() {
+    /** 获取当前 session 信息 */
+    S session = getCurrentSession().getSession();
+    /** 持久化 session */
+    SessionRepositoryFilter.this.sessionRepository.save(session);
+    /** reponse 写入 sessionId */
+    SessionRepositoryFilter.this.httpSessionIdResolver.setSessionId(this, this.response, session.getId());
+  }
+
+  /**
+   * 重写 HttpServletRequest 的 getSession 方法
+   */
+  @Override
+  public HttpSessionWrapper getSession(boolean create) {
+    /** 从持久化中查询 session */
+    S requestedSession = getRequestedSession();
+    /** session 存在，直接返回 */
+    if (requestedSession != null) {
+      currentSession = new HttpSessionWrapper(requestedSession, getServletContext());
+      currentSession.setNew(false);
+      return currentSession;
+    }
+    /** 设置不创建，返回空 */
+    if (!create) {
+      return null;
+    }
+    /** 创建 session 并返回 */
+    S session = SessionRepositoryFilter.this.sessionRepository.createSession();
+    currentSession = new HttpSessionWrapper(session, getServletContext());
+    return currentSession;
+  }
+
+  /**
+   * 从 repository 查询 session
+   */
+  private S getRequestedSession() {
+    /** 查询 sessionId 信息 */
+    List<String> sessionIds = SessionRepositoryFilter.this.httpSessionIdResolver.resolveSessionIds(this);
+    /** 遍历查询 */
+    for (String sessionId : sessionIds) {
+      S session = SessionRepositoryFilter.this.sessionRepository.findById(sessionId);
+      if (session != null) {
+        this.requestedSession = session;
+        break;
+      }
+    }
+    /** 返回持久化 session */
+    return this.requestedSession;
+  }
+
+  /**
+   * http session 包装器
+   */
+  private final class HttpSessionWrapper extends HttpSessionAdapter<S> {
+
+    HttpSessionWrapper(S session, ServletContext servletContext) {
+      super(session, servletContext);
+    }
+
+    @Override
+    public void invalidate() {
+      super.invalidate();
+      /** session 不合法，从存储中删除信息 */
+      SessionRepositoryFilter.this.sessionRepository.deleteById(getId());
+    }
+  }
+}
+```
 ## 依赖
 ```
 <?xml version="1.0" encoding="UTF-8"?>
