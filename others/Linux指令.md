@@ -1,8 +1,9 @@
 # Linux指令
 
-## jps 筛选pid
+##  筛选pid
 ```
 jps -v | grep 10065|awk '{print $1}' | xargs kill -s 9
+ps -ef  | grep tomcat10065 | grep -v grep | awk '{print $2}' | xargs kill -s 9; 
 ```
 
 ## ubunut 允许root登录
