@@ -1,5 +1,30 @@
 # mybatis-plus教程
 
+## 最小配置
+```
+
+    <!-- mapper 扫描 -->
+    <mybatis:scan base-package="db_support.dao" />
+
+
+    <!-- 数据库连接池 -->
+    <bean id="dataSource"  class="com.alibaba.druid.pool.DruidDataSource"
+          destroy-method="close">
+        <property name="url" value="${jdbc.url}" />
+        <property name="username" value="${jdbc.username}" />
+        <property name="password" value="${jdbc.password}" />
+        <property name="driverClassName" value="${jdbc.driverClassName}" />
+    </bean>
+
+    <!-- sql session -->
+    <bean id="sqlSessionFactory" class="com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean">
+        <property name="mapperLocations" value="classpath*:/db_support/mapper/*.xml"/> 
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+```
+
+
 * 在 MyBatis 的基础上只做增强不做改变，为简化开发、提高效率而生
 
 ## 依赖
