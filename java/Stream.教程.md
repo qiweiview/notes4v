@@ -1,5 +1,10 @@
 # Stream教程
 
+## 分组
+```
+  Map<String, List<DemoVO>> collect = load.stream().collect(Collectors.groupingBy(x -> x.getBusinessCode()));
+```
+
 ## collect
 * collect()方法可以对stream中的元素进行各种处理后，得到stream中元素的值。并且Collectors接口提供了很方便的创建Collector对象的工厂方法。
 ```
