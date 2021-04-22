@@ -1,3 +1,10 @@
+# element-ui 综合问题
+
+## 点击选中
+```
+@click.native="$event.target.select()" 
+```
+
 ## element-ui 绑定事件无效
 通过使用native修饰覆盖组件原有事件
 
