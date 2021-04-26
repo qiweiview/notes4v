@@ -1,5 +1,9 @@
 # Spring Session 教程
 ## 相关原理
+* 核心依托于访问地址等级的cookie共享
+```
+Set-Cookie: SESSION=298fe54b-b489-4d4b-8772-859e52ecb32a; Path=/spring_session_test/; HttpOnly
+```
 
 ### tomcat session存储位置
 * Request里找不到就会到对应的ManagerBase实现类中的map里找
