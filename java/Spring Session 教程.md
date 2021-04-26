@@ -1,9 +1,24 @@
 # Spring Session 教程
+
 ## 相关原理
+* [cookie域相关参考资料](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Set-Cookie)
 * 核心依托于访问地址等级的cookie共享
+
+```
+Path=<path-value> 可选
+指定一个 URL 路径，这个路径必须出现在要请求的资源的路径中才可以发送 Cookie 首部。字符  %x2F ("/") 可以解释为文件目录分隔符，此目录的下级目录也满足匹配的条件（例如，如果 path=/docs，那么 "/docs", "/docs/Web/" 或者 "/docs/Web/HTTP" 都满足匹配的条件）。
+```
+
+```
+Domain=<domain-value> 可选
+指定 cookie 可以送达的主机名。假如没有指定，那么默认值为当前文档访问地址中的主机部分（但是不包含子域名）。与之前的规范不同的是，域名之前的点号会被忽略。假如指定了域名，那么相当于各个子域名也包含在内了
+```
+
 ```
 Set-Cookie: SESSION=298fe54b-b489-4d4b-8772-859e52ecb32a; Path=/spring_session_test/; HttpOnly
 ```
+
+
 
 ### tomcat session存储位置
 * Request里找不到就会到对应的ManagerBase实现类中的map里找
