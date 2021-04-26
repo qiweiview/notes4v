@@ -1,5 +1,23 @@
 # vue综合
 
+
+## 异步下载
+```
+//resonse 是base64字符串
+async download(response) {
+                const base64Response = await fetch(`data:image/jpeg;base64,${response.data}`);
+                const blob = await base64Response.blob();
+                console.log(blob)
+                let url = window.URL.createObjectURL(blob)
+                let link = document.createElement('a')
+                link.style.display = 'none'
+                link.href = url
+                link.setAttribute('download', response.fileName)
+                document.body.appendChild(link)
+                link.click()
+            },
+```
+
 ## 异步
 ```
 uploadFile(blob, index, start, end) {
