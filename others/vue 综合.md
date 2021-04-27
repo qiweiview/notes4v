@@ -1,5 +1,14 @@
 # vue综合
 
+## 修改对象样式
+```
+@mouseenter="changeColor('red',$event)"
+
+
+changeColor(color, e) {
+                e.target.style.color = color
+            },
+```
 
 ## 异步下载
 ```
