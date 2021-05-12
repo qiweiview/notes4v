@@ -1,5 +1,13 @@
 # vue综合
 
+
+## js中获取vue对象
+```
+import _this from '@/main';
+
+_this.$router.push('/')
+```
+
 ## 修改对象样式
 ```
 @mouseenter="changeColor('red',$event)"
