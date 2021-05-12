@@ -1,5 +1,8 @@
 # JackSon教程
 
+
+
+
 * ObjectMapper 对象是线程安全的
 ## 依赖
 ```
@@ -10,7 +13,10 @@
         </dependency>
 ```
 
+
 ## 序列化LocalDateTime
+
+### 方法一
 ```
  @JsonSerialize(using = NativeLocalDateTimeSerializer.class)
     private LocalDateTime createDate;
@@ -30,6 +36,32 @@ public class NativeLocalDateTimeSerializer extends StdSerializer<LocalDateTime> 
     }
 }
 
+```
+
+### 方法二
+* 依赖
+```
+ <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310 -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>2.12.1</version>
+        </dependency>
+```
+* 配置
+```
+ @Bean(name = "jacksonObjectMapper")
+    public ObjectMapper getObjectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        return objectMapper;
+    }
+```
+
+* 注解
+```
+ @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private  LocalDateTime updateDate;
 ```
 
 
