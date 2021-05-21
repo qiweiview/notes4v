@@ -1,5 +1,27 @@
 # Nginx教程
 
+## 二级目录部署
+* 在vue.config.js 配置文件中，publicPath 和 outputDir 都改为 '/子目录名/'。
+```
+module.exports = {
+  publicPath: '/jarvis/',
+  outputDir: 'jarvis',
+
+
+```
+
+* nginx 配置
+```
+ location /jarvis {
+              alias /usr/local/nginx/html/jarvis/;
+    #指定主页
+              index index.html;
+    #自动跳转
+              autoindex on;
+            }
+
+```
+
 ## 测试配置文件
 ```
 nginx -t
