@@ -1,5 +1,13 @@
 # Nginx教程
 
+## 编译安装
+* 依赖
+```
+apt-get install libpcre3 libpcre3-dev
+sudo apt-get install openssl libssl-dev
+apt-get install zlib1g-dev
+```
+
 ## 二级目录部署
 * 在vue.config.js 配置文件中，publicPath 和 outputDir 都改为 '/子目录名/'。
 ```
