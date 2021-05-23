@@ -1,5 +1,24 @@
 # Linux指令
 
+## 编译安装
+
+```
+configure --prefix=/usr/local/xxx
+make
+make install
+```
+
+
+```
+#如果不指定 --prefix
+
+#可执行文件默认放在 /usr/local/bin ；
+#库文件默认放在 /usr/local/lib ；
+#配置文件默认放在 /usr/local/etc ；
+#其它的资源文件放在 /usr /local/share
+```
+
+
 ##  筛选pid
 ```
 jps -v | grep 10065|awk '{print $1}' | xargs kill -s 9
