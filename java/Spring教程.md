@@ -1,5 +1,20 @@
 # Spring教程
 
+## 静态方法获取bean
+```
+public class MyBean implements InitializingBean {
+    private static MyBean instance;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        instance = this;
+    }
+
+    public static MyBean get() {
+        return instance;
+    }
+}
+```
 
 ## BaseController 处理入参
 ```
