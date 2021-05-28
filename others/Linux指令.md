@@ -1,5 +1,11 @@
 # Linux指令
 
+## openssl生成强密码
+* 长度14的
+```
+openssl rand -base64 14
+```
+
 ## 编译安装
 
 ```
