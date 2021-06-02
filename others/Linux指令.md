@@ -1,5 +1,18 @@
 # Linux指令
 
+
+## jar包相关
+```
+# 将当前目录打包
+jar -cvfM0 project.jar ./
+
+
+# 解压jar包
+jar -xvf project.jar
+
+unzip project.jar
+```
+
 ## 修改用户密码
 * 所有用户在/etc/passwd里可以看
 ```
