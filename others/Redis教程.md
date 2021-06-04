@@ -27,9 +27,9 @@ requirepass xxxxx # master开启密码保护
 
 masterauth xxxxx # replica同master交互密码
 ```
-* 编排
+* 编排(ip要是调用者可访问的ip)
 ```
-redis-cli -a xxx --cluster create --cluster-replicas 1  127.0.0.1:33791 127.0.0.1:33792 127.0.0.1:33793 127.0.0.1:33794 127.0.0.1:33795 127.0.0.1:33796
+redis-cli -a xxx --cluster create --cluster-replicas 1  ip:33791 ip:33792 ip:33793 ip:33794 ip:33795 ip:33796
 ```
 
 
