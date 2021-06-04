@@ -1,5 +1,20 @@
 ## Mysql内容
 
+## mysql 8 修改密码
+```
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'wdwdwd';
+```
+* 允许远程访问
+```
+use mysql
+
+update user set host='%' where user ='root';
+
+FLUSH PRIVILEGES;
+
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%'WITH GRANT OPTION;
+```
+
 ## 链接编码和时区
 ```
 ?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
