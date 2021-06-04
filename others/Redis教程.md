@@ -1,5 +1,28 @@
 # Redis教程
 
+## 集群部署
+* 至少6个节点
+* 端口要在50000以下
+* 修改配置
+```
+port 33791 # 客户端连接端口
+bind * #实例绑定的IP地址
+dir /usr/local/redis/7001/data # redis实例数据配置存储位置
+daemonize yes # 是否以后台进程的方式启动redis实例
+pidfile pidfile /usr/local/redis/redis_7001.pid # 指定该进程pidfile
+cluster-enabled yes # 开启集群模式
+cluster-config-file node-33791.conf # 集群中该实例的配置文件，该文件会在data目录下生成
+appendonly yes # 开启aop日志
+protected-mode no # 关闭保护模式
+requirepass xxxxx # master开启密码保护
+masterauth xxxxx # replica同master交互密码
+```
+* 编排
+```
+redis-cli -a xxx --cluster create --cluster-replicas 1  127.0.0.1:33791 127.0.0.1:33792 127.0.0.1:33793 127.0.0.1:33794 127.0.0.1:33795 127.0.0.1:33796
+```
+
+
 ## 编译安装
 ```
 # https://redis.io/download
