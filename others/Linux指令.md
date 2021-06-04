@@ -1,5 +1,28 @@
 # Linux指令
 
+## firewall操作
+
+* 查看已打开的所有端口
+```
+firewall-cmd --zone=public --list-ports
+```
+* 查看想开的端口是否已开
+```
+firewall-cmd --query-port=端口/tcp
+```
+* 开启指定端口
+```
+firewall-cmd --zone=public --add-port=端口/tcp --permanent
+```
+* 开启一个端口，–permanent 永久生效，没有此参数重启后失效
+```
+firewall-cmd --reload
+```
+* 必须重新加载才能生效
+* 关闭指定端口
+```
+firewall-cmd --zone=public --remove-port=端口/tcp --permanent
+```
 
 ## jar包相关
 * -c   创建jar包
