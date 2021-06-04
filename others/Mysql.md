@@ -1,5 +1,11 @@
 ## Mysql内容
 
+## 网卡监听
+* /etc/my.cnf
+```
+bind-address=0.0.0.0 
+```
+
 ## mysql 8 修改密码
 ```
 ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'wdwdwd';
