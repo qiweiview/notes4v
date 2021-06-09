@@ -2,7 +2,7 @@
 
 ## 公钥登录
 ```
-ssh-copy-id
+ssh-copy-id 目标ip
 ```
 
 ## firewall操作
