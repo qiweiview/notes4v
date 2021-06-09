@@ -1,5 +1,10 @@
 # Linux指令
 
+## 公钥登录
+```
+ssh-copy-id
+```
+
 ## firewall操作
 
 * 查看已打开的所有端口
