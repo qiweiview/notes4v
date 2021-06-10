@@ -1,5 +1,13 @@
 # Hadoop综合
 
+## vim   ~/.bashrc
+```
+export JAVA_HOME=/usr/local/jdk11
+export PATH=$JAVA_HOME/bin:$PATH
+export PATH=$PATH:/usr/local/hadoop/bin:/usr/local/hadoop/sbin
+export HADOOP_HOME=/usr/local/hadoop
+```
+
 ## 打包
 ```
  <build>
