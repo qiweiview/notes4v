@@ -13,6 +13,11 @@ export HADOOP_HOME=/usr/local/hadoop
 ssh-keygen -t rsa 
 ```
 
+## 文件权限变更
+```
+sudo chown -R hadoop /usr/local/hadoop
+```
+
 ## core-site.xml
 ```
 <configuration>
