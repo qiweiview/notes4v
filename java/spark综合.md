@@ -16,7 +16,7 @@ vim spark-env.sh
 export SPARK_DIST_CLASSPATH=$(/usr/local/hadoop/bin/hadoop classpath)
 ```
 
-## 启动
+## 测试
 ```
 # 测试启动
 run-example SparkPi 2>&1 | grep "Pi is"
@@ -47,7 +47,26 @@ public class SimpleApp {
 }
 ```
 
-* 启动
+# spark任务执行
+
+* 提交任务
 ```
 spark-submit --class "com.spark.SimpleApp" ./map_reduce_task-1.0-SNAPSHOT.jar  2>&1 | grep "Lines with a"
+```
+* 集群提交
+```
+# 集群执行
+/usr/local/spark/bin/spark-submit --class com.AppStart --master spark://Master:7077 --deploy-mode cluster  /home/hadoop/spark_app-1.0-SNAPSHOT.jar
+```
+
+* 集群启动
+```
+# 启动master
+/sbin/start-master.sh
+
+# 访问ui
+http://Master:8080
+
+# 启动worker
+./start-worker.sh spark://Master:7077
 ```
