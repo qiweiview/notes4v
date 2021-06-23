@@ -4,9 +4,36 @@
 ```
             <dependency>
                 <groupId>io.springfox</groupId>
-                <artifactId>springfox-boot-starter</artifactId>
-                <version>3.0.0</version>
+                <artifactId>springfox-swagger2</artifactId>
+                <version>2.9.2</version>
             </dependency>
+
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger-ui</artifactId>
+                <version>2.9.2</version>
+            </dependency>
+```
+
+## 配置
+```
+@Configuration
+@EnableSwagger2
+public class SpringFoxConfig {
+    @Bean
+    public Docket apiDocket() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors.any())
+                .paths(PathSelectors.any())
+                .build();
+    }
+}
+```
+
+* 访问
+```
+/swagger-ui.html#
 ```
 
 ## 注解
