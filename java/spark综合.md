@@ -53,7 +53,8 @@ public class SimpleApp {
 ```
 spark-submit --class "com.spark.SimpleApp" /home/hadoop/map_reduce_task-1.0-SNAPSHOT.jar  2>&1 | grep "Lines with a"
 ```
-* 集群执行
+###  集群执行
+* 涉及hdfs则设备需要能访问hsfd
 ```
 # 集群执行
 /usr/local/spark/bin/spark-submit --class com.AppStart --master spark://Master:7077 --deploy-mode cluster  hdfs://Master:9000/spark_app/spark_app-1.0-SNAPSHOT.jar
