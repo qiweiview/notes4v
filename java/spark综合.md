@@ -47,16 +47,16 @@ public class SimpleApp {
 }
 ```
 
-# spark任务执行
+## spark任务执行
 
-* 提交任务
+* 本地执行
 ```
-spark-submit --class "com.spark.SimpleApp" ./map_reduce_task-1.0-SNAPSHOT.jar  2>&1 | grep "Lines with a"
+spark-submit --class "com.spark.SimpleApp" /home/hadoop/map_reduce_task-1.0-SNAPSHOT.jar  2>&1 | grep "Lines with a"
 ```
-* 集群提交
+* 集群执行
 ```
 # 集群执行
-/usr/local/spark/bin/spark-submit --class com.AppStart --master spark://Master:7077 --deploy-mode cluster  /home/hadoop/spark_app-1.0-SNAPSHOT.jar
+/usr/local/spark/bin/spark-submit --class com.AppStart --master spark://Master:7077 --deploy-mode cluster  hdfs://Master:9000/spark_app/spark_app-1.0-SNAPSHOT.jar
 ```
 
 * 集群启动
