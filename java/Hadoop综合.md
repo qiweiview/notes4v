@@ -246,8 +246,7 @@ public class TaskReduce extends Reducer<Text, LongWritable, Text, LongWritable> 
 ```
 
 * 主程序
-* ```
-* 
+```
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
@@ -283,7 +282,7 @@ public class AppStart {
 
     }
 }
-* ```
+```
 
 * 执行任务
 ```
