@@ -153,3 +153,139 @@ mr-jobhistory-daemon.sh stop historyserver
         </plugins>
     </build>
 ```
+
+## map reduce
+* Mapper
+```
+
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+
+
+import java.util.ArrayList;
+
+import java.util.List;
+
+
+public class TaskMapper extends Mapper<LongWritable, Text, Text, LongWritable> {
+
+    private List<String> stringSet = new ArrayList<>();
+
+    public TaskMapper() {
+        stringSet.add("黛玉");
+        stringSet.add("宝钗");
+        stringSet.add("元春");
+        stringSet.add("探春");
+        stringSet.add("湘云");
+        stringSet.add("迎春");
+        stringSet.add("惜春");
+        stringSet.add("熙凤");
+        stringSet.add("巧姐");
+        stringSet.add("李纨");
+        stringSet.add("可卿");
+
+
+    }
+
+    @Override
+    protected void map(LongWritable key, Text value, Context context) {
+        System.out.println("do mapper...");
+        String s = value.toString();
+
+        stringSet.forEach(x -> {
+            if (s.indexOf(x) != -1) {
+                try {
+                    context.write(new Text(x), key);
+                } catch (Exception e) {
+                    throw new RuntimeException("mapper失败" + e.getMessage());
+                }
+            }
+        });
+    }
+}
+```
+
+* Reduce
+```
+
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Reducer;
+
+
+import java.util.HashMap;
+import java.util.Map;
+
+
+public class TaskReduce extends Reducer<Text, LongWritable, Text, LongWritable> {
+
+    @Override
+    protected void reduce(Text key, Iterable<LongWritable> values, Context context) {
+        System.out.println("do reduce...");
+
+        HBaseExecutor defaultInstance = HBaseExecutor.getInstance();
+
+        //循环行
+        values.forEach(x -> {
+            try {
+                long l = System.currentTimeMillis();
+                byte[] bytes = Bytes.toBytes(l);
+                Map<String, String> valueMaps = new HashMap<>();
+                valueMaps.put("r_name", key.toString());
+                valueMaps.put("r_number", x.toString());
+                defaultInstance.insertValues("red", bytes, "r_count", valueMaps);
+                // context.write(key, x);
+            } catch (Exception e) {
+                throw new RuntimeException("reduce失败" + e.getMessage());
+            }
+        });
+    }
+}
+```
+
+* 主程序
+* ```
+* 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+
+public class AppStart {
+    public static void main(String[] args) throws Exception {
+
+        Configuration conf = new Configuration();
+
+        Job job = Job.getInstance(conf, "demo map reduce");
+        job.setJarByClass(AppStart.class);
+
+        job.setMapperClass(TaskMapper.class);
+        job.setReducerClass(TaskReduce.class);
+
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(LongWritable.class);
+
+        FileInputFormat.addInputPath(job, new Path("hdfs://Master:9000/hd_input/data"));
+
+        String yyyyMMddHHmmss = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm"));
+        FileOutputFormat.setOutputPath(job, new Path("hdfs://Master:9000/hd_output/" + yyyyMMddHHmmss));
+
+        System.exit(job.waitForCompletion(true) ? 0 : 1);
+
+    }
+}
+* ```
+
+* 执行任务
+```
+hadoop jar ./map_reduce_task-1.0-SNAPSHOT.jar  com.map_reduce.AppStart
+```
