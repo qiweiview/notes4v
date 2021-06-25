@@ -1,5 +1,19 @@
 # Hadoop综合
 
+## windows 安装
+* 依赖替换
+[hadoop-hdfs-3.2.1.jar](https://github.com/FahaoTang/big-data/blob/master/hadoop-hdfs-3.2.1.jar)
+```
+D:\Application\hadoop-3.2.1\share\hadoop\hdfs
+```
+* 路径
+```
+<property>
+                <name>dfs.namenode.name.dir</name>
+                <value>/D:/Application/hadoop-3.2.1/tmp/dfs/name</value>
+</property>
+```
+
 ## vim   ~/.bashrc
 ```
 export JAVA_HOME=/usr/local/jdk11
