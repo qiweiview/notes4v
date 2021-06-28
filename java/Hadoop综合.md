@@ -1,6 +1,26 @@
 # Hadoop综合
 
 ## HDFS读取文件
+
+* 依赖
+```
+
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-hdfs</artifactId>
+            <version>${hadoop.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+
+
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-common</artifactId>
+            <version>${hadoop.version}</version>
+        </dependency>
+```
+* 程序
 ```
 
         FileSystem fs = FileSystem.get(new URI("hdfs://Master:9000"), new Configuration());
