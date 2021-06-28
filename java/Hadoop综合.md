@@ -1,5 +1,15 @@
 # Hadoop综合
 
+## HDFS读取文件
+```
+
+        FileSystem fs = FileSystem.get(new URI("hdfs://Master:9000"), new Configuration());
+        FSDataInputStream open = fs.open(new Path("/hd_input/data"));
+        byte[] bytes=new byte[1024*1024];
+        int read = open.read(bytes);
+        byte[] rs = Arrays.copyOf(bytes, read);
+```
+
 ## windows 安装
 * 依赖替换
 [hadoop-hdfs-3.2.1.jar](https://github.com/FahaoTang/big-data/blob/master/hadoop-hdfs-3.2.1.jar)
