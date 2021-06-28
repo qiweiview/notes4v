@@ -81,3 +81,33 @@ mv hive-default.xml.template hive-default.xml
 ```
 /usr/local/hive/bin/hive
 ```
+
+## java连接范例
+```
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+public class HiveConnectExample {
+
+    private static String driverName = "org.apache.hive.jdbc.HiveDriver";
+
+    public static void main(String[] args) {
+        try {
+            Class.forName(driverName);
+            Connection con = DriverManager.getConnection("jdbc:hive2://Master:10000/hive");
+            PreparedStatement preparedStatement = con.prepareStatement("select * from hive.stu");
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                String string = resultSet.getString("id");
+                String string1 = resultSet.getString("name");
+                System.out.println(string + " " + string1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
