@@ -4,6 +4,9 @@
 
 * 依赖
 ```
+    <properties>
+        <hadoop.version>3.3.0</hadoop.version>
+    </properties>
 
         <dependency>
             <groupId>org.apache.hadoop</groupId>
