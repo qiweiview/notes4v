@@ -1,5 +1,21 @@
 # Stream教程
 
+## flapMap
+```
+        List<String> d=new ArrayList<>();
+        d.add("AF,FG");
+        d.add("DT,AJ");
+        d.add("DT,ZLS");
+        d.add("XZ,LF");
+
+        List<String> collect = d.stream().flatMap(x -> {
+            return Stream.of(x.split(","));
+        }).collect(Collectors.toList());
+        System.out.println(collect);
+
+        //[AF, FG, DT, AJ, DT, ZLS, XZ, LF]
+```
+
 ## 分组
 ```
   Map<String, List<DemoVO>> collect = load.stream().collect(Collectors.groupingBy(x -> x.getBusinessCode()));
