@@ -1,5 +1,16 @@
 # maven 综合
 
+## 项目中jar包
+```
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc14</artifactId>
+            <version>10.2.0.1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/ojdbc14-10.2.0.1.0.jar</systemPath>
+        </dependency>
+```
+
 ## uber-jar 
 ```
  <plugins>
