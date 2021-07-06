@@ -1,5 +1,10 @@
 # Hadoop综合
 
+## 查看文件block信息
+```
+hdfs fsck  fileName
+```
+
 ## 伸缩
 
 * 查看节点状态
