@@ -1,5 +1,42 @@
 # Hadoop综合
 
+## 伸缩
+
+* 查看节点状态
+```
+hdfs dfsadmin -report
+yarn node -list
+```
+### 添加节点
+* 修改vim /usr/local/hadoop/etc/hadoop/workers 文件，添加节点域名
+* 节点上启动DataNode和NodeManager
+```
+hdfs --daemon start datanode
+yarn --daemon start nodemanager
+```
+
+
+* 刷新节点
+```
+hdfs dfsadmin -refreshNodes
+start-balancer.sh
+```
+
+
+
+### 删除节点
+* 修改vim /usr/local/hadoop/etc/hadoop/workers 文件，删除节点域名
+* 停止节点
+```
+hdfs --daemon stop datanode
+yarn --daemon stop nodemanager
+```
+
+* 刷新节点
+```
+hdfs dfsadmin -refreshNodes
+start-balancer.sh
+```
 ## HDFS读取文件
 
 * 依赖
