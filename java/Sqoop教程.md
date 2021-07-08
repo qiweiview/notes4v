@@ -30,3 +30,8 @@ export CLASSPATH=$CLASSPATH:$SQOOP_HOME/lib
 ```
 sqoop list-databases --connect jdbc:mysql://127.0.0.1:3306/ --username root -P
 ```
+
+* 导入hdfs
+```
+import  --connect jdbc:mysql://123.207.1.1:123/bricklayer --username root --password xxx   --table bricklayer_user
+```
