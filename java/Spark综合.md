@@ -1,5 +1,24 @@
 # Spark综合
 
+## SparkSQL
+```
+ SparkSession spark = SparkSession
+                .builder()
+                .appName("Java Spark SQL basic example")
+                .config("spark.some.config.option", "some-value")
+                .getOrCreate();
+
+df.createOrReplaceTempView("people");
+Dataset<Row> sqlDF = spark.sql("SELECT * FROM people where age>17");
+
+Dataset<Row> load = spark.read().format("jdbc")
+                .option("url", "jdbc:mysql://192.1.1.1:3306/XXXX")
+                .option("driver", "com.mysql.jdbc.Driver")
+                .option("dbtable", "bricklayer_template")
+                .option("user", "root")
+                .option("password", "111")
+                .load();
+```
 
 ## 权限归属
 ```
