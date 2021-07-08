@@ -1,5 +1,7 @@
 # oracle 常用
 
+
+
 ## 数据库备份
 ```
 exp xx/xxfull=y file=/home/data/database.dmp log=/home/data/database.log
@@ -20,6 +22,12 @@ WHERE
 	a.tablespace_name = b.tablespace_name 
 ORDER BY
 	(( a.bytes - b.bytes ) / a.bytes ) DESC
+```
+
+
+## 创建表空间文件
+```
+create tablespace ZD_CRMF  datafile '/data/oracle_space/tbs_data_04.dbf'    size 500M autoextend on next 5M maxsize unlimited; 
 ```
 
 * 查看指定的表空间是否为自动扩展
