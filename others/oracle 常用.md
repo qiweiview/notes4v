@@ -25,9 +25,12 @@ ORDER BY
 ```
 
 
-## 创建表空间文件
+## 扩展表空间文件
 ```
+# 新增
 create tablespace ZD_CRMF  datafile '/data/oracle_space/tbs_data_04.dbf'    size 500M autoextend on next 5M maxsize unlimited; 
+
+alert tablespace ZD_CRMF add datafile '/data/oracle_space/tbs_data_04.dbf'  size 50M autoextend on next 5M maxsize unlimited; 
 ```
 
 * 查看指定的表空间是否为自动扩展
