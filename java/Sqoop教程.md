@@ -33,5 +33,5 @@ sqoop list-databases --connect jdbc:mysql://127.0.0.1:3306/ --username root -P
 
 * 导入hdfs
 ```
-import  --connect jdbc:mysql://123.207.1.1:123/bricklayer --username root --password xxx   --table bricklayer_user
+import -Dorg.apache.sqoop.splitter.allow_text_splitter=true -Dmapred.job.map.memory.mb=4096  -Dmapred.job.reduce.memory.mb=4096  --connect jdbc:mysql://123.207.1.1:123/bricklayer --username root --password xxx   --table bricklayer_user
 ```
