@@ -1,5 +1,17 @@
 # Sqoop教程
 
+## 异常
+```
+# 异常
+Could not find or load main class org.apache.hadoop.hbase.util.GetJavaProperty
+
+# vim /usr/local/hbase/bin/hbase
+
+# CLASSPATH initially contains $HBASE_CONF_DIR
+CLASSPATH="${HBASE_CONF_DIR}"
+CLASSPATH=${CLASSPATH}:$JAVA_HOME/lib/tools.jar:/usr/local/hbase/lib/*
+```
+
 ## 安装
 * [下载](http://sqoop.apache.org/)
 * 配置
