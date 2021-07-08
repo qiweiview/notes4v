@@ -1,5 +1,19 @@
 ## Mysql内容
 
+## BinLog
+
+* 开启方式
+```
+# 修改my.cnf
+log-bin=mysql-bin
+binlog-format=ROW
+```
+
+* 查看binlog是否开启
+```
+show variables like 'log_bin';
+```
+
 ## 网卡监听
 * /etc/my.cnf
 ```
