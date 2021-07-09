@@ -1,5 +1,15 @@
 # Spark综合
 
+## 处理在执行任务
+```
+# 早期版本
+for i in `hadoop job -list | grep -w  username| awk '{print $1}' | grep job_`; do hadoop job -kill $i; done
+
+
+yarn application -list
+yarn application -kill
+```
+
 ## Structured Streaming
 * 处理csv文件流
 ```
