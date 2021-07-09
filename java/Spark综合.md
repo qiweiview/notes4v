@@ -3,7 +3,8 @@
 ## Structured Streaming
 * 处理csv文件流
 ```
-    SparkSession spark = SparkSession
+
+ SparkSession spark = SparkSession
                 .builder()
                 .appName("JavaStructuredNetworkWordCount")
                 .getOrCreate();
@@ -15,11 +16,12 @@
         Dataset<Row> lines = spark
                 .readStream()
                 .schema(userSchema)
-                .csv("/csv");
+                .csv("/cvs");
 
         StreamingQuery start = lines.writeStream()
-                .format("console")
-                .outputMode("append")
+                .format("json")
+                .option("path", "/csv_op")
+                .option("checkpointLocation", "/csv_op_location")
                 .start();
 
         start.awaitTermination();
