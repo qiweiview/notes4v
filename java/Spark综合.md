@@ -1,5 +1,31 @@
 # Spark综合
 
+## Structured Streaming
+* 处理csv文件流
+```
+    SparkSession spark = SparkSession
+                .builder()
+                .appName("JavaStructuredNetworkWordCount")
+                .getOrCreate();
+
+
+
+        StructType userSchema = new StructType().add("name", "string").add("age", "integer");
+
+        Dataset<Row> lines = spark
+                .readStream()
+                .schema(userSchema)
+                .csv("/csv");
+
+        StreamingQuery start = lines.writeStream()
+                .format("console")
+                .outputMode("append")
+                .start();
+
+        start.awaitTermination();
+
+```
+
 ## SparkSQL
 ```
  SparkSession spark = SparkSession
