@@ -1,6 +1,9 @@
 # oracle 常用
 
-
+## where 最近一周
+```
+to_date(t.yysj,'yyyy-mm-dd')-trunc(sysdate) between -7 and 7
+```
 
 ## 数据库备份
 ```
