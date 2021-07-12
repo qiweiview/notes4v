@@ -1,5 +1,10 @@
 # oracle 常用
 
+## 删表并释放空间
+```
+truncate table  test1 DROP STORAGE;
+```
+
 ## where 最近一周
 ```
 to_date(t.yysj,'yyyy-mm-dd')-trunc(sysdate) between -7 and 7
