@@ -8,20 +8,11 @@
 
                             String name = entry.getName();
                             if (entry.isDirectory()) {
-                                //todo 文件夹跳过
-                                continue;
+                                //todo 文件夹
+                           
                             } else {
                                 //todo 文件
-                                String suffix = name.substring(name.lastIndexOf("."));
-                                if (!(".class".equals(suffix))) {
-                                    //todo 非字节码跳过
-                                    continue;
-                                }
-
-
                                 byte[] bytes = StreamUtils.readAllBytes(zipStream);
-                                String beanName = entry.getName().replaceAll("/", ".");
-                                byteMap.put(beanName, bytes);
 
                             }
 
