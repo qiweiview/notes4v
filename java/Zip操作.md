@@ -1,5 +1,37 @@
 # Zip操作
+## 解压
+```
+                    ZipInputStream zipStream = new ZipInputStream(inputStream);
+                    ZipEntry entry = null;
+                    try {
+                        while ((entry = zipStream.getNextEntry()) != null) {
 
+                            String name = entry.getName();
+                            if (entry.isDirectory()) {
+                                //todo 文件夹跳过
+                                continue;
+                            } else {
+                                //todo 文件
+                                String suffix = name.substring(name.lastIndexOf("."));
+                                if (!(".class".equals(suffix))) {
+                                    //todo 非字节码跳过
+                                    continue;
+                                }
+
+
+                                byte[] bytes = StreamUtils.readAllBytes(zipStream);
+                                String beanName = entry.getName().replaceAll("/", ".");
+                                byteMap.put(beanName, bytes);
+
+                            }
+
+                        }
+                        return;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        throw new RuntimeException("load fail cause:" + e);
+                    }
+```
 
 ## 压缩
 ```
