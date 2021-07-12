@@ -190,7 +190,8 @@ public class Premain {
             }
         }
     }
-}```
+}
+```
 
 
 ## jdk6虚拟机启动后的动态 instrument
