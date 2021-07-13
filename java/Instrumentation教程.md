@@ -1,8 +1,8 @@
 # Instrumentation教程
 
 
-## [参考1](https://www.ibm.com/developerworks/cn/java/j-lo-jse61/index.html)
-## [参考2](https://zhuanlan.zhihu.com/p/51909016)
+
+## [zhihu](https://zhuanlan.zhihu.com/p/51909016)
 
 
 ## 打印已加载类的字节码的客户端
