@@ -1,5 +1,19 @@
 # Maven项目使用Spring
 
+
+## 自定义MANIFEST.MF
+```
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-jar-plugin</artifactId>
+	<configuration>
+		<archive>
+			<manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+		</archive>
+	</configuration>
+</plugin>
+```
+
 ### 目录结构
 ![nBMeXt.png](https://s2.ax1x.com/2019/09/12/nBMeXt.png)
 
