@@ -1,5 +1,11 @@
 # oracle 常用
 
+## round四舍五入，trunc截取
+```
+roud(0.938,2) ----->0.94
+trunc(0.938,2) ----->0.93
+```
+
 ## 删表并释放空间
 ```
 truncate table  test1 DROP STORAGE;
