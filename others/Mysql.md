@@ -1,5 +1,10 @@
 ## Mysql内容
 
+## 日期相隔时间计算
+```
+IME_TO_SEC(timediff(end_date,start_date))/3600
+```
+
 ## sql mode 修改
 * ONLY_FULL_GROUP_BY 会限制标准group by
 ```
