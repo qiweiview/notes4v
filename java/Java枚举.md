@@ -1,5 +1,6 @@
 # Java枚举
 
+## 枚举类
 ```
 
 public enum City {
@@ -28,6 +29,26 @@ public enum City {
 
     public static void main(String[] args) {
         System.out.println(City.A);
+    }
+
+}
+```
+
+## 内部类
+```
+public class TestEnum {
+
+    enum BZZ{
+        
+        cc("cc"),
+        dd("dd"),
+        ee("ee");
+
+        private String name;
+
+        BZZ(String name) {
+            this.name = name;
+        }
     }
 
 }
