@@ -3,10 +3,7 @@
 ## 静态方法调用
 ```
         Class<?> aClass = jarClassLoader.loadClass("app.AppStart");
-
         Method main = aClass.getDeclaredMethod("main", String[].class);
-
-      
         Object invoke = main.invoke(null, new Object[]{new String[]{"1"}});
 ```
 
